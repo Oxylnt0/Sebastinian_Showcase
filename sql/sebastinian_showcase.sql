@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 29, 2025 at 03:19 PM
+-- Generation Time: Nov 29, 2025 at 03:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -81,7 +81,8 @@ CREATE TABLE `projects` (
   `file_size` int(11) DEFAULT NULL,
   `sdg_id` int(11) DEFAULT NULL,
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
-  `date_submitted` timestamp NOT NULL DEFAULT current_timestamp()
+  `date_submitted` timestamp NOT NULL DEFAULT current_timestamp(),
+  `views` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -100,10 +101,10 @@ CREATE TABLE `sdgs` (
 --
 
 INSERT INTO `sdgs` (`sdg_id`, `sdg_name`) VALUES
-(1, 'SDG 4 – Quality Education'),
-(2, 'SDG 9 – Industry, Innovation, and Infrastructure'),
 (3, 'SDG 11 – Sustainable Cities & Communities'),
-(4, 'SDG 13 – Climate Action');
+(4, 'SDG 13 – Climate Action'),
+(1, 'SDG 4 – Quality Education'),
+(2, 'SDG 9 – Industry, Innovation, and Infrastructure');
 
 -- --------------------------------------------------------
 
@@ -160,7 +161,8 @@ ALTER TABLE `projects`
 -- Indexes for table `sdgs`
 --
 ALTER TABLE `sdgs`
-  ADD PRIMARY KEY (`sdg_id`);
+  ADD PRIMARY KEY (`sdg_id`),
+  ADD UNIQUE KEY `sdg_name` (`sdg_name`);
 
 --
 -- Indexes for table `users`
