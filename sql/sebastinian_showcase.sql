@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 29, 2025 at 03:35 PM
+-- Generation Time: Nov 29, 2025 at 03:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -139,6 +139,7 @@ ALTER TABLE `activity_log`
 --
 ALTER TABLE `approvals`
   ADD PRIMARY KEY (`approval_id`),
+  ADD UNIQUE KEY `project_id_2` (`project_id`),
   ADD KEY `project_id` (`project_id`),
   ADD KEY `approved_by` (`approved_by`);
 
