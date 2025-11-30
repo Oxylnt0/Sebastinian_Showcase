@@ -1,7 +1,11 @@
 <?php
-require_once "config/db.php";
+require_once("../config/db.php");  // fixed path
 
 $db = new Database();
 $conn = $db->connect();
 
-echo $conn->connect_error ? "FAIL" : "OK";
+if ($conn->connect_error) {
+    echo "Connection failed: " . $conn->connect_error;
+} else {
+    echo "Connected to DB successfully!";
+}
