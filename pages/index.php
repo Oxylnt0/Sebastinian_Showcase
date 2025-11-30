@@ -93,11 +93,11 @@
     <nav>
         <?php if(isset($_SESSION['username'])): ?>
             <span>Hello, <?php echo $_SESSION['username']; ?></span>
-            <a href="pages/dashboard.php">Dashboard</a>
-            <a href="pages/logout.php">Logout</a>
+            <a href="dashboard.php">Dashboard</a>
+            <a href="logout.php">Logout</a>
         <?php else: ?>
-            <a href="pages/login.php">Login</a>
-            <a href="pages/register.php">Register</a>
+            <a href="login.php">Login</a>
+            <a href="register.php">Register</a>
         <?php endif; ?>
     </nav>
 </header>
