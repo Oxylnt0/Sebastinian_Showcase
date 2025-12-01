@@ -1,180 +1,267 @@
-<?php session_start(); ?>
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$isAdmin = $_SESSION['role'] === 'admin';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard - Sebastinian Showcase</title>
-<link rel="stylesheet" href="../assets/css/style.css">
-<style>
-    /* Reset & Base */
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body { font-family: 'Arial', sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
-
-    header {
-        background: #007bff;
-        color: #fff;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    header h1 { font-size: 24px; margin-bottom: 5px; }
-    header nav a { color: #fff; text-decoration: none; margin-left: 15px; font-weight: bold; }
-    header nav a:hover { text-decoration: underline; }
-
-    main { padding: 20px 30px; max-width: 1200px; margin: auto; }
-
-    h2 { margin-bottom: 15px; color: #007bff; }
-
-    .projects-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .project-card {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .project-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    .project-card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-    }
-
-    .project-content {
-        padding: 15px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-
-    .project-content h3 { font-size: 18px; margin-bottom: 5px; color: #007bff; }
-    .project-content p { font-size: 14px; margin-bottom: 8px; }
-
-    .badges {
-        margin-bottom: 10px;
-    }
-    .badge {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 12px;
-        border-radius: 5px;
-        color: #fff;
-        margin-right: 5px;
-    }
-
-    /* SDG Colors */
-    .sdg-1 { background-color: #007bff; } /* SDG 4 – Blue */
-    .sdg-2 { background-color: #6f42c1; } /* SDG 9 – Purple */
-    .sdg-3 { background-color: #20c997; } /* SDG 11 – Green */
-    .sdg-4 { background-color: #fd7e14; } /* SDG 13 – Orange */
-
-    /* Status Colors */
-    .status-approved { background-color: #28a745; }
-    .status-pending { background-color: #ffc107; color: #212529; }
-    .status-rejected { background-color: #dc3545; }
-
-    .btn-view {
-        margin-top: auto;
-        text-align: center;
-        background: #007bff;
-        color: #fff;
-        padding: 10px 0;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background 0.3s;
-    }
-    .btn-view:hover { background: #0056b3; }
-
-    /* Responsive */
-    @media(max-width:480px){
-        header { flex-direction: column; align-items: flex-start; }
-        header nav { margin-top: 5px; }
-    }
-</style>
-</head>
-<body>
-
-<header>
-    <h1>Dashboard - Sebastinian Showcase</h1>
-    <nav>
-        <a href="project.php">Upload Project</a>
-        <a href="logout.php">Logout</a>
-    </nav>
-</header>
-
-<main>
-    <h2>All Projects</h2>
-    <div class="projects-grid" id="projectsContainer">
-        <p>Loading projects...</p>
-    </div>
-</main>
-
-<script>
-async function loadProjects() {
-    const container = document.getElementById('projectsContainer');
-    try {
-        const res = await fetch('../api/projects/get_projects.php');
-        const projects = await res.json();
-
-        container.innerHTML = '';
-        if (!projects || projects.length === 0) {
-            container.innerHTML = '<p>No projects found.</p>';
-            return;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sebastinian Showcase</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fff5e6;
+            margin: 0;
+            padding: 0;
         }
 
-        projects.forEach(p => {
-            // SDG badge class
-            let sdgClass = '';
-            if (p.sdg_id == 1) sdgClass = 'sdg-1';
-            else if (p.sdg_id == 2) sdgClass = 'sdg-2';
-            else if (p.sdg_id == 3) sdgClass = 'sdg-3';
-            else if (p.sdg_id == 4) sdgClass = 'sdg-4';
+        header {
+            background: #8B0000;
+            color: #ffd700;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            // Status class
-            let statusClass = '';
-            if (p.status === 'approved') statusClass = 'status-approved';
-            else if (p.status === 'pending') statusClass = 'status-pending';
-            else if (p.status === 'rejected') statusClass = 'status-rejected';
+        header h1 {
+            margin: 0;
+        }
 
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            card.innerHTML = `
-                ${p.image ? `<img src="../uploads/project_images/${p.image}" alt="${p.title}">` : ''}
-                <div class="project-content">
-                    <h3>${p.title}</h3>
-                    <p><strong>By:</strong> ${p.full_name}</p>
-                    <div class="badges">
-                        ${p.sdg_name ? `<span class="badge ${sdgClass}">${p.sdg_name}</span>` : ''}
-                        <span class="badge ${statusClass}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
-                    </div>
-                    <a class="btn-view" href="project.php?id=${p.project_id}">View Details</a>
-                </div>
-            `;
-            container.appendChild(card);
+        header .logout-btn {
+            background: #ffd700;
+            color: #8B0000;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        header .logout-btn:hover {
+            background: #e6c200;
+        }
+
+        main {
+            padding: 30px;
+        }
+
+        .welcome {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #8B0000;
+        }
+
+        .actions {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .actions button, .actions select {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        .actions button {
+            background: #8B0000;
+            color: #ffd700;
+            border: none;
+        }
+
+        .actions button:hover {
+            background: #a30000;
+        }
+
+        .actions select {
+            border: 1px solid #d4af37;
+        }
+
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: #fff;
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .project-card h3 {
+            margin: 0 0 5px 0;
+            color: #8B0000;
+        }
+
+        .project-card p {
+            flex: 1;
+            margin: 5px 0;
+        }
+
+        .project-card .meta {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .project-card .status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-align: center;
+            width: fit-content;
+            margin-top: 5px;
+        }
+
+        .status.pending { background: #ffd700; color: #8B0000; }
+        .status.approved { background: #008000; color: #fff; }
+        .status.rejected { background: #8B0000; color: #fff; }
+
+        .admin-actions button {
+            margin-right: 5px;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sebastinian Showcase</h1>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+    </header>
+    <main>
+        <div class="welcome">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</div>
+        <div class="actions">
+            <button id="uploadBtn">Upload New Project</button>
+            <select id="sdgFilter">
+                <option value="">All SDGs</option>
+                <option value="1">SDG 4 – Quality Education</option>
+                <option value="2">SDG 9 – Industry, Innovation, and Infrastructure</option>
+                <option value="3">SDG 11 – Sustainable Cities & Communities</option>
+                <option value="4">SDG 13 – Climate Action</option>
+            </select>
+        </div>
+        <div class="projects-container" id="projectsContainer">
+            <!-- Projects will load here dynamically -->
+        </div>
+    </main>
+
+    <script>
+        const projectsContainer = document.getElementById('projectsContainer');
+        const sdgFilter = document.getElementById('sdgFilter');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const isAdmin = <?php echo $isAdmin ? 'true' : 'false'; ?>;
+
+        async function fetchProjects() {
+            projectsContainer.innerHTML = 'Loading projects...';
+            let url = `../api/projects/get_projects.php`;
+            if (sdgFilter.value) {
+                url += `?sdg_id=${sdgFilter.value}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    projectsContainer.innerHTML = '';
+                    if (data.data.length === 0) {
+                        projectsContainer.innerHTML = '<p>No projects found.</p>';
+                        return;
+                    }
+
+                    data.data.forEach(project => {
+                        const card = document.createElement('div');
+                        card.className = 'project-card';
+
+                        let adminButtons = '';
+                        if (isAdmin && project.status === 'pending') {
+                            adminButtons = `
+                                <div class="admin-actions">
+                                    <button onclick="updateStatus(${project.project_id}, 'approved')">Approve</button>
+                                    <button onclick="updateStatus(${project.project_id}, 'rejected')">Reject</button>
+                                </div>
+                            `;
+                        }
+
+                        card.innerHTML = `
+                            ${project.image ? `<img src="${project.image}" alt="${project.title}">` : ''}
+                            <h3>${project.title}</h3>
+                            <div class="meta">By: ${project.user.full_name}</div>
+                            <div class="meta">SDG: ${project.sdg?.sdg_name || 'N/A'}</div>
+                            <div class="meta">Submitted: ${new Date(project.date_submitted).toLocaleDateString()}</div>
+                            <p>${project.description}</p>
+                            <div class="status ${project.status}">${project.status.charAt(0).toUpperCase() + project.status.slice(1)}</div>
+                            ${adminButtons}
+                        `;
+                        projectsContainer.appendChild(card);
+                    });
+                } else {
+                    projectsContainer.innerHTML = `<p>Error: ${data.message}</p>`;
+                }
+            } catch (err) {
+                projectsContainer.innerHTML = `<p>Network error. Please try again.</p>`;
+            }
+        }
+
+        async function updateStatus(projectId, status) {
+            const remarks = prompt(`Add remarks (optional) for ${status} action:`) || '';
+            try {
+                const formData = new FormData();
+                formData.append('project_id', projectId);
+                formData.append('status', status);
+                formData.append('remarks', remarks);
+
+                const res = await fetch('../api/projects/approve_project.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(data.message);
+                    fetchProjects();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (err) {
+                alert("Network error. Please try again.");
+            }
+        }
+
+        sdgFilter.addEventListener('change', fetchProjects);
+        uploadBtn.addEventListener('click', () => window.location.href = 'project.php');
+        logoutBtn.addEventListener('click', async () => {
+            await fetch('../api/auth/logout.php');
+            window.location.href = 'login.php';
         });
-    } catch (err) {
-        console.error('Error loading projects:', err);
-        container.innerHTML = '<p>Error loading projects.</p>';
-    }
-}
 
-loadProjects();
-</script>
-
+        fetchProjects();
+    </script>
 </body>
 </html>
