@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register - Sebastinian Showcase</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/register.css">
     <style>
         /* Basic Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }

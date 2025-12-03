@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Sebastinian Showcase</title>
-<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/index.css">
 <style>
     /* Reset & Base */
     * { box-sizing: border-box; margin:0; padding:0; }

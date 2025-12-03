@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Project Details - Sebastinian Showcase</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/project.css">
     <style>
         /* Base Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }

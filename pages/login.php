@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Sebastinian Showcase</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
 </head>
 <body>
     <h2>Login</h2>
