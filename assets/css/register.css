@@ -1,0 +1,101 @@
+/* register.css */
+
+/* Primary colors: Red & Gold */
+:root {
+    --primary-red: #B71C1C;
+    --primary-gold: #FFD700;
+    --light-bg: #FAFAFA;
+    --dark-text: #212121;
+    --input-border: #ccc;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light-bg);
+    color: var(--dark-text);
+}
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.register-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.register-title {
+    margin: 0;
+    font-size: 2rem;
+    color: var(--primary-red);
+    font-weight: bold;
+}
+
+.register-subtitle {
+    margin: 0.5rem 0 2rem 0;
+    color: #555;
+    font-size: 1rem;
+}
+
+.register-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.register-card input,
+.register-card select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+.register-card input:focus,
+.register-card select:focus {
+    border-color: var(--primary-red);
+    outline: none;
+}
+
+.register-card button {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-red);
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.register-card button:hover {
+    background: var(--primary-gold);
+    color: var(--dark-text);
+}
+
+.login-text {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.login-text a {
+    color: var(--primary-red);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-text a:hover {
+    color: var(--primary-gold);
+}
