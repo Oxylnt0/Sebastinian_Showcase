@@ -1,8 +1,9 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 
-// Destroy all session data
 $_SESSION = [];
+
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
@@ -13,10 +14,8 @@ if (ini_get("session.use_cookies")) {
 
 session_destroy();
 
-// Send JSON response
-header('Content-Type: application/json');
 echo json_encode([
     'status' => 'success',
-    'message' => 'Logged out successfully.'
+    'message' => 'Logged out successfully'
 ]);
 exit;

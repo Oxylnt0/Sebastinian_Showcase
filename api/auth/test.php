@@ -1,11 +1,13 @@
 <?php
-require_once("../config/db.php");  // fixed path
+require_once("../config/db.php");
+header('Content-Type: application/json');
 
-$db = new Database();
-$conn = $db->connect();
+$conn = (new Database())->connect();
 
 if ($conn->connect_error) {
-    echo "Connection failed: " . $conn->connect_error;
-} else {
-    echo "Connected to DB successfully!";
+    echo json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]);
+    exit;
 }
+
+echo json_encode(['status' => 'success', 'message' => 'Connected to DB successfully']);
+exit;
