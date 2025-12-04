@@ -1,13 +1,17 @@
 <?php
 require_once("../config/db.php");
-header('Content-Type: application/json');
+require_once("../utils/response.php");
 
-$conn = (new Database())->connect();
+header("Content-Type: application/json");
 
-if ($conn->connect_error) {
-    echo json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]);
-    exit;
+try {
+    $conn = (new Database())->connect();
+
+    if (!$conn->connect_error) {
+        json_success("Database connection successful");
+    } else {
+        json_error("Connection error: " . $conn->connect_error);
+    }
+} catch (Exception $e) {
+    json_error("Unexpected error: " . $e->getMessage());
 }
-
-echo json_encode(['status' => 'success', 'message' => 'Connected to DB successfully']);
-exit;

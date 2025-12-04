@@ -1,36 +1,27 @@
-<?php session_start(); ?>
+<?php
+session_start();
+if(isset($_SESSION['user_id'])){
+    header("Location: dashboard.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - Sebastinian Showcase</title>
-    <link rel="stylesheet" href="../assets/css/login.css">
+<meta charset="UTF-8">
+<title>Login - Sebastinian Showcase</title>
+<link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <h2>Login</h2>
-    <form id="loginForm" method="POST">
-        <input type="text" name="username" placeholder="Username" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <button type="submit">Login</button>
-    </form>
+<?php include("header.php"); ?>
 
-    <div id="message"></div>
+<h1>Login</h1>
+<form id="loginForm" method="POST" action="../api/auth/login.php">
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+</form>
 
-    <script>
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const res = await fetch('../api/auth/login.php', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await res.json();
-        document.getElementById('message').innerText = data.message;
-        if(data.status === 'success') {
-            window.location.href = 'dashboard.php';
-        }
-    });
-    </script>
+<?php include("footer.php"); ?>
 </body>
 </html>

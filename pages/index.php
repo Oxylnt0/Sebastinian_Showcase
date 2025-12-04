@@ -1,184 +1,47 @@
-<?php session_start(); ?>
+<?php
+session_start();
+require_once("../api/config/db.php");
+require_once("../api/utils/response.php");
+
+// Fetch projects dynamically
+$conn = (new Database())->connect();
+$sql = "
+    SELECT p.*, u.full_name, s.sdg_name
+    FROM projects p
+    LEFT JOIN users u ON p.user_id = u.user_id
+    LEFT JOIN sdgs s ON p.sdg_id = s.sdg_id
+    WHERE p.status = 'approved'
+    ORDER BY p.date_submitted DESC
+";
+$result = $conn->query($sql);
+$projects = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Sebastinian Showcase</title>
-<link rel="stylesheet" href="../assets/css/index.css">
-<style>
-    /* Reset & Base */
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body { font-family: 'Arial', sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
-
-    header {
-        background: #007bff;
-        color: #fff;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    header h1 { font-size: 24px; margin-bottom: 5px; }
-    header nav a { color: #fff; text-decoration: none; margin-left: 15px; font-weight: bold; }
-    header nav a:hover { text-decoration: underline; }
-    header nav span { font-weight: normal; margin-right: 10px; }
-
-    main { padding: 20px 30px; max-width: 1200px; margin: auto; }
-    h2 { margin-bottom: 15px; color: #007bff; }
-
-    .projects-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .project-card {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .project-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    .project-card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-    }
-
-    .project-content {
-        padding: 15px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-
-    .project-content h3 { font-size: 18px; margin-bottom: 5px; color: #007bff; }
-    .project-content p { font-size: 14px; margin-bottom: 8px; }
-
-    .badges { margin-bottom: 10px; }
-    .badge {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 12px;
-        border-radius: 5px;
-        color: #fff;
-        margin-right: 5px;
-    }
-
-    /* SDG Colors */
-    .sdg-1 { background-color: #007bff; }
-    .sdg-2 { background-color: #6f42c1; }
-    .sdg-3 { background-color: #20c997; }
-    .sdg-4 { background-color: #fd7e14; }
-
-    /* Status Colors */
-    .status-approved { background-color: #28a745; }
-    .status-pending { background-color: #ffc107; color: #212529; }
-    .status-rejected { background-color: #dc3545; }
-
-    .btn-view {
-        margin-top: auto;
-        text-align: center;
-        background: #007bff;
-        color: #fff;
-        padding: 10px 0;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background 0.3s;
-    }
-    .btn-view:hover { background: #0056b3; }
-
-    @media(max-width:480px){
-        header { flex-direction: column; align-items: flex-start; }
-        header nav { margin-top: 5px; }
-    }
-</style>
+    <meta charset="UTF-8">
+    <title>Sebastinian Showcase</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+<?php include("header.php"); ?>
+<h1>Project Showcase</h1>
 
-<header>
-    <h1>Sebastinian Showcase</h1>
-    <nav>
-        <?php if(isset($_SESSION['username'])): ?>
-            <span>Hello, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-            <a href="dashboard.php">Dashboard</a>
-            <a href="logout.php">Logout</a>
-        <?php else: ?>
-            <a href="login.php">Login</a>
-            <a href="register.php">Register</a>
-        <?php endif; ?>
-    </nav>
-</header>
-
-<main>
-    <h2>Latest Projects</h2>
-    <div class="projects-grid" id="projectsContainer">
-        <p>Loading projects...</p>
+<?php if(count($projects) === 0): ?>
+    <p>No projects uploaded yet.</p>
+<?php else: ?>
+    <div class="projects-grid">
+        <?php foreach($projects as $proj): ?>
+            <div class="project-card">
+                <h3><?= htmlspecialchars($proj['title']) ?></h3>
+                <p>By <?= htmlspecialchars($proj['full_name']) ?></p>
+                <p>SDG: <?= htmlspecialchars($proj['sdg_name']) ?></p>
+                <a href="project.php?id=<?= $proj['project_id'] ?>">View Details</a>
+            </div>
+        <?php endforeach; ?>
     </div>
-</main>
+<?php endif; ?>
 
-<script>
-async function loadProjects() {
-    const container = document.getElementById('projectsContainer');
-    try {
-        const res = await fetch('../api/projects/get_projects.php');
-        const projects = await res.json();
-
-        container.innerHTML = '';
-        if (!projects || projects.length === 0) {
-            container.innerHTML = '<p>No projects found.</p>';
-            return;
-        }
-
-        // Show latest 5 projects
-        projects.slice(0,5).forEach(p => {
-            // SDG badge class
-            let sdgClass = '';
-            if (p.sdg_id == 1) sdgClass = 'sdg-1';
-            else if (p.sdg_id == 2) sdgClass = 'sdg-2';
-            else if (p.sdg_id == 3) sdgClass = 'sdg-3';
-            else if (p.sdg_id == 4) sdgClass = 'sdg-4';
-
-            // Status badge
-            let statusClass = '';
-            if (p.status === 'approved') statusClass = 'status-approved';
-            else if (p.status === 'pending') statusClass = 'status-pending';
-            else if (p.status === 'rejected') statusClass = 'status-rejected';
-
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            card.innerHTML = `
-                ${p.image ? `<img src="../uploads/project_images/${p.image}" alt="${p.title}">` : ''}
-                <div class="project-content">
-                    <h3>${p.title}</h3>
-                    <p><strong>By:</strong> ${p.full_name}</p>
-                    <div class="badges">
-                        ${p.sdg_name ? `<span class="badge ${sdgClass}">${p.sdg_name}</span>` : ''}
-                        <span class="badge ${statusClass}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
-                    </div>
-                    <a class="btn-view" href="pages/project.php?id=${p.project_id}">View Details</a>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    } catch (err) {
-        console.error('Error loading projects:', err);
-        container.innerHTML = '<p>Error loading projects.</p>';
-    }
-}
-
-loadProjects();
-</script>
-
+<?php include("footer.php"); ?>
 </body>
 </html>
