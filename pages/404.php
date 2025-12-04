@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>404 - Page Not Found</title>
-<link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body>
-<?php include("header.php"); ?>
-<h1>404 - Page Not Found</h1>
-<p>Sorry, the page you are looking for does not exist.</p>
-<a href="index.php">Go back to home</a>
-<?php include("footer.php"); ?>
-</body>
-</html>
+<?php
+require_once("header.php"); // Include header with navigation
+?>
+
+<main class="error-page">
+    <div class="container">
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+        <p>Oops! The page you're looking for doesn't exist or has been moved.</p>
+        <a href="index.php" class="btn-home">Go Back Home</a>
+    </div>
+</main>
+
+<?php
+require_once("footer.php"); // Include footer
+?>

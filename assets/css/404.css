@@ -1,0 +1,88 @@
+/* 404.css */
+
+/* Reset & Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff8f5;
+    color: #333;
+    height: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Main Container */
+.error-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.error-page .container {
+    max-width: 600px;
+}
+
+/* 404 Number */
+.error-page h1 {
+    font-size: 12rem;
+    color: #b71c1c; /* Deep Red */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.error-page h2 {
+    font-size: 2.5rem;
+    color: #b71c1c;
+    margin-bottom: 15px;
+}
+
+.error-page p {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+}
+
+/* Button */
+.btn-home {
+    display: inline-block;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #b71c1c 0%, #ffb300 100%);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-home:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .error-page h1 {
+        font-size: 8rem;
+    }
+
+    .error-page h2 {
+        font-size: 2rem;
+    }
+
+    .error-page p {
+        font-size: 1rem;
+    }
+}

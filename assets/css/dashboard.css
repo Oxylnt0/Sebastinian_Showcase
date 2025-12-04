@@ -1,0 +1,180 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: #bfa028; /* Gold */
+    transition: all 0.3s ease;
+}
+a:hover {
+    color: #d4af37;
+}
+
+/* Gold Text Highlight */
+.gold-text {
+    color: #bfa028;
+    font-weight: bold;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.welcome-banner h1 {
+    font-size: 2.5rem;
+    color: #a10d0d; /* Dark Red */
+}
+.welcome-banner p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 0.5rem;
+}
+
+/* Stats Cards */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+.stats-cards .card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stats-cards .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+.stats-cards .card h3 {
+    font-size: 1.1rem;
+    color: #a10d0d; /* Dark Red */
+    margin-bottom: 0.5rem;
+}
+.stats-cards .card p {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #bfa028; /* Gold */
+}
+
+/* Recent Projects */
+.recent-projects h2 {
+    color: #a10d0d;
+    margin-bottom: 1rem;
+}
+.project-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+.project-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+.project-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+.placeholder-img {
+    width: 100%;
+    height: 180px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 1rem;
+}
+.project-info {
+    padding: 1rem;
+}
+.project-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #a10d0d;
+}
+.project-info p {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+.project-info .sdg-tag {
+    display: inline-block;
+    background-color: #bfa028;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    margin-right: 0.5rem;
+}
+.project-info .status {
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+.project-info .status.pending { background-color: #f0ad4e; color: #fff; }
+.project-info .status.approved { background-color: #28a745; color: #fff; }
+.project-info .status.rejected { background-color: #dc3545; color: #fff; }
+
+/* Admin Dashboard Link */
+.admin-link {
+    margin-top: 2rem;
+    text-align: center;
+}
+.gold-btn {
+    display: inline-block;
+    background-color: #bfa028;
+    color: #fff;
+    font-weight: bold;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.gold-btn:hover {
+    background-color: #d4af37;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-cards {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .project-list {
+        grid-template-columns: 1fr;
+    }
+}

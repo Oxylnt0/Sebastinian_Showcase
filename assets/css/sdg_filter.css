@@ -1,0 +1,194 @@
+/* sdg_filter.css */
+
+/* Reset & Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #fdf6f0; /* light neutral for readability */
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Container */
+.sdg-filter-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+/* Heading */
+.sdg-filter-container h1 {
+    font-size: 2.5rem;
+    color: #b71c1c; /* deep red */
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.filter-section form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-section label {
+    font-weight: bold;
+    color: #b71c1c;
+}
+
+#sdgSelect {
+    padding: 8px 12px;
+    border: 2px solid #b71c1c;
+    border-radius: 6px;
+    background-color: #fff8f5;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#sdgSelect:hover,
+#sdgSelect:focus {
+    border-color: #ffb300; /* gold accent */
+    outline: none;
+}
+
+.filter-section button {
+    padding: 8px 16px;
+    background-color: #b71c1c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.filter-section button:hover {
+    background-color: #ffb300; /* gold accent */
+    color: #b71c1c;
+    transform: translateY(-2px);
+}
+
+/* Projects List */
+.projects-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* No Projects Message */
+.no-projects {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #b71c1c;
+}
+
+/* Project Card */
+.project-card {
+    background-color: #fff8f5;
+    border: 2px solid #b71c1c;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Card Header */
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.project-header h3 {
+    font-size: 1.5rem;
+    color: #b71c1c;
+}
+
+.project-sdg {
+    background-color: #ffb300; /* gold */
+    color: #b71c1c;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Project Image */
+.project-image {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.project-image img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid #b71c1c;
+}
+
+/* Project Description */
+.project-description {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+/* Project Footer */
+.project-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-footer span {
+    font-weight: bold;
+    color: #b71c1c;
+}
+
+.download-btn {
+    background-color: #b71c1c;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    background-color: #ffb300; /* gold */
+    color: #b71c1c;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filter-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+}

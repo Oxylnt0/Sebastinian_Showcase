@@ -1,0 +1,265 @@
+/* ============================= */
+/*         GLOBAL RESET          */
+/* ============================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f7f5f3;
+    color: #333;
+}
+
+/* ============================= */
+/*      PROJECT CONTAINER        */
+/* ============================= */
+.project-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* ============================= */
+/*          PROJECT BOX          */
+/* ============================= */
+.project-box {
+    background: #fff;
+    border-radius: 15px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.project-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.project-title {
+    color: #B22222;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.project-meta {
+    color: #555;
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.project-meta strong.approved {
+    color: #28a745; /* green for approved */
+}
+
+.project-meta strong.rejected {
+    color: #dc3545; /* red for rejected */
+}
+
+.project-meta strong.pending {
+    color: #B22222; /* red for pending */
+}
+
+/* ============================= */
+/*        PROJECT IMAGE          */
+/* ============================= */
+.project-image {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.project-image img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+}
+
+.project-image img:hover {
+    transform: scale(1.03);
+}
+
+/* ============================= */
+/*       PROJECT DESCRIPTION     */
+/* ============================= */
+.project-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/* ============================= */
+/*         PROJECT FILE          */
+/* ============================= */
+.project-file {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #B22222;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.download-btn:hover {
+    background-color: #8b1a1a;
+    transform: translateY(-2px);
+}
+
+/* ============================= */
+/*       COMMENTS SECTION        */
+/* ============================= */
+.comments-section {
+    margin-top: 40px;
+}
+
+.comments-section h2 {
+    color: #B22222;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.comment {
+    background-color: #f9f7f6;
+    border-left: 4px solid #FFD700;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.comment p {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: #888;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+}
+
+/* ============================= */
+/*       COMMENT FORM            */
+/* ============================= */
+#comment-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#comment-form textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    min-height: 100px;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+#comment-form textarea:focus {
+    border-color: #FFD700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    outline: none;
+}
+
+.comment-btn {
+    align-self: flex-end;
+    padding: 10px 25px;
+    background-color: #B22222;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.comment-btn:hover {
+    background-color: #8b1a1a;
+    transform: translateY(-2px);
+}
+
+.comment-message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #B22222;
+}
+
+/* ============================= */
+/*    LOGIN PROMPT MESSAGE       */
+/* ============================= */
+.login-to-comment {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.login-to-comment a {
+    color: #FFD700;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.login-to-comment a:hover {
+    color: #B22222;
+}
+
+/* ============================= */
+/*        RESPONSIVE DESIGN      */
+/* ============================= */
+@media (max-width: 768px) {
+    .project-box {
+        padding: 30px 20px;
+    }
+
+    .project-title {
+        font-size: 1.8rem;
+    }
+
+    .project-meta {
+        font-size: 0.9rem;
+    }
+
+    .download-btn, .comment-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .comment-date {
+        position: static;
+        display: block;
+        margin-top: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .project-description {
+        font-size: 0.95rem;
+    }
+
+    .comments-section h2 {
+        font-size: 1.2rem;
+    }
+
+    #comment-form textarea {
+        font-size: 0.9rem;
+    }
+}

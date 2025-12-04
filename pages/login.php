@@ -1,27 +1,39 @@
 <?php
 session_start();
-if(isset($_SESSION['user_id'])){
+
+// Redirect already logged-in users to dashboard
+if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit;
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Login - Sebastinian Showcase</title>
-<link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body>
-<?php include("header.php"); ?>
 
-<h1>Login</h1>
-<form id="loginForm" method="POST" action="../api/auth/login.php">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-</form>
+require_once("../api/config/db.php");
+include("header.php"); // Include header if needed
+
+?>
+
+<main class="login-container">
+    <section class="login-box">
+        <h1>Login to Sebastinian Showcase</h1>
+        <p>Enter your credentials to access your account</p>
+
+        <form id="login-form" method="POST" action="../api/auth/login.php">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+            <p class="register-link">Don't have an account? <a href="register.php">Register here</a></p>
+
+            <div id="login-message" class="login-message"></div>
+        </form>
+    </section>
+</main>
 
 <?php include("footer.php"); ?>
-</body>
-</html>

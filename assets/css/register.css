@@ -1,0 +1,163 @@
+/* ============================= */
+/*         GLOBAL RESET          */
+/* ============================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: #f7f5f3;
+    color: #333;
+}
+
+/* ============================= */
+/*      REGISTER CONTAINER       */
+/* ============================= */
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ============================= */
+/*         REGISTER BOX          */
+/* ============================= */
+.register-box {
+    background: #fff;
+    border-radius: 15px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.register-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+}
+
+.register-box h1 {
+    color: #B22222;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.register-box p {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+}
+
+/* ============================= */
+/*         FORM ELEMENTS         */
+/* ============================= */
+.form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #B22222;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* ============================= */
+/*       REGISTER BUTTON         */
+/* ============================= */
+.register-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #B22222;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.register-btn:hover {
+    background-color: #8b1a1a;
+    transform: translateY(-2px);
+}
+
+/* ============================= */
+/*        LOGIN LINK             */
+/* ============================= */
+.login-link {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.login-link a {
+    color: #FFD700;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.login-link a:hover {
+    color: #B22222;
+}
+
+/* ============================= */
+/*      REGISTER MESSAGE DIV     */
+/* ============================= */
+.register-message {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #B22222;
+    font-weight: bold;
+}
+
+/* ============================= */
+/*        RESPONSIVE DESIGN      */
+/* ============================= */
+@media (max-width: 480px) {
+    .register-box {
+        padding: 30px 20px;
+    }
+
+    .register-box h1 {
+        font-size: 1.6rem;
+    }
+
+    .register-box p {
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    .register-btn {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+}

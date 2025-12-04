@@ -1,0 +1,176 @@
+/* ============================= */
+/*      GLOBAL RESET & BASE      */
+/* ============================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f9f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ============================= */
+/*           HERO SECTION        */
+/* ============================= */
+.hero {
+    background: linear-gradient(135deg, #B22222 0%, #FFD700 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* ============================= */
+/*        PROJECTS GRID          */
+/* ============================= */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 0 20px;
+}
+
+/* ============================= */
+/*        PROJECT CARD           */
+/* ============================= */
+.project-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.project-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.placeholder-img {
+    background: #ddd;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-weight: bold;
+}
+
+.project-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.project-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #B22222;
+}
+
+.project-content .student-name {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.project-content .project-desc {
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.project-content .sdg-tag {
+    display: inline-block;
+    background: #FFD700;
+    color: #B22222;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.project-content .view-btn {
+    background: #B22222;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.project-content .view-btn:hover {
+    background: #8b1a1a;
+}
+
+/* ============================= */
+/*        NO PROJECTS MSG        */
+/* ============================= */
+.no-projects {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #777;
+    margin: 40px 0;
+}
+
+/* ============================= */
+/*        RESPONSIVE DESIGN      */
+/* ============================= */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .projects-grid {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+}
