@@ -17,6 +17,7 @@ body {
 a {
     text-decoration: none;
     color: inherit;
+    transition: color 0.3s;
 }
 
 /* ============================= */
@@ -41,6 +42,38 @@ a {
     font-size: 1.2rem;
     max-width: 700px;
     margin: 0 auto;
+}
+
+/* ============================= */
+/*           SDG FILTERS         */
+/* ============================= */
+.sdg-menu {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    gap: 10px;
+}
+
+.sdg-menu a {
+    display: inline-block;
+    background: #B22222;
+    color: #FFD700;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sdg-menu a:hover {
+    background: #8b1a1a;
+    color: #fff;
+}
+
+.sdg-menu a.active {
+    background: #FFD700;
+    color: #B22222;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 /* ============================= */
@@ -78,7 +111,7 @@ a {
 }
 
 .placeholder-img {
-    background: #ddd;
+    background: #eee;
     height: 180px;
     display: flex;
     align-items: center;
@@ -162,6 +195,10 @@ a {
 
     .projects-grid {
         gap: 20px;
+    }
+
+    .sdg-menu {
+        gap: 8px;
     }
 }
 

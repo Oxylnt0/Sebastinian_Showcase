@@ -8,6 +8,9 @@
  *   Auth::requireLogin();
  *   Auth::requireRole('admin');
  *   $user = Auth::currentUser();
+ *   // Or use the function-style helpers:
+ *   if (!isLoggedIn()) { ... }
+ *   if (!isAdmin()) { ... }
  */
 
 require_once __DIR__ . '/response.php';
@@ -20,7 +23,6 @@ class Auth
     public static function ensureSession(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
-            // Use secure session cookie parameters when possible
             $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
             session_set_cookie_params([
                 'lifetime' => 0,
@@ -79,7 +81,8 @@ class Auth
         return [
             'user_id' => $_SESSION['user_id'],
             'username' => $_SESSION['username'] ?? null,
-            'role' => $_SESSION['role'] ?? null
+            'role' => $_SESSION['role'] ?? null,
+            'full_name' => $_SESSION['full_name'] ?? null
         ];
     }
 
@@ -98,4 +101,18 @@ class Auth
         }
         session_destroy();
     }
+}
+
+/**
+ * Function-style wrappers for backward compatibility
+ */
+function isLoggedIn(): bool
+{
+    return Auth::currentUser() !== null;
+}
+
+function isAdmin(): bool
+{
+    $user = Auth::currentUser();
+    return $user && ($user['role'] === 'admin');
 }

@@ -3,34 +3,37 @@ document.addEventListener("DOMContentLoaded", function() {
     const sdgFilters = document.querySelectorAll(".sdg-menu a");
     const searchInput = document.getElementById("search-projects");
 
-    // --- FUNCTION TO LOAD PROJECTS ---
-    async function loadProjects(filter = "", search = "") {
+    let allProjects = []; // Store fetched projects from API
+
+    // --- DEBOUNCE FUNCTION FOR SEARCH ---
+    function debounce(func, wait = 300) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // --- FUNCTION TO LOAD PROJECTS FROM API ---
+    async function fetchProjects() {
         try {
             const response = await fetch("../api/projects/get_projects.php");
             const projects = await response.json();
 
-            let filtered = projects;
-
-            // Filter by SDG if specified
-            if (filter) {
-                filtered = filtered.filter(p => p.sdg_name === filter);
+            if (!Array.isArray(projects)) {
+                throw new Error("Invalid response from server");
             }
 
-            // Search by project title
-            if (search) {
-                filtered = filtered.filter(p => p.title.toLowerCase().includes(search.toLowerCase()));
-            }
-
-            renderProjects(filtered);
+            allProjects = projects;
         } catch (error) {
-            console.error("Error loading projects:", error);
+            console.error("Error fetching projects:", error);
             projectContainer.innerHTML = `<p class="no-projects">Failed to load projects.</p>`;
         }
     }
 
     // --- FUNCTION TO RENDER PROJECT CARDS ---
     function renderProjects(projects) {
-        if (projects.length === 0) {
+        if (!projects || projects.length === 0) {
             projectContainer.innerHTML = `<p class="no-projects">No projects found.</p>`;
             return;
         }
@@ -52,25 +55,48 @@ document.addEventListener("DOMContentLoaded", function() {
         `).join("");
     }
 
-    // --- SDG FILTERING ---
+    // --- FILTER PROJECTS BASED ON SDG AND SEARCH ---
+    function filterProjects(filter = "", search = "") {
+        let filtered = [...allProjects];
+
+        if (filter) {
+            filtered = filtered.filter(p => p.sdg_name === filter);
+        }
+
+        if (search) {
+            const lowerSearch = search.toLowerCase();
+            filtered = filtered.filter(p => p.title.toLowerCase().includes(lowerSearch));
+        }
+
+        renderProjects(filtered);
+    }
+
+    // --- SDG FILTER EVENT ---
     if (sdgFilters.length > 0) {
         sdgFilters.forEach(link => {
             link.addEventListener("click", e => {
                 e.preventDefault();
                 const filter = link.dataset.sdg || "";
-                loadProjects(filter, searchInput ? searchInput.value : "");
+                const search = searchInput ? searchInput.value.trim() : "";
+                filterProjects(filter, search);
             });
         });
     }
 
-    // --- LIVE SEARCH ---
+    // --- LIVE SEARCH EVENT ---
     if (searchInput) {
-        searchInput.addEventListener("input", () => {
+        searchInput.addEventListener("input", debounce(() => {
             const search = searchInput.value.trim();
-            loadProjects("", search);
-        });
+            // Find currently active SDG filter
+            const activeFilterLink = document.querySelector(".sdg-menu a.active");
+            const filter = activeFilterLink ? activeFilterLink.dataset.sdg || "" : "";
+            filterProjects(filter, search);
+        }, 250));
     }
 
     // --- INITIAL LOAD ---
-    loadProjects(); // Load all projects on page load
+    (async () => {
+        await fetchProjects();
+        // Don't overwrite initial PHP-rendered projects unless JS filtering/search is used
+    })();
 });

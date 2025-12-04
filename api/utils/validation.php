@@ -53,6 +53,23 @@ class Validation
     }
 
     /**
+     * Validate required field and throw JSON error if empty
+     *
+     * @param mixed $value
+     * @param string $message
+     */
+    public static function requireField($value, string $message): void
+    {
+        if (!self::required($value)) {
+            echo json_encode([
+                "status" => "error",
+                "message" => $message
+            ]);
+            exit;
+        }
+    }
+
+    /**
      * Validate that value is one of allowed enumerations
      *
      * @param string $value

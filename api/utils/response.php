@@ -5,8 +5,14 @@
  * Small response helper for JSON APIs.
  * Usage:
  *   require_once __DIR__ . '/response.php';
+ *
+ * Class usage:
  *   Response::success(['id'=>1], 'Created', 201);
  *   Response::error('Invalid input', 400);
+ *
+ * Procedural helpers:
+ *   json_success(['id'=>1], 'Created', 201);
+ *   json_error('Invalid input', 400);
  */
 
 class Response
@@ -14,7 +20,7 @@ class Response
     /**
      * Send a JSON response and exit.
      *
-     * @param array|string $payload - data or message
+     * @param array|string $payload
      * @param int $httpCode
      */
     public static function json($payload, int $httpCode = 200): void
@@ -24,7 +30,7 @@ class Response
             header('Content-Type: application/json; charset=utf-8');
             header('X-Content-Type-Options: nosniff');
         }
-        echo json_encode($payload, JSON_UNESCAPED_UNICODE);
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }
 
@@ -63,4 +69,17 @@ class Response
         }
         self::json($payload, $httpCode);
     }
+}
+
+/**
+ * Procedural helper functions for backward compatibility.
+ */
+function json_success($data = [], $message = 'OK', $httpCode = 200): void
+{
+    Response::success($data, $message, $httpCode);
+}
+
+function json_error($message = 'Error', $httpCode = 400, $meta = []): void
+{
+    Response::error($message, $httpCode, $meta);
 }

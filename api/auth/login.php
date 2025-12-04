@@ -4,19 +4,22 @@ require_once("../utils/response.php");
 require_once("../utils/validation.php");
 require_once("../utils/auth_check.php");
 
-header("Content-Type: application/json");
-
 // Reject anything except POST
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    json_error("Invalid request method", 405);
+    Response::error("Invalid request method", 405);
 }
 
+// Grab input
 $username = trim($_POST["username"] ?? "");
 $password = $_POST["password"] ?? "";
 
-// Input validation
-validate_required($username, "Username is required");
-validate_required($password, "Password is required");
+// Input validation using Validation class
+if (!Validation::required($username)) {
+    Response::error("Username is required");
+}
+if (!Validation::required($password)) {
+    Response::error("Password is required");
+}
 
 try {
     $conn = (new Database())->connect();
@@ -32,27 +35,29 @@ try {
     $result = $stmt->get_result();
 
     if ($result->num_rows !== 1) {
-        json_error("Account not found");
+        Response::error("Account not found", 404);
     }
 
     $user = $result->fetch_assoc();
 
     if (!password_verify($password, $user["password"])) {
-        json_error("Invalid password");
+        Response::error("Invalid password", 401);
     }
 
+    // Start session
     session_start();
     $_SESSION["user_id"] = $user["user_id"];
     $_SESSION["username"] = $user["username"];
     $_SESSION["role"] = $user["role"];
     $_SESSION["logged_in_at"] = time();
 
-    json_success("Login successful", [
+    // Correct order: data first, then message
+    Response::success([
         "user_id" => $user["user_id"],
         "username" => $user["username"],
         "role" => $user["role"]
-    ]);
+    ], "Login successful");
 
 } catch (Exception $e) {
-    json_error("Server error: " . $e->getMessage());
+    Response::error("Server error: " . $e->getMessage(), 500);
 }

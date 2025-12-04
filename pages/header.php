@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once("../api/config/db.php");
 
 // Fetch SDGs for navigation filter
@@ -41,11 +40,35 @@ $sdgs = $sdg_result ? $sdg_result->fetch_all(MYSQLI_ASSOC) : [];
             </li>
         </ul>
     </nav>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/index.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
+    <link rel="stylesheet" href="../assets/css/register.css">
+    <link rel="stylesheet" href="../assets/css/profile.css">
+    <link rel="stylesheet" href="../assets/css/project.css">
+    <link rel="stylesheet" href="../assets/css/my_projects.css">
+    <link rel="stylesheet" href="../assets/css/about.css">
+    <link rel="stylesheet" href="../assets/css/404.css">
+    <link rel="stylesheet" href="../assets/css/footer.css">
+    <link rel="stylesheet" href="../assets/css/header.css">
+
+    <!-- JS -->
+    <script src="../assets/js/index.js" defer></script>
+    <script src="../assets/js/login.js" defer></script>
+    <script src="../assets/js/register.js" defer></script>
+    <script src="../assets/js/project.js" defer></script>
+    <script src="../assets/js/my_projects.js" defer></script>
+    <script src="../assets/js/about.js" defer></script>
+    <script src="../assets/js/404.js" defer></script>
+    <script src="../assets/js/profile.js" defer></script>
+    <script src="../assets/js/footer.js" defer></script>
+
 </header>
 
 <style>
 /* Basic header/navigation styling */
-header { background: #4982ec; color: white; padding: 10px 20px; }
+header { background: #B22222; color: white; padding: 10px 20px; }
 nav { display: flex; align-items: center; justify-content: space-between; }
 nav .logo a { color: white; text-decoration: none; font-weight: bold; font-size: 1.3em; }
 nav .nav-links { list-style: none; display: flex; gap: 15px; }

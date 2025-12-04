@@ -1,35 +1,32 @@
 <?php
-session_start();
-require_once("../api/config/db.php");
-require_once("../api/utils/auth_check.php");
-require_once("../api/utils/response.php");
+require_once "../api/config/db.php";
+require_once "../api/utils/auth_check.php";
+require_once "../api/utils/response.php";
 
-// Redirect to login if not logged in
-if (!isLoggedIn()) {
-    header("Location: login.php");
-    exit;
-}
+// Ensure user is logged in
+Auth::requireLogin();
+$user = Auth::currentUser();
 
+// Database connection
 $conn = (new Database())->connect();
-$user_id = $_SESSION['user_id'];
-$role = $_SESSION['role'];
-$username = $_SESSION['username'];
-$full_name = $_SESSION['full_name'] ?? '';
+$user_id = $user['user_id'];
+$role = $user['role'];
+$username = $user['username'];
+$full_name = $_SESSION['full_name'] ?? $username;
 
-// Fetch project statistics for user
+// Fetch project statistics
 $stats_stmt = $conn->prepare("
     SELECT 
         COUNT(*) AS total_projects,
-        SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
-        SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
-        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending
+        COALESCE(SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END), 0) AS approved,
+        COALESCE(SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END), 0) AS rejected,
+        COALESCE(SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END), 0) AS pending
     FROM projects
     WHERE user_id = ?
 ");
 $stats_stmt->bind_param("i", $user_id);
 $stats_stmt->execute();
-$stats_result = $stats_stmt->get_result();
-$stats = $stats_result->fetch_assoc();
+$stats = $stats_stmt->get_result()->fetch_assoc();
 
 // Fetch 5 most recent projects
 $recent_stmt = $conn->prepare("
@@ -42,12 +39,7 @@ $recent_stmt = $conn->prepare("
 ");
 $recent_stmt->bind_param("i", $user_id);
 $recent_stmt->execute();
-$recent_result = $recent_stmt->get_result();
-$recent_projects = [];
-while ($row = $recent_result->fetch_assoc()) {
-    $recent_projects[] = $row;
-}
-
+$recent_projects = $recent_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,30 +52,30 @@ while ($row = $recent_result->fetch_assoc()) {
 <?php include 'header.php'; ?>
 
 <main class="dashboard-container">
+    <!-- Welcome Banner -->
     <section class="welcome-banner">
-        <h1>Welcome back, <span class="gold-text"><?= htmlspecialchars($full_name ?: $username) ?></span>!</h1>
+        <h1>Welcome back, <span class="gold-text"><?= htmlspecialchars($full_name) ?></span>!</h1>
         <p>Your projects and contributions are showcased here.</p>
     </section>
 
+    <!-- Stats Cards -->
     <section class="stats-cards">
-        <div class="card total">
-            <h3>Total Projects</h3>
-            <p><?= $stats['total_projects'] ?></p>
-        </div>
-        <div class="card approved">
-            <h3>Approved</h3>
-            <p><?= $stats['approved'] ?></p>
-        </div>
-        <div class="card rejected">
-            <h3>Rejected</h3>
-            <p><?= $stats['rejected'] ?></p>
-        </div>
-        <div class="card pending">
-            <h3>Pending</h3>
-            <p><?= $stats['pending'] ?></p>
-        </div>
+        <?php
+        $cards = [
+            'Total Projects' => $stats['total_projects'],
+            'Approved' => $stats['approved'],
+            'Rejected' => $stats['rejected'],
+            'Pending' => $stats['pending']
+        ];
+        foreach ($cards as $title => $value): ?>
+            <div class="card <?= strtolower($title) ?>">
+                <h3><?= $title ?></h3>
+                <p><?= $value ?></p>
+            </div>
+        <?php endforeach; ?>
     </section>
 
+    <!-- Recent Projects -->
     <section class="recent-projects">
         <h2>Recently Submitted Projects</h2>
         <?php if (empty($recent_projects)): ?>
@@ -92,7 +84,7 @@ while ($row = $recent_result->fetch_assoc()) {
             <div class="project-list">
                 <?php foreach ($recent_projects as $project): ?>
                     <div class="project-card">
-                        <?php if ($project['image']): ?>
+                        <?php if (!empty($project['image'])): ?>
                             <img src="../uploads/project_images/<?= htmlspecialchars($project['image']) ?>" alt="<?= htmlspecialchars($project['title']) ?>">
                         <?php else: ?>
                             <div class="placeholder-img">No Image</div>
@@ -109,6 +101,7 @@ while ($row = $recent_result->fetch_assoc()) {
         <?php endif; ?>
     </section>
 
+    <!-- Admin Dashboard Link -->
     <?php if ($role === 'admin'): ?>
         <section class="admin-link">
             <a href="admin_dashboard.php" class="gold-btn">Go to Admin Dashboard</a>

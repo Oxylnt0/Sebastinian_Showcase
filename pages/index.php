@@ -4,6 +4,15 @@ include("header.php"); // includes session start and SDG menu
 
 $conn = (new Database())->connect();
 
+// Fetch all SDGs for filter menu
+$sdgResult = $conn->query("SELECT sdg_id, sdg_name FROM sdgs ORDER BY sdg_name ASC");
+$sdgs = [];
+if ($sdgResult) {
+    while ($row = $sdgResult->fetch_assoc()) {
+        $sdgs[] = $row;
+    }
+}
+
 // Fetch approved projects, newest first
 $sql = "
     SELECT 
@@ -27,11 +36,27 @@ if ($result) {
 ?>
 
 <main class="container">
+    <!-- HERO SECTION -->
     <section class="hero">
         <h1>Welcome to Sebastinian Showcase</h1>
         <p>Discover student creativity, innovation, and projects aligned with the UN Sustainable Development Goals.</p>
     </section>
 
+    <!-- SDG FILTERS + SEARCH -->
+    <section class="filter-search">
+        <div class="sdg-menu">
+            <span>Filter by SDG:</span>
+            <a href="#" data-sdg="">All</a>
+            <?php foreach($sdgs as $sdg): ?>
+                <a href="#" data-sdg="<?= htmlspecialchars($sdg['sdg_name']) ?>"><?= htmlspecialchars($sdg['sdg_name']) ?></a>
+            <?php endforeach; ?>
+        </div>
+        <div class="search-box">
+            <input type="text" id="search-projects" placeholder="Search projects by title...">
+        </div>
+    </section>
+
+    <!-- PROJECTS GRID -->
     <section class="projects-grid">
         <?php if(count($projects) > 0): ?>
             <?php foreach($projects as $project): ?>

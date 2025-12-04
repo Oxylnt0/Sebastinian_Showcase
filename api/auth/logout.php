@@ -1,25 +1,27 @@
 <?php
-require_once("../utils/response.php");
-
-header("Content-Type: application/json");
-
+// api/auth/logout.php
 session_start();
+
+// Clear all session data
 $_SESSION = [];
 
-// Delete session cookie
+// Delete session cookie if it exists
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(
         session_name(),
-        "",
+        '',
         time() - 42000,
-        $params["path"],
-        $params["domain"],
-        $params["secure"],
-        $params["httponly"]
+        $params['path'],
+        $params['domain'],
+        $params['secure'],
+        $params['httponly']
     );
 }
 
+// Destroy the session
 session_destroy();
 
-json_success("Logged out successfully");
+// Redirect to login page
+header("Location: ../../pages/login.php");
+exit;
