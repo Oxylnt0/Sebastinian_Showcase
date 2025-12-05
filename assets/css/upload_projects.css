@@ -1,0 +1,162 @@
+/* ============================= */
+/* Upload Project Page - Sebastinian Showcase */
+/* Primary Colors: Red (#B22222) & Gold (#FFD700) */
+/* ============================= */
+
+/* --- Reset basics --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* --- Main container --- */
+.upload-container {
+    max-width: 900px;
+    margin: 60px auto 40px auto;
+    background: #fff;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-top: 6px solid #B22222; /* Red accent */
+}
+
+/* --- Page heading --- */
+.upload-container h1 {
+    color: #B22222;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.upload-container .subtitle {
+    color: #555;
+    font-size: 1rem;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* --- Form styling --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #B22222;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select,
+.form-group input[type="file"] {
+    padding: 12px 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.form-group input[type="file"]:focus {
+    outline: none;
+    border-color: #B22222;
+    box-shadow: 0 0 8px rgba(178, 34, 34, 0.3);
+}
+
+/* Textarea customization */
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* File input small text */
+.form-group small {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #777;
+}
+
+/* --- Button Styling --- */
+.btn-submit {
+    background: linear-gradient(135deg, #B22222, #FFD700);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: center;
+    width: 50%;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(178, 34, 34, 0.4);
+}
+
+/* --- Feedback message --- */
+.feedback {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 15px;
+    min-height: 24px;
+}
+
+.feedback.success {
+    color: #228B22; /* green for success */
+}
+
+.feedback.error {
+    color: #B22222; /* red for errors */
+}
+
+/* --- Upload card --- */
+.upload-card {
+    padding: 30px 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .upload-container {
+        padding: 30px 20px;
+        margin: 40px 20px;
+    }
+
+    .btn-submit {
+        width: 70%;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-container {
+        padding: 20px 15px;
+    }
+
+    .btn-submit {
+        width: 100%;
+    }
+}

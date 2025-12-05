@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once("../api/config/db.php");
 
 // Fetch SDGs for navigation filter
@@ -22,7 +25,7 @@ $sdgs = $sdg_result ? $sdg_result->fetch_all(MYSQLI_ASSOC) : [];
                     <li><a href="admin_dashboard.php">Admin</a></li>
                 <?php else: ?>
                     <li><a href="my_projects.php">My Projects</a></li>
-                    <li><a href="upload_project.php">Upload Project</a></li>
+                    <li><a href="upload_projects.php">Upload Project</a></li>
                 <?php endif; ?>
                 <li><a href="../api/auth/logout.php">Logout</a></li>
             <?php else: ?>
@@ -48,6 +51,7 @@ $sdgs = $sdg_result ? $sdg_result->fetch_all(MYSQLI_ASSOC) : [];
     <link rel="stylesheet" href="../assets/css/profile.css">
     <link rel="stylesheet" href="../assets/css/project.css">
     <link rel="stylesheet" href="../assets/css/my_projects.css">
+    <link rel="stylesheet" href="../assets/css/upload_projects.css">
     <link rel="stylesheet" href="../assets/css/about.css">
     <link rel="stylesheet" href="../assets/css/404.css">
     <link rel="stylesheet" href="../assets/css/footer.css">
@@ -59,6 +63,7 @@ $sdgs = $sdg_result ? $sdg_result->fetch_all(MYSQLI_ASSOC) : [];
     <script src="../assets/js/register.js" defer></script>
     <script src="../assets/js/project.js" defer></script>
     <script src="../assets/js/my_projects.js" defer></script>
+    <script src="../assets/js/upload_projects.js" defer></script>
     <script src="../assets/js/about.js" defer></script>
     <script src="../assets/js/404.js" defer></script>
     <script src="../assets/js/profile.js" defer></script>

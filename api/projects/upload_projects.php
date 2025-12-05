@@ -4,52 +4,74 @@ require_once("../config/db.php");
 require_once("../utils/auth_check.php");
 require_once("../utils/response.php");
 require_once("../utils/upload_handler.php");
-require_once("../utils/validation.php");
 
-// Only logged-in users can upload
-auth_check(['student', 'admin']);
 
-$conn = (new Database())->connect();
+// Ensure user is logged in
+auth_check(['student', 'admin']); // only students/admins can upload
+$user_id = $_SESSION['user_id'];
 
-// Only allow POST
+// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     response_json('error', 'Invalid request method', 405);
 }
 
-// Gather POST data
-$user_id = $_SESSION['user_id'];
+// Get POST data
 $title = trim($_POST['title'] ?? '');
 $description = trim($_POST['description'] ?? '');
-$sdg_id = intval($_POST['sdg_id'] ?? 0);
 
-// Validate input
-if ($title === '' || $description === '') {
-    response_json('error', 'Title and description are required');
+// Validate required fields
+if ($title === '') response_json('error', 'Project title is required');
+if ($description === '') response_json('error', 'Project description is required');
+
+// Connect to DB
+$conn = (new Database())->connect();
+
+// Handle project file upload
+$project_file = $_FILES['project_file'] ?? null;
+if (!$project_file || $project_file['name'] === '') {
+    response_json('error', 'Project file is required');
 }
 
-// Validate SDG exists
-$sdg_check = $conn->prepare("SELECT sdg_id FROM sdgs WHERE sdg_id = ?");
-$sdg_check->bind_param("i", $sdg_id);
-$sdg_check->execute();
-$res = $sdg_check->get_result();
-if ($res->num_rows === 0) {
-    response_json('error', 'Invalid SDG selection');
+$file_upload = upload_file(
+    'project_file',
+    '../../uploads/project_files/',
+    ['pdf', 'doc', 'docx', 'pptx', 'txt', 'zip']
+);
+
+if (!$file_upload) {
+    response_json('error', 'Failed to upload project file');
 }
 
-// Handle file upload
-$file_name = upload_file('project_file', '../../uploads/project_files/', ['pdf','docx','pptx','txt','zip']);
-$image_name = upload_file('project_image', '../../uploads/project_images/', ['png','jpg','jpeg','webp']);
+// Handle project image upload (optional)
+$image_name = null;
+$project_image = $_FILES['project_image'] ?? null;
+if ($project_image && $project_image['name'] !== '') {
+    $image_upload = upload_file(
+        'project_image',
+        '../../uploads/project_images/',
+        ['png', 'jpg', 'jpeg', 'webp']
+    );
 
-// Insert project
+    if (!$image_upload) {
+        response_json('error', 'Failed to upload project image');
+    }
+    $image_name = $image_upload;
+}
+
+// Insert into projects table
+// If your DB requires sdg_id to be NOT NULL, set it to NULL or a default value
 $stmt = $conn->prepare("
-    INSERT INTO projects (user_id, title, description, file, image, sdg_id)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO projects (user_id, title, description, file, image)
+    VALUES (?, ?, ?, ?, ?)
 ");
-$stmt->bind_param("issssi", $user_id, $title, $description, $file_name, $image_name, $sdg_id);
+$stmt->bind_param("issss", $user_id, $title, $description, $file_upload, $image_name);
 
 if ($stmt->execute()) {
-    response_json('success', 'Project uploaded successfully');
+    response_json('success', 'Project uploaded successfully', [
+        'project_id' => $stmt->insert_id,
+        'file' => $file_upload,
+        'image' => $image_name
+    ]);
 } else {
-    response_json('error', 'Failed to upload project');
+    response_json('error', 'Failed to save project to database');
 }
-    
