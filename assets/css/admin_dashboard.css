@@ -1,163 +1,234 @@
-/* admin_dashboard.css */
+/* =========================================== */
+/* Premium Admin Dashboard CSS – Sebastinian Showcase */
+/* Fully responsive, modern, clean, professional  */
+/* =========================================== */
 
-/* Reset & Base */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
+/* -----------------------------
+   Root & Variables
+----------------------------- */
+:root {
+    --primary-color: #B22222; /* Rich red */
+    --secondary-color: #FFD700; /* Gold */
+    --bg-color: #f9f9f9;
+    --card-bg: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.08);
+    --text-color: #333;
+    --success-color: #228B22;
+    --error-color: #B22222;
+    --pending-color: #FFA500;
+    --rejected-color: #D32F2F;
+    --border-radius: 12px;
+    --transition: all 0.3s ease;
+    --font-primary: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* -----------------------------
+   Global Styles
+----------------------------- */
 body {
-    background-color: #f5f5f5;
-    color: #333;
-    line-height: 1.6;
+    font-family: var(--font-primary);
+    background-color: var(--bg-color);
+    margin: 0;
+    color: var(--text-color);
 }
 
+h1, h2, h3 {
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+/* -----------------------------
+   Admin Dashboard Container
+----------------------------- */
 .admin-dashboard-container {
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 2rem auto;
-    padding: 1.5rem;
+    padding: 0 1rem;
 }
 
-/* Heading */
-.admin-dashboard-container h1 {
-    color: #b71c1c; /* deep red */
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-/* Summary Cards */
+/* -----------------------------
+   Summary Cards
+----------------------------- */
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 1.2rem;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+.summary-cards .card {
+    background: linear-gradient(145deg, var(--card-bg), #fff);
+    box-shadow: 0 8px 20px var(--card-shadow);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
     text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: var(--transition);
+    cursor: default;
 }
 
-.card:hover {
+.summary-cards .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 25px var(--card-shadow);
 }
 
-.card h3 {
-    font-size: 1.2rem;
-    color: #b71c1c;
+.summary-cards .card h3 {
+    font-size: 1rem;
+    color: var(--primary-color);
     margin-bottom: 0.5rem;
 }
 
-.card p {
-    font-size: 2rem;
+.summary-cards .card p {
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #ffb300; /* gold */
 }
 
-/* Table Styling */
+/* Status Colors */
+.total-projects { border-top: 4px solid var(--primary-color); }
+.approved-projects { border-top: 4px solid var(--success-color); }
+.pending-projects { border-top: 4px solid var(--pending-color); }
+.rejected-projects { border-top: 4px solid var(--rejected-color); }
+
+/* -----------------------------
+   Projects Table
+----------------------------- */
 .projects-table-container {
-    background: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    background: var(--card-bg);
+    box-shadow: 0 8px 20px var(--card-shadow);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    overflow-x: auto;
+    transition: var(--transition);
 }
 
 .projects-table-container h2 {
     margin-bottom: 1rem;
-    color: #b71c1c;
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 .projects-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 700px;
 }
 
 .projects-table th,
 .projects-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.8rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #eee;
+    transition: var(--transition);
 }
 
 .projects-table th {
-    background-color: #b71c1c;
-    color: #fff;
+    background: #f3f3f3;
     font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.9rem;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
-.projects-table td {
-    background: #fff;
+.projects-table tr:hover {
+    background: #fff8dc;
+    transform: scale(1.01);
 }
 
-.projects-table td.status.approved {
-    color: #2e7d32; /* green */
+.projects-table td.status {
     font-weight: bold;
+    text-transform: capitalize;
 }
 
-.projects-table td.status.rejected {
-    color: #c62828; /* red */
-    font-weight: bold;
-}
+.status.approved { color: var(--success-color); }
+.status.pending { color: var(--pending-color); }
+.status.rejected { color: var(--rejected-color); }
 
-.projects-table td.status.pending {
-    color: #f9a825; /* yellow/gold */
-    font-weight: bold;
-}
-
-.projects-table td.actions button {
-    padding: 0.4rem 0.8rem;
+/* Actions Buttons */
+.actions button {
+    background: var(--primary-color);
+    color: #fff;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
     margin-right: 0.3rem;
-    transition: transform 0.2s, background 0.2s;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
-.projects-table td.actions button.approve-btn {
-    background-color: #ffb300;
-    color: #fff;
-}
-
-.projects-table td.actions button.reject-btn {
-    background-color: #b71c1c;
-    color: #fff;
-}
-
-.projects-table td.actions button:hover {
+.actions button:hover {
     transform: scale(1.05);
-    opacity: 0.9;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
 }
 
-/* No projects message */
+.actions span {
+    color: #aaa;
+}
+
+/* -----------------------------
+   No Projects Text
+----------------------------- */
 .no-projects {
     text-align: center;
-    padding: 1.5rem 0;
-    color: #777;
+    color: #666;
+    padding: 2rem 0;
     font-style: italic;
 }
 
-/* Responsive */
+/* -----------------------------
+   Feedback Messages
+----------------------------- */
+.feedback {
+    margin: 1rem 0;
+    padding: 0.8rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: var(--transition);
+}
+
+.feedback.success {
+    background-color: #e6f5ea;
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.feedback.error {
+    background-color: #fdecea;
+    color: var(--error-color);
+    border-left: 4px solid var(--error-color);
+}
+
+/* -----------------------------
+   Shake Animation for Form
+----------------------------- */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+/* -----------------------------
+   Responsive
+----------------------------- */
 @media (max-width: 768px) {
-    .projects-table-container {
-        overflow-x: auto;
-    }
-
     .summary-cards {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 
-    .card p {
-        font-size: 1.5rem;
+    .projects-table {
+        min-width: 100%;
     }
+}
+
+@media (max-width: 480px) {
+    .summary-cards .card h3 { font-size: 0.85rem; }
+    .summary-cards .card p { font-size: 1.4rem; }
 }

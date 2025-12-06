@@ -52,6 +52,7 @@ $sdgs = $sdg_result ? $sdg_result->fetch_all(MYSQLI_ASSOC) : [];
     <link rel="stylesheet" href="../assets/css/project.css">
     <link rel="stylesheet" href="../assets/css/my_projects.css">
     <link rel="stylesheet" href="../assets/css/upload_projects.css">
+    <link rel="stylesheet" href="../assets/css/admin_dashboard.css">
     <link rel="stylesheet" href="../assets/css/about.css">
     <link rel="stylesheet" href="../assets/css/404.css">
     <link rel="stylesheet" href="../assets/css/footer.css">
@@ -64,6 +65,7 @@ $sdgs = $sdg_result ? $sdg_result->fetch_all(MYSQLI_ASSOC) : [];
     <script src="../assets/js/project.js" defer></script>
     <script src="../assets/js/my_projects.js" defer></script>
     <script src="../assets/js/upload_projects.js" defer></script>
+    <script src="../assets/js/admin_dashboard.js" defer></script>
     <script src="../assets/js/about.js" defer></script>
     <script src="../assets/js/404.js" defer></script>
     <script src="../assets/js/profile.js" defer></script>
