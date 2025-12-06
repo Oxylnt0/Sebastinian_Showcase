@@ -3,13 +3,7 @@
  * api/utils/auth_check.php
  *
  * Lightweight session-based authentication helpers.
- * Usage:
- *   require_once __DIR__ . '/auth_check.php';
- *   Auth::requireLogin();
- *   Auth::requireRole('admin');
- *   $user = Auth::currentUser();
- *   // Or use the helper function:
- *   auth_check(['student', 'admin']);
+ * Fully AJAX-safe and automatically normalizes $_SESSION['user'].
  */
 
 require_once __DIR__ . '/response.php';
@@ -17,7 +11,7 @@ require_once __DIR__ . '/response.php';
 class Auth
 {
     /**
-     * Ensure session is started.
+     * Ensure session is started and normalize session keys.
      */
     public static function ensureSession(): void
     {
@@ -26,12 +20,20 @@ class Auth
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path' => '/',
-                'domain' => '', // leave empty for local dev
+                'domain' => '',
                 'secure' => $secure,
                 'httponly' => true,
                 'samesite' => 'Lax'
             ]);
             session_start();
+        }
+
+        // Auto-normalize user session keys
+        if (!empty($_SESSION['user']) && is_array($_SESSION['user'])) {
+            $_SESSION['user_id']   = $_SESSION['user']['user_id'] ?? $_SESSION['user_id'] ?? null;
+            $_SESSION['username']  = $_SESSION['user']['username'] ?? $_SESSION['username'] ?? null;
+            $_SESSION['role']      = $_SESSION['user']['role'] ?? $_SESSION['role'] ?? null;
+            $_SESSION['full_name'] = $_SESSION['user']['full_name'] ?? $_SESSION['full_name'] ?? null;
         }
     }
 
@@ -42,6 +44,7 @@ class Auth
     {
         self::ensureSession();
         if (empty($_SESSION['user_id'])) {
+            ob_clean();
             Response::error('Authentication required', 401);
         }
     }
@@ -58,10 +61,12 @@ class Auth
 
         if (is_array($roles)) {
             if (!in_array($role, $roles, true)) {
+                ob_clean();
                 Response::error('Insufficient privileges', 403);
             }
         } else {
             if ($role !== $roles) {
+                ob_clean();
                 Response::error('Insufficient privileges', 403);
             }
         }
@@ -75,14 +80,12 @@ class Auth
     public static function currentUser(): ?array
     {
         self::ensureSession();
-        if (empty($_SESSION['user_id'])) {
-            return null;
-        }
+        if (empty($_SESSION['user_id'])) return null;
 
         return [
-            'user_id' => $_SESSION['user_id'],
-            'username' => $_SESSION['username'] ?? null,
-            'role' => $_SESSION['role'] ?? null,
+            'user_id'   => $_SESSION['user_id'],
+            'username'  => $_SESSION['username'] ?? null,
+            'role'      => $_SESSION['role'] ?? null,
             'full_name' => $_SESSION['full_name'] ?? null
         ];
     }
@@ -106,7 +109,7 @@ class Auth
 }
 
 /**
- * Function-style wrappers for backward compatibility
+ * Procedural wrappers for backward compatibility
  */
 function isLoggedIn(): bool
 {
@@ -120,16 +123,16 @@ function isAdmin(): bool
 }
 
 /**
- * Simple auth_check() helper function
- * Use this in your old code like:
- *   auth_check(['student', 'admin']);
+ * AJAX-safe auth_check helper
  *
  * @param array $roles
  */
 function auth_check(array $roles = []): void
 {
+    ob_start(); // catch accidental output
     Auth::requireLogin();
     if (!empty($roles)) {
         Auth::requireRole($roles);
     }
+    ob_end_clean(); // discard any accidental output
 }

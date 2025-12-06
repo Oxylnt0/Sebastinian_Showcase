@@ -1,6 +1,6 @@
 <?php
 // =========================================
-// Sebastinian Showcase - Upload Project API
+// api/projects/upload_projects.php
 // Handles file upload and project creation
 // Always returns JSON
 // =========================================

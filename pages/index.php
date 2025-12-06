@@ -1,27 +1,16 @@
 <?php
 require_once("../api/config/db.php");
-include("header.php"); // includes session start and SDG menu
+include("header.php"); // includes session start
 
 $conn = (new Database())->connect();
-
-// Fetch all SDGs for filter menu
-$sdgResult = $conn->query("SELECT sdg_id, sdg_name FROM sdgs ORDER BY sdg_name ASC");
-$sdgs = [];
-if ($sdgResult) {
-    while ($row = $sdgResult->fetch_assoc()) {
-        $sdgs[] = $row;
-    }
-}
 
 // Fetch approved projects, newest first
 $sql = "
     SELECT 
         p.*, 
-        u.full_name AS student_name, 
-        s.sdg_name
+        u.full_name AS student_name
     FROM projects p
     LEFT JOIN users u ON p.user_id = u.user_id
-    LEFT JOIN sdgs s ON p.sdg_id = s.sdg_id
     WHERE p.status = 'approved'
     ORDER BY p.date_submitted DESC
 ";
@@ -42,20 +31,6 @@ if ($result) {
         <p>Discover student creativity, innovation, and projects aligned with the UN Sustainable Development Goals.</p>
     </section>
 
-    <!-- SDG FILTERS + SEARCH -->
-    <section class="filter-search">
-        <div class="sdg-menu">
-            <span>Filter by SDG:</span>
-            <a href="#" data-sdg="">All</a>
-            <?php foreach($sdgs as $sdg): ?>
-                <a href="#" data-sdg="<?= htmlspecialchars($sdg['sdg_name']) ?>"><?= htmlspecialchars($sdg['sdg_name']) ?></a>
-            <?php endforeach; ?>
-        </div>
-        <div class="search-box">
-            <input type="text" id="search-projects" placeholder="Search projects by title...">
-        </div>
-    </section>
-
     <!-- PROJECTS GRID -->
     <section class="projects-grid">
         <?php if(count($projects) > 0): ?>
@@ -70,7 +45,6 @@ if ($result) {
                         <h2><?= htmlspecialchars($project['title']) ?></h2>
                         <p class="student-name">By: <?= htmlspecialchars($project['student_name']) ?></p>
                         <p class="project-desc"><?= htmlspecialchars(substr($project['description'], 0, 150)) ?>...</p>
-                        <span class="sdg-tag"><?= htmlspecialchars($project['sdg_name']) ?></span>
                         <a href="project.php?id=<?= $project['project_id'] ?>" class="view-btn">View Project</a>
                     </div>
                 </div>

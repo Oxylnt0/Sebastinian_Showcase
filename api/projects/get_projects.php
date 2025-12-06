@@ -1,4 +1,5 @@
 <?php
+// api/projects/get_projects.php
 require_once("../config/db.php");
 require_once("../utils/response.php");
 

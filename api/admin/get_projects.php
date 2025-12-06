@@ -1,0 +1,142 @@
+<?php
+// ===========================================
+// api/admin/get_projects.php
+// Returns projects for admin dashboard
+// Supports search, status filter, and pagination
+// ===========================================
+ini_set('display_errors', 0);
+error_reporting(0);
+header('Content-Type: application/json; charset=utf-8');
+
+session_start();
+require_once("../utils/auth_check.php");
+require_once("../config/db.php");
+require_once("../utils/response.php");
+
+// Only admins can access
+auth_check(['admin']);
+
+// Ensure GET method
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    Response::error("Invalid request method", 405);
+}
+
+try {
+    $conn = (new Database())->connect();
+
+    // -----------------------------
+    // Get query params
+    // -----------------------------
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+    $statusFilter = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : '';
+    $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+    $perPage = isset($_GET['per_page']) ? max(1, intval($_GET['per_page'])) : 10;
+    $offset = ($page - 1) * $perPage;
+
+    $params = [];
+    $whereClauses = [];
+
+    // Optional status filter
+    $allowedStatuses = ['pending', 'approved', 'rejected'];
+    if ($statusFilter && in_array($statusFilter, $allowedStatuses, true)) {
+        $whereClauses[] = "p.status = ?";
+        $params[] = $statusFilter;
+    }
+
+    // Optional search filter
+    if ($search !== '') {
+        $whereClauses[] = "(p.title LIKE ? OR u.full_name LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+    }
+
+    $whereSQL = '';
+    if (!empty($whereClauses)) {
+        $whereSQL = "WHERE " . implode(" AND ", $whereClauses);
+    }
+
+    // -----------------------------
+    // Get total count for pagination
+    // -----------------------------
+    $countSQL = "
+        SELECT COUNT(*) 
+        FROM projects p
+        LEFT JOIN users u ON p.user_id = u.user_id
+        $whereSQL
+    ";
+    $stmtCount = $conn->prepare($countSQL);
+    if (!empty($params)) {
+        $types = str_repeat('s', count($params));
+        $stmtCount->bind_param($types, ...$params);
+    }
+    $stmtCount->execute();
+    $stmtCount->bind_result($totalProjects);
+    $stmtCount->fetch();
+    $stmtCount->close();
+
+    // -----------------------------
+    // Fetch projects with limit + offset
+    // -----------------------------
+    $sql = "
+        SELECT 
+            p.project_id,
+            p.title,
+            p.description,
+            p.status,
+            p.date_submitted,
+            u.user_id AS student_id,
+            u.full_name AS student_name,
+            u.email AS student_email
+        FROM projects p
+        LEFT JOIN users u ON p.user_id = u.user_id
+        $whereSQL
+        ORDER BY p.date_submitted DESC
+        LIMIT ? OFFSET ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    // Add limit and offset params
+    $bindParams = $params;
+    $bindParams[] = $perPage;
+    $bindParams[] = $offset;
+
+    // Prepare types
+    $types = str_repeat('s', count($params)) . "ii";
+
+    $stmt->bind_param($types, ...$bindParams);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $projects = [];
+    while ($row = $result->fetch_assoc()) {
+        $projects[] = [
+            'project_id' => $row['project_id'],
+            'title' => $row['title'],
+            'description' => $row['description'],
+            'status' => $row['status'],
+            'date_submitted' => date("Y-m-d H:i:s", strtotime($row['date_submitted'])),
+            'student_id' => $row['student_id'],
+            'student_name' => $row['student_name'],
+            'student_email' => $row['student_email']
+        ];
+    }
+
+    // -----------------------------
+    // Return JSON with pagination info
+    // -----------------------------
+    Response::success([
+        'projects' => $projects,
+        'pagination' => [
+            'total' => $totalProjects,
+            'per_page' => $perPage,
+            'current_page' => $page,
+            'total_pages' => ceil($totalProjects / $perPage)
+        ]
+    ], "Projects retrieved successfully");
+
+} catch (mysqli_sql_exception $e) {
+    Response::error("Database error: " . $e->getMessage(), 500);
+} catch (Exception $e) {
+    Response::error("Server error: " . $e->getMessage(), 500);
+}
