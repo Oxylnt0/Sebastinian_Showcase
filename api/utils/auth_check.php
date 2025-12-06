@@ -8,9 +8,8 @@
  *   Auth::requireLogin();
  *   Auth::requireRole('admin');
  *   $user = Auth::currentUser();
- *   // Or use the function-style helpers:
- *   if (!isLoggedIn()) { ... }
- *   if (!isAdmin()) { ... }
+ *   // Or use the helper function:
+ *   auth_check(['student', 'admin']);
  */
 
 require_once __DIR__ . '/response.php';
@@ -27,7 +26,7 @@ class Auth
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path' => '/',
-                'domain' => $_SERVER['HTTP_HOST'] ?? '',
+                'domain' => '', // leave empty for local dev
                 'secure' => $secure,
                 'httponly' => true,
                 'samesite' => 'Lax'
@@ -56,6 +55,7 @@ class Auth
     {
         self::ensureSession();
         $role = $_SESSION['role'] ?? null;
+
         if (is_array($roles)) {
             if (!in_array($role, $roles, true)) {
                 Response::error('Insufficient privileges', 403);
@@ -78,6 +78,7 @@ class Auth
         if (empty($_SESSION['user_id'])) {
             return null;
         }
+
         return [
             'user_id' => $_SESSION['user_id'],
             'username' => $_SESSION['username'] ?? null,
@@ -97,7 +98,8 @@ class Auth
             $params = session_get_cookie_params();
             setcookie(session_name(), '', time() - 42000,
                 $params['path'], $params['domain'],
-                $params['secure'], $params['httponly']);
+                $params['secure'], $params['httponly']
+            );
         }
         session_destroy();
     }
@@ -115,4 +117,19 @@ function isAdmin(): bool
 {
     $user = Auth::currentUser();
     return $user && ($user['role'] === 'admin');
+}
+
+/**
+ * Simple auth_check() helper function
+ * Use this in your old code like:
+ *   auth_check(['student', 'admin']);
+ *
+ * @param array $roles
+ */
+function auth_check(array $roles = []): void
+{
+    Auth::requireLogin();
+    if (!empty($roles)) {
+        Auth::requireRole($roles);
+    }
 }

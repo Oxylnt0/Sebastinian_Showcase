@@ -3,7 +3,7 @@
 /* Primary Colors: Red (#B22222) & Gold (#FFD700) */
 /* ============================= */
 
-/* --- Reset basics --- */
+/* --- Reset & Base --- */
 * {
     margin: 0;
     padding: 0;
@@ -12,65 +12,82 @@
 }
 
 body {
-    background-color: #f9f9f9;
+    background: linear-gradient(120deg, #fff8f8, #fdf5e6);
     color: #333;
 }
 
-/* --- Main container --- */
+/* --- Main Container --- */
 .upload-container {
     max-width: 900px;
     margin: 60px auto 40px auto;
     background: #fff;
     padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    border-top: 6px solid #B22222;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Upload Card --- */
+.upload-card {
+    background: #fff;
     border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    border-top: 6px solid #B22222; /* Red accent */
+    padding: 35px 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    transition: all 0.3s ease;
 }
 
-/* --- Page heading --- */
-.upload-container h1 {
+.upload-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(178,34,34,0.25);
+}
+
+/* --- Headings --- */
+.upload-card h1 {
     color: #B22222;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     margin-bottom: 10px;
+    font-weight: 800;
     text-align: center;
-    font-weight: 700;
 }
 
-.upload-container .subtitle {
+.upload-card .subtitle {
     color: #555;
     font-size: 1rem;
     margin-bottom: 30px;
     text-align: center;
 }
 
-/* --- Form styling --- */
+/* --- Form Styling --- */
 form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
 }
 
-/* Form groups */
 .form-group {
     display: flex;
     flex-direction: column;
 }
 
 .form-group label {
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 8px;
     color: #B22222;
+    font-size: 1rem;
 }
 
 .form-group input[type="text"],
 .form-group textarea,
 .form-group select,
 .form-group input[type="file"] {
-    padding: 12px 15px;
+    padding: 14px 18px;
     border: 2px solid #ccc;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
+    background: #fff;
 }
 
 .form-group input[type="text"]:focus,
@@ -79,16 +96,62 @@ form {
 .form-group input[type="file"]:focus {
     outline: none;
     border-color: #B22222;
-    box-shadow: 0 0 8px rgba(178, 34, 34, 0.3);
+    box-shadow: 0 0 12px rgba(178,34,34,0.25);
 }
 
-/* Textarea customization */
 textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 140px;
 }
 
-/* File input small text */
+/* --- Drag & Drop Boxes --- */
+.dropzone {
+    position: relative;
+    border: 2px dashed #B22222;
+    border-radius: 12px;
+    padding: 25px;
+    background: #fff8f8;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dropzone.hover {
+    background: #ffeaea;
+    box-shadow: 0 0 15px rgba(178,34,34,0.25);
+}
+
+.dropzone input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-preview, .image-preview {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 150px;
+    margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.image-preview img:hover {
+    transform: scale(1.05);
+}
+
+/* --- Small Text --- */
 .form-group small {
     margin-top: 5px;
     font-size: 0.85rem;
@@ -100,63 +163,41 @@ textarea {
     background: linear-gradient(135deg, #B22222, #FFD700);
     color: #fff;
     font-weight: 700;
-    font-size: 1.1rem;
-    padding: 14px 20px;
+    font-size: 1.2rem;
+    padding: 16px 22px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     align-self: center;
     width: 50%;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(178, 34, 34, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(178,34,34,0.35);
 }
 
 /* --- Feedback message --- */
 .feedback {
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
     margin-top: 15px;
-    min-height: 24px;
+    min-height: 26px;
+    font-size: 1rem;
 }
 
-.feedback.success {
-    color: #228B22; /* green for success */
-}
-
-.feedback.error {
-    color: #B22222; /* red for errors */
-}
-
-/* --- Upload card --- */
-.upload-card {
-    padding: 30px 25px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-}
+.feedback.success { color: #228B22; }
+.feedback.error { color: #B22222; }
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
-    .upload-container {
-        padding: 30px 20px;
-        margin: 40px 20px;
-    }
-
-    .btn-submit {
-        width: 70%;
-    }
+    .upload-container { padding: 35px 25px; margin: 40px 20px; }
+    .btn-submit { width: 70%; }
 }
 
 @media (max-width: 480px) {
-    .upload-container {
-        padding: 20px 15px;
-    }
-
-    .btn-submit {
-        width: 100%;
-    }
+    .upload-container { padding: 25px 15px; }
+    .btn-submit { width: 100%; }
 }

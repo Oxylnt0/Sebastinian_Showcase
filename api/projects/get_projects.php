@@ -18,7 +18,7 @@ $sql = "
 $result = $conn->query($sql);
 
 if (!$result) {
-    response_json('error', 'Database query failed');
+    Response::error("Database query failed");
 }
 
 $projects = [];
@@ -26,4 +26,4 @@ while ($row = $result->fetch_assoc()) {
     $projects[] = $row;
 }
 
-response_json('success', 'Projects retrieved successfully', $projects);
+Response::success($projects, "Projects retrieved successfully");

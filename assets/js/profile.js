@@ -1,24 +1,67 @@
-// profile.js
-
+// profile.js - Final Version
 document.addEventListener("DOMContentLoaded", () => {
     const profileForm = document.getElementById("profileForm");
     const profileImageInput = document.getElementById("profileImage");
     const profileImagePreview = document.getElementById("profileImagePreview");
     const responseMessage = document.getElementById("responseMessage");
 
-    // Preview selected profile image
-    profileImageInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                profileImagePreview.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+    if (!profileForm || !profileImageInput || !profileImagePreview || !responseMessage) return;
+
+    // --- Drag & Drop Preview ---
+    const dropzone = profileImageInput.parentElement;
+    dropzone.classList.add("dropzone");
+
+    // Drag hover effect
+    ["dragover", "dragenter"].forEach(event => {
+        dropzone.addEventListener(event, e => {
+            e.preventDefault();
+            dropzone.classList.add("hover");
+        });
+    });
+
+    // Remove hover effect
+    ["dragleave", "dragend", "drop"].forEach(event => {
+        dropzone.addEventListener(event, e => {
+            e.preventDefault();
+            dropzone.classList.remove("hover");
+        });
+    });
+
+    // Handle dropped file
+    dropzone.addEventListener("drop", e => {
+        e.preventDefault();
+        if (e.dataTransfer.files.length > 0) {
+            profileImageInput.files = e.dataTransfer.files;
+            showImagePreview(e.dataTransfer.files[0]);
         }
     });
 
-    // Handle profile update via AJAX
+    // --- Show Image Preview ---
+    function showImagePreview(file) {
+        if (!file) {
+            profileImagePreview.src = "../uploads/profile_images/default.png";
+            return;
+        }
+        if (!file.type.startsWith("image/")) {
+            responseMessage.textContent = "Invalid image file type.";
+            responseMessage.style.color = "red";
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = event => {
+            profileImagePreview.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Preview on manual file select
+    profileImageInput.addEventListener("change", () => {
+        if (profileImageInput.files.length > 0) {
+            showImagePreview(profileImageInput.files[0]);
+        }
+    });
+
+    // --- AJAX Form Submission ---
     profileForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -28,27 +71,35 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         responseMessage.textContent = "Updating profile...";
-        responseMessage.style.color = "#b71c1c";
+        responseMessage.style.color = "red";
 
         try {
             const res = await fetch("../api/utils/update_profile.php", {
                 method: "POST",
-                body: formData,
+                body: formData
             });
 
-            const data = await res.json();
+            let data;
+            try {
+                data = await res.json();
+            } catch (err) {
+                const text = await res.text();
+                console.error("Invalid JSON response:", text);
+                responseMessage.textContent = "Server returned invalid response. Check console.";
+                return;
+            }
 
             if (data.status === "success") {
                 responseMessage.textContent = data.message;
                 responseMessage.style.color = "#ffb300"; // Gold for success
             } else {
                 responseMessage.textContent = data.message;
-                responseMessage.style.color = "#b71c1c"; // Red for errors
+                responseMessage.style.color = "red";
             }
-        } catch (error) {
+        } catch (err) {
+            console.error("Request failed:", err);
             responseMessage.textContent = "An unexpected error occurred.";
-            responseMessage.style.color = "#b71c1c";
-            console.error(error);
+            responseMessage.style.color = "red";
         }
     });
 });

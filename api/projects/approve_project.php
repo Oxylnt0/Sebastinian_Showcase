@@ -12,7 +12,7 @@ $conn = (new Database())->connect();
 
 // Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    response_json('error', 'Invalid request method', 405);
+    Response::error('Invalid request method', 405);
 }
 
 $project_id = intval($_POST['project_id'] ?? 0);
@@ -21,8 +21,8 @@ $remarks = trim($_POST['remarks'] ?? '');
 $approved_by = $_SESSION['user_id'];
 
 $valid_status = ['approved', 'rejected'];
-if (!in_array($status, $valid_status)) {
-    response_json('error', 'Invalid status');
+if (!in_array($status, $valid_status, true)) {
+    Response::error('Invalid status');
 }
 
 // Validate project exists
@@ -31,7 +31,7 @@ $project_exists->bind_param("i", $project_id);
 $project_exists->execute();
 $res = $project_exists->get_result();
 if ($res->num_rows === 0) {
-    response_json('error', 'Project not found');
+    Response::error("Project not found", 404); 
 }
 
 // Insert into approvals
@@ -39,7 +39,7 @@ $insert = $conn->prepare("INSERT INTO approvals (project_id, approved_by, status
 $insert->bind_param("iiss", $project_id, $approved_by, $status, $remarks);
 
 if (!$insert->execute()) {
-    response_json('error', 'Approval already exists or database error');
+    Response::error('Approval already exists or database error');
 }
 
 // Update project status
@@ -47,4 +47,4 @@ $update = $conn->prepare("UPDATE projects SET status = ? WHERE project_id = ?");
 $update->bind_param("si", $status, $project_id);
 $update->execute();
 
-response_json('success', 'Project status updated successfully');
+Response::success([], 'Project status updated successfully');
