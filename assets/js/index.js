@@ -1,49 +1,91 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const projectContainer = document.querySelector(".projects-grid");
+// ==============================
+// INDEX.JS — Sebastinian Showcase
+// Elite Magazine-style University Portal
+// ==============================
 
-    let allProjects = []; // Store fetched projects from API
+document.addEventListener("DOMContentLoaded", () => {
 
-    // --- FUNCTION TO LOAD PROJECTS FROM API ---
-    async function fetchProjects() {
-        try {
-            const res = await fetch("/Sebastinian_Showcase/api/admin/get_projects.php");
-            const data = await res.json();
+// ===== HERO ANIMATIONS =====
+const heroTitle = document.querySelector(".hero h1");
+const heroSubtitle = document.querySelector(".hero p");
 
-            if (data.status !== "success" || !data.data.projects) {
-                throw new Error("Invalid response from server");
-            }
+if(heroTitle && heroSubtitle){
+heroTitle.style.opacity = 0;
+heroTitle.style.transform = "translateY(-20px)";
+heroSubtitle.style.opacity = 0;
+heroSubtitle.style.transform = "translateY(20px)";
 
-            allProjects = data.data.projects;
-            renderProjects(allProjects);
-        } catch (error) {
-            console.error("Error fetching projects:", error);
-            projectContainer.innerHTML = `<p class="no-projects">Failed to load projects.</p>`;
-        }
-    }
+setTimeout(() => {
+  heroTitle.style.transition = "all 1s ease-out";
+  heroTitle.style.opacity = 1;
+  heroTitle.style.transform = "translateY(0)";
+}, 200);
 
-    // --- FUNCTION TO RENDER PROJECT CARDS ---
-    function renderProjects(projects) {
-        if (!projects || projects.length === 0) {
-            projectContainer.innerHTML = `<p class="no-projects">No projects available.</p>`;
-            return;
-        }
+setTimeout(() => {
+  heroSubtitle.style.transition = "all 1s ease-out";
+  heroSubtitle.style.opacity = 1;
+  heroSubtitle.style.transform = "translateY(0)";
+}, 600);
 
-        projectContainer.innerHTML = projects.map(p => `
-            <div class="project-card">
-                ${p.image ? 
-                    `<img src="../uploads/project_images/${p.image}" alt="${p.title}">` :
-                    `<div class="placeholder-img">No Image</div>`
-                }
-                <div class="project-content">
-                    <h2>${p.title}</h2>
-                    <p class="student-name">By: ${p.student_name}</p>
-                    <p class="project-desc">${p.description.substring(0, 150)}...</p>
-                    <a href="project.php?id=${p.project_id}" class="view-btn">View Project</a>
-                </div>
-            </div>
-        `).join("");
-    }
 
-    // --- INITIAL LOAD ---
-    fetchProjects();
+}
+
+// ===== PROJECT CARDS FADE-IN =====
+const cards = document.querySelectorAll(".project-card");
+const observerOptions = { threshold: 0.1 };
+
+const cardObserver = new IntersectionObserver((entries, observer) => {
+entries.forEach(entry => {
+if(entry.isIntersecting){
+entry.target.classList.add("fade-in");
+observer.unobserve(entry.target);
+}
+});
+}, observerOptions);
+
+cards.forEach(card => cardObserver.observe(card));
+
+// ===== HERO PARALLAX EFFECT =====
+const hero = document.querySelector(".hero");
+if(hero){
+window.addEventListener("scroll", () => {
+const scrollY = window.scrollY;
+hero.style.backgroundPosition = `center ${scrollY * 0.3}px`;
+});
+}
+
+// ===== CARD HOVER EFFECTS =====
+cards.forEach(card => {
+card.addEventListener("mousemove", (e) => {
+const rect = card.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+
+  const rotateX = ((y / rect.height) - 0.5) * 8; // max 8 deg
+  const rotateY = ((x / rect.width) - 0.5) * 8;  // max 8 deg
+
+  card.style.transform = `translateY(-10px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+  card.style.transition = "transform 0.1s ease-out";
+});
+
+card.addEventListener("mouseleave", () => {
+  card.style.transform = "translateY(-10px) rotateX(0deg) rotateY(0deg)";
+  card.style.transition = "transform 0.35s ease-out";
+});
+
+
+});
+
+// ===== SMOOTH SCROLL FOR LINKS =====
+const links = document.querySelectorAll('a[href^="#"]');
+links.forEach(link => {
+link.addEventListener("click", e => {
+e.preventDefault();
+const target = document.querySelector(link.getAttribute("href"));
+if(target){
+target.scrollIntoView({ behavior: "smooth" });
+}
+});
+});
+
 });

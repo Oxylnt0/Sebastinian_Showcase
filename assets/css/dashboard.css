@@ -1,180 +1,271 @@
-/* Reset & Base */
+/* ===========================
+   Reset & Global Styles
+=========================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Montserrat', 'Arial', sans-serif;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f7f7f7;
+    background: #f8f5f2; /* light neutral background */
     color: #333;
     line-height: 1.6;
 }
 
-/* Links */
 a {
     text-decoration: none;
-    color: #bfa028; /* Gold */
-    transition: all 0.3s ease;
-}
-a:hover {
-    color: #d4af37;
+    color: inherit;
 }
 
-/* Gold Text Highlight */
 .gold-text {
-    color: #bfa028;
-    font-weight: bold;
+    color: #FFD700;
+    font-weight: 600;
 }
 
-/* Dashboard Container */
+h1, h2, h3, h4 {
+    color: #FFD700; /* deep red */
+}
+
+/* ===========================
+   Main Dashboard Container
+=========================== */
 .dashboard-container {
-    max-width: 1200px;
+    width: 90%;
+    max-width: 1400px;
     margin: 2rem auto;
-    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
 }
 
-/* Welcome Banner */
+/* ===========================
+   Welcome Banner
+=========================== */
 .welcome-banner {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-.welcome-banner h1 {
-    font-size: 2.5rem;
-    color: #a10d0d; /* Dark Red */
-}
-.welcome-banner p {
-    font-size: 1.1rem;
-    color: #555;
-    margin-top: 0.5rem;
-}
-
-/* Stats Cards */
-.stats-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-}
-.stats-cards .card {
-    background-color: #fff;
-    padding: 1.5rem;
+    background: linear-gradient(135deg, #8B0000, #B22222);
+    color: #fff;
+    padding: 2.5rem 2rem;
     border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.stats-cards .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-.stats-cards .card h3 {
-    font-size: 1.1rem;
-    color: #a10d0d; /* Dark Red */
-    margin-bottom: 0.5rem;
-}
-.stats-cards .card p {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #bfa028; /* Gold */
+
+.welcome-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
 }
 
-/* Recent Projects */
-.recent-projects h2 {
-    color: #a10d0d;
-    margin-bottom: 1rem;
+.welcome-banner h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
 }
+
+.welcome-banner p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ===========================
+   Stats Cards
+=========================== */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: #fff;
+    padding: 1.8rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+}
+
+.card h3 {
+    font-size: 1.2rem;
+    color: #B22222;
+    margin-bottom: 0.8rem;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FFD700;
+}
+
+/* ===========================
+   Recent Projects
+=========================== */
+.recent-projects h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #8B0000;
+}
+
 .project-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
 }
+
 .project-card {
-    background-color: #fff;
+    background: #fff;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .project-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.2);
 }
+
 .project-card img {
     width: 100%;
     height: 180px;
     object-fit: cover;
 }
+
 .placeholder-img {
     width: 100%;
     height: 180px;
-    background-color: #ddd;
+    background: #eee;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #888;
+    color: #aaa;
+    font-weight: 600;
     font-size: 1rem;
 }
+
 .project-info {
-    padding: 1rem;
+    padding: 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
 }
+
 .project-info h3 {
     font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #a10d0d;
+    color: #B22222;
+    margin-bottom: 0.3rem;
 }
-.project-info p {
+
+.project-info .desc {
     font-size: 0.95rem;
     color: #555;
-    margin-bottom: 0.5rem;
+    line-height: 1.3;
 }
-.project-info .sdg-tag {
-    display: inline-block;
-    background-color: #bfa028;
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: bold;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    margin-right: 0.5rem;
-}
-.project-info .status {
-    font-size: 0.75rem;
-    font-weight: bold;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-}
-.project-info .status.pending { background-color: #f0ad4e; color: #fff; }
-.project-info .status.approved { background-color: #28a745; color: #fff; }
-.project-info .status.rejected { background-color: #dc3545; color: #fff; }
 
-/* Admin Dashboard Link */
-.admin-link {
-    margin-top: 2rem;
+.project-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.project-meta .status {
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+    color: #fff;
+}
+
+.status.approved { background-color: #228B22; } /* green */
+.status.rejected { background-color: #B22222; } /* red */
+.status.pending { background-color: #DAA520; }  /* goldenrod */
+
+.view-btn {
+    margin-top: 1rem;
+    display: inline-block;
     text-align: center;
-}
-.gold-btn {
-    display: inline-block;
-    background-color: #bfa028;
-    color: #fff;
-    font-weight: bold;
-    padding: 0.8rem 1.5rem;
+    padding: 0.5rem 1rem;
+    background: #B22222;
+    color: #FFD700;
+    font-weight: 600;
     border-radius: 8px;
-    transition: all 0.3s ease;
-}
-.gold-btn:hover {
-    background-color: #d4af37;
-    color: #fff;
-    text-decoration: none;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Responsive */
+.view-btn:hover {
+    background: #FFD700;
+    color: #B22222;
+}
+
+/* ===========================
+   No Projects Message
+=========================== */
+.no-projects {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* ===========================
+   Admin Link Button
+=========================== */
+.admin-link {
+    text-align: center;
+    margin-top: 2.5rem;
+}
+
+.admin-link .gold-btn {
+    background: #B22222;
+    color: #FFD700;
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.admin-link .gold-btn:hover {
+    background: #FFD700;
+    color: #B22222;
+    transform: translateY(-3px);
+}
+
+/* ===========================
+   Responsive Adjustments
+=========================== */
 @media (max-width: 768px) {
     .stats-cards {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
     .project-list {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .welcome-banner h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        width: 95%;
+    }
+    .welcome-banner p {
+        font-size: 0.95rem;
+    }
+    .card h3 {
+        font-size: 1rem;
+    }
+    .card-value {
+        font-size: 1.5rem;
     }
 }

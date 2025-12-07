@@ -5,12 +5,13 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #f7f5f3;
-    color: #333;
+    background-color: #f4f2f1;
+    color: #2c2c2c;
+    line-height: 1.6;
 }
 
 /* ============================= */
@@ -19,80 +20,85 @@ body {
 .project-container {
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 50px 20px;
+    min-height: 90vh;
 }
 
 /* ============================= */
 /*          PROJECT BOX          */
 /* ============================= */
 .project-box {
-    background: #fff;
-    border-radius: 15px;
-    padding: 40px 30px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 50px 40px;
     width: 100%;
-    max-width: 900px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s, box-shadow 0.3s;
+    max-width: 950px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+    transition: all 0.4s ease;
+    position: relative;
 }
 
 .project-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
+/* ============================= */
+/*         PROJECT TITLE         */
+/* ============================= */
 .project-title {
     color: #B22222;
-    font-size: 2.2rem;
-    margin-bottom: 10px;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
+/* ============================= */
+/*         PROJECT META          */
+/* ============================= */
 .project-meta {
     color: #555;
-    font-size: 0.95rem;
+    font-size: 1rem;
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
-.project-meta strong.approved {
-    color: #28a745; /* green for approved */
-}
-
-.project-meta strong.rejected {
-    color: #dc3545; /* red for rejected */
-}
-
-.project-meta strong.pending {
-    color: #B22222; /* red for pending */
-}
+.project-meta strong.approved { color: #28a745; }
+.project-meta strong.rejected { color: #dc3545; }
+.project-meta strong.pending { color: #B22222; }
 
 /* ============================= */
 /*        PROJECT IMAGE          */
 /* ============================= */
 .project-image {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .project-image img {
     max-width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s;
+    border-radius: 15px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .project-image img:hover {
-    transform: scale(1.03);
+    transform: scale(1.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
 }
 
 /* ============================= */
 /*       PROJECT DESCRIPTION     */
 /* ============================= */
 .project-description {
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    line-height: 1.8;
     color: #333;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    padding: 0 10px;
 }
 
 /* ============================= */
@@ -100,22 +106,62 @@ body {
 /* ============================= */
 .project-file {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .download-btn {
     display: inline-block;
-    padding: 12px 25px;
+    padding: 14px 30px;
     background-color: #B22222;
     color: #fff;
-    font-weight: bold;
+    font-weight: 600;
     text-decoration: none;
-    border-radius: 8px;
-    transition: background 0.3s, transform 0.2s;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
 .download-btn:hover {
     background-color: #8b1a1a;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================= */
+/*        ACTION BUTTONS         */
+/* ============================= */
+.action-btn {
+    padding: 12px 28px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.delete-btn {
+    background-color: #B22222;
+    color: #fff;
+}
+
+.delete-btn:hover {
+    background-color: #8b1a1a;
+    transform: translateY(-2px);
+}
+
+.like-btn {
+    background-color: #FFD700;
+    color: #B22222;
+}
+
+.like-btn.liked {
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+.like-btn:hover {
+    background-color: #e6c200;
     transform: translateY(-2px);
 }
 
@@ -123,73 +169,119 @@ body {
 /*       COMMENTS SECTION        */
 /* ============================= */
 .comments-section {
-    margin-top: 40px;
+    margin-top: 50px;
 }
 
 .comments-section h2 {
     color: #B22222;
-    margin-bottom: 15px;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
 }
 
 .comment {
     background-color: #f9f7f6;
-    border-left: 4px solid #FFD700;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
+    border-left: 5px solid #FFD700;
+    padding: 15px 20px;
+    margin-bottom: 18px;
+    border-radius: 12px;
     position: relative;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.comment:hover {
+    background-color: #fff2cc;
+    transform: translateX(3px);
 }
 
 .comment p {
-    margin-bottom: 5px;
-    font-size: 0.95rem;
+    margin-bottom: 8px;
+    font-size: 1rem;
 }
 
 .comment-date {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #888;
     position: absolute;
-    top: 12px;
-    right: 15px;
+    top: 15px;
+    right: 20px;
+}
+
+.comment .edit-comment-btn,
+.comment .delete-comment-btn,
+.comment .like-comment-btn,
+.comment .reply-btn {
+    margin-top: 5px;
+    margin-right: 5px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.comment .edit-comment-btn { background: #FFD700; color: #B22222; }
+.comment .delete-comment-btn { background: #B22222; color: #fff; }
+.comment .like-comment-btn { background: #e6c200; color: #8b1a1a; }
+.comment .reply-btn { background: #28a745; color: #fff; }
+
+.comment .edit-comment-btn:hover { background: #e6c200; }
+.comment .delete-comment-btn:hover { background: #8b1a1a; }
+.comment .like-comment-btn:hover { background: #ffd700; }
+.comment .reply-btn:hover { background: #218838; }
+
+.reply-section {
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.reply-input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
 }
 
 /* ============================= */
 /*       COMMENT FORM            */
 /* ============================= */
 #comment-form {
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
 }
 
 #comment-form textarea {
-    padding: 12px;
-    border-radius: 8px;
+    padding: 14px;
+    border-radius: 12px;
     border: 1px solid #ccc;
     resize: vertical;
-    min-height: 100px;
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    transition: border 0.3s, box-shadow 0.3s;
+    min-height: 110px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
 }
 
 #comment-form textarea:focus {
     border-color: #FFD700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
     outline: none;
 }
 
 .comment-btn {
     align-self: flex-end;
-    padding: 10px 25px;
+    padding: 12px 28px;
     background-color: #B22222;
     color: #fff;
-    font-weight: bold;
+    font-weight: 600;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 .comment-btn:hover {
@@ -197,23 +289,17 @@ body {
     transform: translateY(-2px);
 }
 
-.comment-message {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #B22222;
-}
-
 /* ============================= */
 /*    LOGIN PROMPT MESSAGE       */
 /* ============================= */
 .login-to-comment {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: #555;
 }
 
 .login-to-comment a {
     color: #FFD700;
-    font-weight: bold;
+    font-weight: 600;
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -223,43 +309,43 @@ body {
 }
 
 /* ============================= */
-/*        RESPONSIVE DESIGN      */
+/*       OWNER BADGE             */
 /* ============================= */
-@media (max-width: 768px) {
-    .project-box {
-        padding: 30px 20px;
-    }
-
-    .project-title {
-        font-size: 1.8rem;
-    }
-
-    .project-meta {
-        font-size: 0.9rem;
-    }
-
-    .download-btn, .comment-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    .comment-date {
-        position: static;
-        display: block;
-        margin-top: 5px;
-    }
+.owner-badge {
+    display: inline-block;
+    background-color: #FFD700;
+    color: #B22222;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    margin-left: 8px;
 }
 
-@media (max-width: 480px) {
-    .project-description {
-        font-size: 0.95rem;
-    }
+/* ============================= */
+/*       LIKE COUNTER            */
+/* ============================= */
+.like-counter {
+    margin-left: 6px;
+    font-weight: 600;
+    color: #B22222;
+    font-size: 0.95rem;
+}
 
-    .comments-section h2 {
-        font-size: 1.2rem;
-    }
+/* ============================= */
+/*       RESPONSIVE DESIGN       */
+/* ============================= */
+@media (max-width: 992px) {
+    .project-box { padding: 40px 30px; }
+    .project-title { font-size: 2rem; }
+    .project-meta { font-size: 0.95rem; }
+    .download-btn, .action-btn, .comment-btn { width: 100%; margin-bottom: 10px; }
+}
 
-    #comment-form textarea {
-        font-size: 0.9rem;
-    }
+@media (max-width: 576px) {
+    .project-box { padding: 30px 20px; }
+    .project-title { font-size: 1.8rem; }
+    .project-description { font-size: 0.95rem; }
+    #comment-form textarea { font-size: 0.95rem; min-height: 90px; }
+    .comment-date { position: static; display: block; margin-top: 5px; }
 }

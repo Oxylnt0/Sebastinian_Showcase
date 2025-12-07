@@ -1,166 +1,265 @@
-/* ============================= */
-/*      GLOBAL RESET & BASE      */
-/* ============================= */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
+/* ===============================
+INDEX.CSS — Sebastinian Showcase
+Elite Magazine-style University Portal
+Primary Colors: Red (#C8102E), Gold (#FFD700)
+=============================== */
+
+/* ====== RESET ====== */
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+html {
+font-size: 16px;
+scroll-behavior: smooth;
 }
 
 body {
-    background-color: #f9f7f6;
-    color: #333;
-    line-height: 1.6;
+font-family: 'Poppins', sans-serif;
+line-height: 1.6;
+background-color: #FAFAFA;
+color: #333333;
+overflow-x: hidden;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-    transition: color 0.3s;
+/* ====== CONTAINER ====== */
+.container {
+width: 90%;
+max-width: 1400px;
+margin: 0 auto;
+padding: 2rem 0;
 }
 
-/* ============================= */
-/*           HERO SECTION        */
-/* ============================= */
+/* ====== HERO SECTION ====== */
 .hero {
-    background: linear-gradient(135deg, #B22222 0%, #FFD700 100%);
-    color: white;
-    padding: 80px 20px;
-    text-align: center;
-    border-radius: 12px;
-    margin-bottom: 40px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+text-align: center;
+padding: 6rem 2rem 4rem 2rem;
+background: linear-gradient(135deg, #C8102E 0%, #FFD700 100%);
+color: #fff;
+border-radius: 1rem;
+box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+position: relative;
+overflow: hidden;
+margin-bottom: 5rem;
+}
+
+.hero::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 70%);
+transform: rotate(25deg);
 }
 
 .hero h1 {
-    font-size: 3rem;
-    margin-bottom: 15px;
+font-size: 3.2rem;
+font-weight: 800;
+margin-bottom: 1rem;
+text-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+line-height: 1.2;
 }
 
 .hero p {
-    font-size: 1.2rem;
-    max-width: 700px;
-    margin: 0 auto;
+font-size: 1.35rem;
+max-width: 850px;
+margin: 0 auto;
+line-height: 1.6;
+text-shadow: 1px 1px 5px rgba(0,0,0,0.15);
 }
 
-/* ============================= */
-/*        PROJECTS GRID          */
-/* ============================= */
+/* Hero highlight underline */
+.hero::after {
+content: '';
+display: block;
+width: 120px;
+height: 4px;
+background: #FFD700;
+margin: 2rem auto 0 auto;
+border-radius: 2px;
+}
+
+/* ====== PROJECTS GRID ====== */
 .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    padding: 0 20px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+gap: 3rem;
+margin-bottom: 6rem;
 }
 
-/* ============================= */
-/*        PROJECT CARD           */
-/* ============================= */
+/* ====== PROJECT CARD ====== */
 .project-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s, box-shadow 0.3s;
+background-color: #fff;
+border-radius: 1rem;
+overflow: hidden;
+box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+display: flex;
+flex-direction: column;
+transition: transform 0.35s ease, box-shadow 0.35s ease;
+position: relative;
+}
+
+.project-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 5px;
+background: linear-gradient(90deg, #C8102E, #FFD700);
+transform: scaleX(0);
+transform-origin: left;
+transition: transform 0.4s ease;
+}
+
+.project-card:hover::before {
+transform: scaleX(1);
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+transform: translateY(-10px);
+box-shadow: 0 16px 36px rgba(0,0,0,0.22);
 }
 
-.project-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
+/* Project Image */
+.project-card img,
+.project-card .placeholder-img {
+width: 100%;
+height: 240px;
+object-fit: cover;
+display: block;
+background-color: #f0f0f0;
+text-align: center;
+line-height: 240px;
+font-size: 1.2rem;
+color: #aaa;
+transition: transform 0.35s ease;
 }
 
-.placeholder-img {
-    background: #eee;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-weight: bold;
+.project-card:hover img {
+transform: scale(1.05);
 }
 
+/* Project Content */
 .project-content {
-    padding: 15px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+padding: 2rem 1.8rem;
+display: flex;
+flex-direction: column;
+flex: 1;
 }
 
 .project-content h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #B22222;
+font-size: 1.65rem;
+font-weight: 700;
+margin-bottom: 0.6rem;
+color: #C8102E;
+line-height: 1.2;
 }
 
 .project-content .student-name {
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #555;
+font-size: 0.95rem;
+color: #666;
+margin-bottom: 0.9rem;
+font-style: italic;
 }
 
 .project-content .project-desc {
-    font-size: 0.95rem;
-    margin-bottom: 15px;
-    color: #444;
+flex-grow: 1;
+font-size: 1rem;
+color: #333;
+margin-bottom: 1.4rem;
+transition: color 0.3s ease;
 }
 
-.project-content .view-btn {
-    background: #B22222;
-    color: white;
-    padding: 10px 15px;
-    text-align: center;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: background 0.3s;
+.project-content .project-desc:hover {
+color: #C8102E;
 }
 
-.project-content .view-btn:hover {
-    background: #8b1a1a;
+/* View Project Button */
+.view-btn {
+text-decoration: none;
+padding: 0.75rem 1.5rem;
+background: linear-gradient(45deg, #FFD700, #C8102E);
+color: #fff;
+font-weight: 600;
+border-radius: 0.6rem;
+text-align: center;
+transition: all 0.35s ease;
+align-self: flex-start;
+box-shadow: 0 4px 14px rgba(0,0,0,0.15);
 }
 
-/* ============================= */
-/*        NO PROJECTS MSG        */
-/* ============================= */
+.view-btn:hover {
+background: linear-gradient(45deg, #C8102E, #FFD700);
+color: #fff;
+box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+transform: translateY(-2px);
+}
+
+/* ====== NO PROJECTS MESSAGE ====== */
 .no-projects {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #777;
-    margin: 40px 0;
+font-size: 1.25rem;
+color: #888;
+text-align: center;
+grid-column: 1 / -1;
+padding: 3rem 1rem;
+font-weight: 500;
 }
 
-/* ============================= */
-/*        RESPONSIVE DESIGN      */
-/* ============================= */
+/* ====== RESPONSIVE ====== */
+@media (max-width: 1024px) {
+.hero h1 { font-size: 2.8rem; }
+.hero p { font-size: 1.25rem; }
+.projects-grid { gap: 2.5rem; }
+}
+
 @media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.2rem;
-    }
-
-    .hero p {
-        font-size: 1rem;
-    }
-
-    .projects-grid {
-        gap: 20px;
-    }
+.hero h1 { font-size: 2.4rem; }
+.hero p { font-size: 1.15rem; }
+.projects-grid { gap: 2rem; }
 }
 
 @media (max-width: 480px) {
-    .hero h1 {
-        font-size: 1.8rem;
-    }
+.hero h1 { font-size: 2rem; }
+.hero p { font-size: 1rem; }
+.view-btn { width: 100%; text-align: center; }
+}
 
-    .hero p {
-        font-size: 0.95rem;
-    }
+/* ====== ADDITIONAL ELITE FLARES ====== /
+/ Floating card hover shimmer */
+.project-card::after {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%);
+transform: rotate(25deg) scale(0);
+transition: transform 0.5s ease;
+pointer-events: none;
+}
+
+.project-card:hover::after {
+transform: rotate(25deg) scale(1);
+}
+
+/* Smooth fade-in animation */
+.fade-in {
+opacity: 0;
+transform: translateY(20px);
+animation: fadeInUp 0.8s forwards;
+}
+
+@keyframes fadeInUp {
+to {
+opacity: 1;
+transform: translateY(0);
+}
 }
