@@ -1,39 +1,53 @@
 <?php
+// api/auth/register.php
+
 require_once("../config/db.php");
 require_once("../utils/response.php");
 require_once("../utils/validation.php");
 
 header("Content-Type: application/json");
 
-// Only POST allowed
+// Only allow POST
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    json_error("Invalid request method", 405);
+    Response::error("Invalid request method", 405);
 }
 
-$username = trim($_POST["username"] ?? "");
+// -----------------------------
+// Collect input
+// -----------------------------
+$username     = trim($_POST["username"] ?? "");
 $raw_password = $_POST["password"] ?? "";
-$full_name = trim($_POST["full_name"] ?? "");
-$email = trim($_POST["email"] ?? "");
-$role = "student"; // Students register; admins created manually
+$full_name    = trim($_POST["full_name"] ?? "");
+$email        = trim($_POST["email"] ?? "");
+$role         = "student"; // Students register themselves
 
-// Base validation
-validate_required($username, "Username required");
-validate_required($raw_password, "Password required");
-validate_required($full_name, "Full name required");
-validate_required($email, "Email required");
-validate_email($email);
+// -----------------------------
+// Validate inputs using Validation class
+// -----------------------------
+Validation::requireField($username, "Username is required");
+Validation::requireField($raw_password, "Password is required");
+Validation::requireField($full_name, "Full name is required");
+Validation::requireField($email, "Email is required");
 
-// Enforce password security
-validate_password_strength($raw_password);
+if (!Validation::isValidEmail($email)) {
+    Response::error("Invalid email address");
+}
+
+// Enforce password strength (minimum 6 chars)
+if (strlen($raw_password) < 6) {
+    Response::error("Password must be at least 6 characters");
+}
 
 try {
     $conn = (new Database())->connect();
 
+    // -----------------------------
     // Check if username or email already exists
+    // -----------------------------
     $stmt = $conn->prepare("
         SELECT user_id 
         FROM users 
-        WHERE username = ? OR email = ?
+        WHERE username = ? OR email = ? 
         LIMIT 1
     ");
     $stmt->bind_param("ss", $username, $email);
@@ -41,12 +55,17 @@ try {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        json_error("Username or email already exists");
+        Response::error("Username or email already exists");
     }
 
-    // Secure hashing
+    // -----------------------------
+    // Hash password securely
+    // -----------------------------
     $hashed_password = password_hash($raw_password, PASSWORD_DEFAULT);
 
+    // -----------------------------
+    // Insert new user
+    // -----------------------------
     $stmt = $conn->prepare("
         INSERT INTO users (username, password, full_name, email, role) 
         VALUES (?, ?, ?, ?, ?)
@@ -54,11 +73,14 @@ try {
     $stmt->bind_param("sssss", $username, $hashed_password, $full_name, $email, $role);
 
     if (!$stmt->execute()) {
-        json_error("Registration failed. SQL Error.");
+        Response::error("Registration failed. SQL error: " . $stmt->error);
     }
 
-    json_success("Account created successfully");
+    // -----------------------------
+    // Success
+    // -----------------------------
+    Response::success([], "Account created successfully");
 
 } catch (Exception $e) {
-    json_error("Server error: " . $e->getMessage());
+    Response::error("Server error: " . $e->getMessage());
 }

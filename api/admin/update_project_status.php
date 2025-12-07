@@ -2,7 +2,7 @@
 // ===========================================
 // update_project_status.php – Sebastinian Showcase
 // Handles project approval/rejection via AJAX
-// Production-ready JSON API
+// api/admin/update_project_status.php
 // ===========================================
 
 session_start();
@@ -25,8 +25,9 @@ $input = json_decode(file_get_contents('php://input'), true);
 $project_id = isset($input['project_id']) ? intval($input['project_id']) : 0;
 $status = isset($input['status']) ? strtolower(trim($input['status'])) : '';
 
-// Validate input
+// Valid statuses
 $allowed_statuses = ['approved', 'rejected'];
+
 if (!$project_id || !in_array($status, $allowed_statuses, true)) {
     Response::error('Invalid project ID or status', 400);
 }
@@ -35,21 +36,29 @@ try {
     $conn = (new Database())->connect();
 
     // -----------------------------
+    // Get Admin ID from Session
+    // -----------------------------
+    if (!isset($_SESSION['user']['user_id'])) {
+        Response::error("Admin session invalid", 401);
+    }
+    $admin_id = intval($_SESSION['user']['user_id']);
+
+    // -----------------------------
     // Check if project exists
     // -----------------------------
-    $stmt_check = $conn->prepare("SELECT project_id, status FROM projects WHERE project_id = ?");
+    $stmt_check = $conn->prepare("SELECT status FROM projects WHERE project_id = ?");
     $stmt_check->bind_param("i", $project_id);
     $stmt_check->execute();
-    $stmt_check->store_result();
+    $result = $stmt_check->get_result();
 
-    if ($stmt_check->num_rows === 0) {
+    if ($result->num_rows === 0) {
         Response::error('Project not found', 404);
     }
 
-    $stmt_check->bind_result($pid, $current_status);
-    $stmt_check->fetch();
+    $project = $result->fetch_assoc();
+    $current_status = $project['status'];
 
-    // Already in desired status
+    // Already same status
     if ($current_status === $status) {
         Response::error("Project is already {$status}", 409);
     }
@@ -59,7 +68,7 @@ try {
     // -----------------------------
     $stmt_update = $conn->prepare("
         UPDATE projects 
-        SET status = ?, date_submitted = NOW() 
+        SET status = ? 
         WHERE project_id = ?
     ");
     $stmt_update->bind_param("si", $status, $project_id);
@@ -68,22 +77,29 @@ try {
     }
 
     // -----------------------------
-    // Log admin action
+    // Insert into approvals table
     // -----------------------------
-    if (!empty($_SESSION['user']['user_id'])) {
-        $admin_id = $_SESSION['user']['user_id'];
-        $stmt_log = $conn->prepare("
-            INSERT INTO activity_log (user_id, action, details, created_at) 
-            VALUES (?, 'project_status_update', CONCAT('Project ', ?, ' set to ', ?), NOW())
-        ");
-        $stmt_log->bind_param("iis", $admin_id, $project_id, $status);
-        $stmt_log->execute();
-    }
+    $stmt_approval = $conn->prepare("
+        INSERT INTO approvals (project_id, approved_by, status, `date_approved`)
+        VALUES (?, ?, ?, NOW())
+    ");
+    $stmt_approval->bind_param("iis", $project_id, $admin_id, $status);
+    $stmt_approval->execute();
 
     // -----------------------------
-    // Return success JSON
+    // Log Admin Action
     // -----------------------------
-    Response::success([], "Project status updated to {$status}");
+    $stmt_log = $conn->prepare("
+        INSERT INTO activity_log (user_id, action, details, `timestamp`)
+        VALUES (?, 'project_status_update', CONCAT('Project ', ?, ' set to ', ?), NOW())
+    ");
+    $stmt_log->bind_param("iis", $admin_id, $project_id, $status);
+    $stmt_log->execute();
+
+    // -----------------------------
+    // Success response
+    // -----------------------------
+    Response::success(["project_id" => $project_id, "new_status" => $status], "Project status updated successfully");
 
 } catch (mysqli_sql_exception $e) {
     Response::error('Database error: ' . $e->getMessage(), 500);

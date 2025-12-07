@@ -74,7 +74,9 @@ $confirm_password = $input['confirm_password'] ?? '';
 // ------------------------------
 if ($username === '') Response::error("Username is required");
 if ($email === '') Response::error("Email is required");
-if (!Validation::isEmail($email)) Response::error("Invalid email format");
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    Response::error("Invalid email format");
+}
 if ($password === '') Response::error("Password is required");
 if (strlen($password) < 6) Response::error("Password must be at least 6 characters");
 if ($password !== $confirm_password) Response::error("Passwords do not match");
@@ -123,7 +125,7 @@ try {
     if (!empty($_SESSION['user_id'])) {
         $current_admin = (int) $_SESSION['user_id'];
         $stmt = $conn->prepare("
-            INSERT INTO activity_log (user_id, action, details, created_at)
+            INSERT INTO activity_log (user_id, action, details, timestamp)
             VALUES (?, 'add_admin', CONCAT('Admin ', ?, ' created'), NOW())
         ");
         if ($stmt) {

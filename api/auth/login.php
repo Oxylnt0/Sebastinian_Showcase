@@ -25,7 +25,7 @@ try {
     $conn = (new Database())->connect();
 
     $stmt = $conn->prepare("
-        SELECT user_id, username, password, role 
+        SELECT user_id, username, password, role, full_name
         FROM users 
         WHERE username = ?
         LIMIT 1
@@ -44,18 +44,32 @@ try {
         Response::error("Invalid password", 401);
     }
 
-    // Start session
+    // -------------------------------
+    // Start session and normalize
+    // -------------------------------
     session_start();
+
+    // Legacy session keys
     $_SESSION["user_id"] = $user["user_id"];
     $_SESSION["username"] = $user["username"];
     $_SESSION["role"] = $user["role"];
+    $_SESSION["full_name"] = $user["full_name"] ?? null;
     $_SESSION["logged_in_at"] = time();
 
-    // Correct order: data first, then message
+    // Unified user array for auth_check()
+    $_SESSION["user"] = [
+        "user_id"   => $user["user_id"],
+        "username"  => $user["username"],
+        "role"      => $user["role"],
+        "full_name" => $user["full_name"] ?? null
+    ];
+
+    // Return success JSON
     Response::success([
-        "user_id" => $user["user_id"],
-        "username" => $user["username"],
-        "role" => $user["role"]
+        "user_id"   => $user["user_id"],
+        "username"  => $user["username"],
+        "role"      => $user["role"],
+        "full_name" => $user["full_name"] ?? null
     ], "Login successful");
 
 } catch (Exception $e) {

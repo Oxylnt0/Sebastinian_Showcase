@@ -3,6 +3,7 @@
 // api/admin/search_projects.php
 // Allows admin to search projects by title or student name
 // ===========================================
+
 ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -24,16 +25,18 @@ try {
     $conn = (new Database())->connect();
 
     // -----------------------------
-    // Get query params
+    // Get query parameters
     // -----------------------------
-    $query = trim($_GET['q'] ?? '');
+    $query = trim($_GET['query'] ?? '');
     $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
     $perPage = isset($_GET['per_page']) ? max(1, intval($_GET['per_page'])) : 50;
     $offset = ($page - 1) * $perPage;
 
+    // -----------------------------
+    // Build WHERE clause
+    // -----------------------------
     $params = [];
     $whereSQL = '';
-
     if ($query !== '') {
         $whereSQL = "WHERE p.title LIKE ? OR u.full_name LIKE ?";
         $params[] = "%$query%";
@@ -43,12 +46,7 @@ try {
     // -----------------------------
     // Get total count for pagination
     // -----------------------------
-    $countSQL = "
-        SELECT COUNT(*)
-        FROM projects p
-        LEFT JOIN users u ON p.user_id = u.user_id
-        $whereSQL
-    ";
+    $countSQL = "SELECT COUNT(*) FROM projects p LEFT JOIN users u ON p.user_id = u.user_id $whereSQL";
     $stmtCount = $conn->prepare($countSQL);
     if (!empty($params)) {
         $stmtCount->bind_param(str_repeat('s', count($params)), ...$params);
@@ -59,7 +57,7 @@ try {
     $stmtCount->close();
 
     // -----------------------------
-    // Fetch projects
+    // Fetch projects with student info
     // -----------------------------
     $sql = "
         SELECT 
@@ -68,7 +66,7 @@ try {
             p.description,
             p.status,
             p.date_submitted,
-            u.user_id AS student_id,
+            u.user_id AS user_id,
             u.full_name AS student_name,
             u.email AS student_email
         FROM projects p
@@ -80,7 +78,6 @@ try {
 
     $stmt = $conn->prepare($sql);
 
-    // Bind params dynamically
     $bindParams = $params;
     $bindParams[] = $perPage;
     $bindParams[] = $offset;
@@ -89,7 +86,6 @@ try {
     if (!empty($bindParams)) {
         $stmt->bind_param($types, ...$bindParams);
     }
-
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -101,7 +97,7 @@ try {
             'description' => $row['description'],
             'status' => $row['status'],
             'date_submitted' => date("Y-m-d H:i:s", strtotime($row['date_submitted'])),
-            'student_id' => $row['student_id'],
+            'user_id' => $row['user_id'],          
             'student_name' => $row['student_name'],
             'student_email' => $row['student_email']
         ];

@@ -3,6 +3,7 @@
 // api/admin/get_student_details.php
 // Returns student info + all their projects
 // ===========================================
+
 ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -24,11 +25,11 @@ try {
     $conn = (new Database())->connect();
 
     // -----------------------------
-    // Get student_id safely
+    // Get user_id safely from query string
     // -----------------------------
-    $student_id = isset($_GET['student_id']) ? intval($_GET['student_id']) : 0;
-    if (!$student_id) {
-        Response::error("Invalid student ID", 400);
+    $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+    if (!$user_id) {
+        Response::error("Invalid user ID", 400);
     }
 
     // -----------------------------
@@ -39,7 +40,7 @@ try {
         FROM users
         WHERE user_id = ? AND role = 'student'
     ");
-    $stmtStudent->bind_param("i", $student_id);
+    $stmtStudent->bind_param("i", $user_id);
     $stmtStudent->execute();
     $resultStudent = $stmtStudent->get_result();
 
@@ -59,7 +60,7 @@ try {
         WHERE user_id = ?
         ORDER BY date_submitted DESC
     ");
-    $stmtProjects->bind_param("i", $student_id);
+    $stmtProjects->bind_param("i", $user_id);
     $stmtProjects->execute();
     $resultProjects = $stmtProjects->get_result();
 

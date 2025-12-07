@@ -1,6 +1,7 @@
 /* ============================================== 
-   admin_dashboard.js
-   Sebastinian Showcase Admin Panel
+   Sebastinian Showcase Admin Panel - Ultimate JS
+   Premium Red & Gold Theme
+   Clean, Professional, Fully Optimized
    ============================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,14 +18,16 @@ document.addEventListener("DOMContentLoaded", () => {
         feedback.className = `feedback ${type}`;
         feedback.style.opacity = 1;
         feedback.style.transform = "translateY(0)";
+        feedback.style.pointerEvents = "auto";
         setTimeout(() => {
             feedback.style.opacity = 0;
-            feedback.style.transform = "translateY(-10px)";
+            feedback.style.transform = "translateY(-20px)";
+            feedback.style.pointerEvents = "none";
         }, 4000);
     };
 
     /* =========================
-       Tabs Switching
+       Tabs Switching with Smooth Fade
     ========================= */
     const tabs = document.querySelectorAll(".tab-btn");
     const panes = document.querySelectorAll(".tab-pane");
@@ -33,68 +36,56 @@ document.addEventListener("DOMContentLoaded", () => {
         tab.addEventListener("click", () => {
             tabs.forEach(t => t.classList.remove("active"));
             panes.forEach(p => p.classList.remove("active"));
-            tab.classList.add("active");
-            document.getElementById(tab.dataset.tab).classList.add("active");
 
+            tab.classList.add("active");
+            const activePane = document.getElementById(tab.dataset.tab);
+            activePane.classList.add("active");
+            activePane.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            // Load content dynamically for AJAX tabs
             if (tab.dataset.tab === "manage-admins") loadAdmins();
             if (tab.dataset.tab === "projects") loadProjects();
         });
     });
 
     /* =========================
-       Admins
+       Admin Management
     ========================= */
     const loadAdmins = async () => {
         const container = document.getElementById("admins-container");
         if (!container) return;
-        container.innerHTML = "<p>Loading admins...</p>";
+        container.innerHTML = `<p>Loading admins...</p>`;
 
         try {
             const res = await fetch("/Sebastinian_Showcase/api/admin/get_admins.php");
-            const text = await res.text();
-            let data;
-            try { data = JSON.parse(text); } 
-            catch { throw new Error("Invalid JSON response for admins"); }
-
+            const data = await res.json();
             if (data.status !== "success") throw new Error(data.message);
 
-            let html = `<table class="projects-table">
-                            <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Full Name</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-
+            let html = `
+                <table class="projects-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
             data.data.forEach(admin => {
-                html += `<tr data-user-id="${admin.user_id}">
-                            <td>${admin.username}</td>
-                            <td>${admin.email}</td>
-                            <td>${admin.full_name}</td>
-                            <td>${new Date(admin.date_created).toLocaleDateString()}</td>
-                            <td><button class="delete-admin-btn">Delete</button></td>
-                         </tr>`;
+                html += `
+                    <tr data-user-id="${admin.user_id}">
+                        <td>${admin.username}</td>
+                        <td>${admin.email}</td>
+                        <td>${admin.full_name}</td>
+                        <td>${new Date(admin.date_created).toLocaleDateString()}</td>
+                        <td><button class="delete-admin-btn">Delete</button></td>
+                    </tr>`;
             });
-
             html += `</tbody></table>`;
-
-            // Add admin form
-            html += `<div class="add-admin-form">
-                        <h3>Add New Admin</h3>
-                        <form id="addAdminForm" autocomplete="off">
-                            <input type="text" name="username" placeholder="Username" required>
-                            <input type="email" name="email" placeholder="Email" required>
-                            <input type="password" name="password" placeholder="Password" required>
-                            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-                            <button type="submit">Add Admin</button>
-                        </form>
-                      </div>`;
-
             container.innerHTML = html;
+
             attachAdminEvents();
         } catch (err) {
             showFeedback(err.message, "error");
@@ -118,15 +109,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     const data = await res.json();
                     if (data.status !== "success") throw new Error(data.message);
 
-                    showFeedback("Admin deleted successfully", "success");
                     row.remove();
+                    showFeedback("Admin deleted successfully", "success");
                 } catch (err) {
                     showFeedback(err.message, "error");
                 }
             });
         });
 
-        // Add admin
+        // Add admin using form
         const addForm = document.getElementById("addAdminForm");
         if (addForm) {
             addForm.addEventListener("submit", async e => {
@@ -147,8 +138,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const data = await res.json();
                     if (data.status !== "success") throw new Error(data.message);
 
-                    showFeedback("Admin added successfully", "success");
+                    addForm.reset();
                     loadAdmins();
+                    showFeedback("Admin added successfully", "success");
                 } catch (err) {
                     showFeedback(err.message, "error");
                 }
@@ -157,76 +149,64 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     /* =========================
-       Projects
+       Project Management
     ========================= */
+    let projectSearchTimeout = null;
     const loadProjects = async (search = "") => {
         const container = document.getElementById("projects-container");
         if (!container) return;
-        container.innerHTML = "<p>Loading projects...</p>";
+        container.innerHTML = `<p>Loading projects...</p>`;
 
         try {
             let url = "/Sebastinian_Showcase/api/admin/search_projects.php";
             if (search) url += `?query=${encodeURIComponent(search)}`;
 
             const res = await fetch(url);
-            const text = await res.text();
-            let data;
-            try { data = JSON.parse(text); } 
-            catch { throw new Error("Invalid JSON response for projects"); }
-
+            const data = await res.json();
             if (data.status !== "success") throw new Error(data.message);
 
-            let html = `<input type="text" id="projectSearch" placeholder="Search projects...">
-                        <table class="projects-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Student</th>
-                                    <th>Status</th>
-                                    <th>Date Submitted</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-
+            let html = `<table class="projects-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Student</th>
+                            <th>Status</th>
+                            <th>Date Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
             data.data.projects.forEach(proj => {
-                html += `<tr data-project-id="${proj.project_id}" data-user-id="${proj.user_id}">
-                            <td>${proj.title}</td>
-                            <td><span class="view-student">${proj.student_name}</span></td>
-                            <td class="status ${proj.status}">${proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}</td>
-                            <td>${new Date(proj.date_submitted).toLocaleString()}</td>
-                            <td>
-                                ${proj.status === "pending" ?
-                                    `<button class="approve-btn" data-status="approved">Approve</button>
-                                     <button class="reject-btn" data-status="rejected">Reject</button>` : "-"}
-                                <button class="delete-project-btn">Delete</button>
-                            </td>
-                        </tr>`;
+                html += `
+                    <tr data-project-id="${proj.project_id}" data-user-id="${proj.user_id}">
+                        <td>${proj.title}</td>
+                        <td><span class="view-student">${proj.student_name}</span></td>
+                        <td class="status-cell">
+                            <span class="status ${proj.status}">
+                                ${proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>${new Date(proj.date_submitted).toLocaleString()}</td>
+                        <td>
+                            ${proj.status === "pending" ? 
+                                `<button class="approve-btn" data-status="approved">Approve</button>
+                                 <button class="reject-btn" data-status="rejected">Reject</button>` : ""}
+                            <button class="delete-project-btn">Delete</button>
+                        </td>
+                    </tr>`;
             });
-
             html += `</tbody></table>`;
             container.innerHTML = html;
 
             attachProjectEvents();
-
-            // Search input debounce
-            const searchInput = document.getElementById("projectSearch");
-            if (searchInput) {
-                let timeout = null;
-                searchInput.addEventListener("input", () => {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => loadProjects(searchInput.value.trim()), 500);
-                });
-            }
-
         } catch (err) {
-            showFeedback(err.message, "error");
             container.innerHTML = `<p>Error loading projects.</p>`;
+            showFeedback(err.message, "error");
         }
     };
 
     const attachProjectEvents = () => {
-        // Approve/Reject buttons
+        // Approve/Reject
         document.querySelectorAll(".approve-btn, .reject-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
                 const row = btn.closest("tr");
@@ -242,12 +222,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     const data = await res.json();
                     if (data.status !== "success") throw new Error(data.message);
 
-                    if (status === "rejected") row.remove();
-                    else {
-                        const cell = row.querySelector(".status");
+                    const cell = row.querySelector(".status");
+                    if (status === "rejected") {
+                        row.remove();
+                    } else {
                         cell.textContent = status.charAt(0).toUpperCase() + status.slice(1);
                         cell.className = "status " + status;
                         row.querySelector("td:last-child").innerHTML = `<button class="delete-project-btn">Delete</button>`;
+                        attachProjectEvents(); // rebind newly added delete buttons
                     }
 
                     showFeedback(data.message, "success");
@@ -257,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Delete button
+        // Delete Project
         document.querySelectorAll(".delete-project-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
                 const row = btn.closest("tr");
@@ -281,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Student modal
+        // Student Modal
         document.querySelectorAll(".view-student").forEach(span => {
             span.addEventListener("click", async () => {
                 const row = span.closest("tr");
@@ -292,29 +274,49 @@ document.addEventListener("DOMContentLoaded", () => {
                     const data = await res.json();
                     if (data.status !== "success") throw new Error(data.message);
 
+                    const student = data.data.student;
+                    const projects = data.data.projects;
                     const container = document.getElementById("studentProfileContainer");
                     container.innerHTML = `
-                        <h3>${data.data.full_name} (${data.data.email})</h3>
-                        <p>Registered: ${new Date(data.data.date_created).toLocaleDateString()}</p>
+                        <h3>${student.full_name} (${student.email})</h3>
+                        <p>Registered: ${new Date(student.date_created).toLocaleDateString()}</p>
                         <h4>Projects</h4>
                         <ul>
-                            ${data.projects.map(p => `<li>${p.title} - ${p.status}</li>`).join("")}
+                            ${projects.map(p => `<li>${p.title} - ${p.status}</li>`).join("")}
                         </ul>
                     `;
-                    document.getElementById("studentModal").style.display = "block";
+                    const modal = document.getElementById("studentModal");
+                    modal.style.display = "flex";
+                    modal.querySelector(".modal-content").scrollIntoView({ behavior: "smooth" });
+
                 } catch (err) {
                     showFeedback(err.message, "error");
                 }
             });
         });
+
+        // Search input with debouncing
+        const searchInput = document.getElementById("projectsSearch");
+        if (searchInput) {
+            searchInput.addEventListener("input", () => {
+                clearTimeout(projectSearchTimeout);
+                projectSearchTimeout = setTimeout(() => loadProjects(searchInput.value.trim()), 400);
+            });
+        }
     };
 
-    // Student modal close
+    /* =========================
+       Student Modal Close
+    ========================= */
     const modal = document.getElementById("studentModal");
-    modal.querySelector(".close").addEventListener("click", () => modal.style.display = "none");
-    window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+    if (modal) {
+        modal.querySelector(".close").addEventListener("click", () => modal.style.display = "none");
+        window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+    }
 
-    // Initialize
+    /* =========================
+       Initialize Dashboard
+    ========================= */
     loadAdmins();
     loadProjects();
 });

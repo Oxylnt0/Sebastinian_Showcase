@@ -1,207 +1,448 @@
-/* ==============================================
-   admin_dashboard.css
-   Sebastinian Showcase Admin Panel
-   ============================================== */
+/* ==========================================
+   Sebastinian Showcase Admin Panel CSS
+   Unified Dashboard - Red & Gold Theme
+   ========================================== */
 
-/* -------------------------
-   General Layout
-------------------------- */
-.admin-dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
+/* ---------- Global ---------- */
+body {
+    font-family: 'Poppins', 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f2f0ed;
     color: #333;
+    line-height: 1.6;
 }
 
-.admin-dashboard-container h1 {
+* {
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* ---------- Dashboard Container ---------- */
+.admin-dashboard-container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 20px 25px;
+}
+
+/* ---------- Dashboard Top Panel ---------- */
+.dashboard-top-panel {
+    background: linear-gradient(135deg, #C62828, #B71C1C);
+    padding: 30px 25px 40px;
+    border-radius: 25px;
+    color: #FFD700;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    margin-bottom: 35px;
     text-align: center;
-    margin-bottom: 30px;
-    color: #222;
 }
 
-/* -------------------------
-   Tabs Navigation
-------------------------- */
+.dashboard-top-panel .dashboard-header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.dashboard-top-panel .dashboard-header .dashboard-subtitle {
+    font-size: 1.2rem;
+    color: #FFD700;
+    margin-top: 0;
+}
+
+/* ---------- Summary Cards ---------- */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.card {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: #B71C1C;
+}
+
+.card p {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #FFD700;
+}
+
+/* Card Top Borders */
+.total-projects { border-top: 5px solid #C62828; }
+.approved-projects { border-top: 5px solid #4CAF50; }
+.pending-projects { border-top: 5px solid #FFB300; }
+.rejected-projects { border-top: 5px solid #D32F2F; }
+.students-count { border-top: 5px solid #1976D2; }
+.admins-count { border-top: 5px solid #7B1FA2; }
+.active-this-month { border-top: 5px solid #F57C00; }
+
+/* ---------- Tabs Navigation ---------- */
 .tabs-nav {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 30px;
 }
 
 .tab-btn {
-    padding: 10px 20px;
-    background: #eee;
+    padding: 12px 28px;
     border: none;
-    border-radius: 5px 5px 0 0;
+    border-radius: 40px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
+    background: linear-gradient(135deg, #C62828, #B71C1C);
+    color: #FFD700;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    min-width: 150px;
+    text-align: center;
 }
 
 .tab-btn.active {
-    background: #4CAF50;
-    color: white;
+    background: linear-gradient(135deg, #FFD700, #FFC107);
+    color: #B71C1C;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
-/* -------------------------
-   Tabs Content
-------------------------- */
+.tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* ---------- Tab Panes ---------- */
 .tab-pane {
     display: none;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-top: none;
-    padding: 20px;
-    border-radius: 0 5px 5px 5px;
+    animation: fadeIn 0.4s ease forwards;
 }
 
 .tab-pane.active {
     display: block;
 }
 
-/* -------------------------
-   Summary Cards
-------------------------- */
-.summary-cards {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
+/* ---------- Search Input ---------- */
+.projects-search {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    outline: none;
+    transition: all 0.3s ease;
 }
 
-.summary-cards .card {
-    flex: 1 1 200px;
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+.projects-search:focus {
+    border-color: #C62828;
+    box-shadow: 0 6px 20px rgba(198,40,40,0.25);
 }
 
-.summary-cards .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.summary-cards .card h3 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #555;
-}
-
-.summary-cards .card p {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0;
-}
-
-/* Card colors */
-.total-projects { background: #e0f7fa; }
-.approved-projects { background: #d0f0c0; }
-.pending-projects { background: #fff3cd; }
-.rejected-projects { background: #f8d7da; }
-
-/* -------------------------
-   Tables
-------------------------- */
-.projects-table, 
-table {
+/* ---------- Tables ---------- */
+.projects-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-bottom: 35px;
+    background: rgba(255,255,255,0.96);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.06);
 }
 
-.projects-table th, 
-.projects-table td,
-table th, table td {
-    padding: 10px 15px;
+.projects-table th, .projects-table td {
+    padding: 12px 16px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 
-.projects-table th, table th {
-    background: #f0f0f0;
+.projects-table th {
+    background: #B71C1C;
+    color: #FFD700;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
+.projects-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.projects-table tbody tr:hover {
+    background-color: rgba(255, 215, 0, 0.12);
+    transform: scale(1.01);
+}
+
+/* ---------- Status Badges (Centered & Padded) ---------- */
 .status {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 25px;
     color: #fff;
-    text-transform: capitalize;
-    font-size: 12px;
+    text-align: center;
+    display: inline-block;
+    min-width: 80px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    vertical-align: middle;
 }
 
 .status.approved { background: #4CAF50; }
-.status.pending { background: #FFC107; }
-.status.rejected { background: #DC3545; }
+.status.pending { background: #FFB300; }
+.status.rejected { background: #D32F2F; }
 
-/* Links for students */
-.view-student {
-    color: #007bff;
-    text-decoration: none;
+/* ---------- Table Buttons (Approve, Reject, Delete) ---------- */
+.projects-table button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
 
-.view-student:hover {
-    text-decoration: underline;
+.approve-btn { background: #4CAF50; color: #fff; margin-right: 5px; }
+.reject-btn { background: #D32F2F; color: #fff; margin-right: 5px; }
+.delete-project-btn { background: #B71C1C; color: #FFD700; }
+
+.projects-table button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
 }
 
-/* -------------------------
-   Modal
-------------------------- */
+.delete-admin-btn {
+    background: #B71C1C;
+    color: #FFD700;
+    margin-right: 5px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.delete-admin-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+
+/* ---------- Forms (Add Admin) ---------- */
+.add-admin-form {
+    background: rgba(255,255,255,0.97);
+    border-radius: 20px;
+    padding: 25px 25px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+    margin-bottom: 35px;
+}
+
+.add-admin-form h3 {
+    margin-bottom: 18px;
+    font-weight: 700;
+    color: #B71C1C;
+}
+
+.add-admin-form .form-group {
+    margin-bottom: 15px;
+}
+
+.add-admin-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.add-admin-form input[type="text"],
+.add-admin-form input[type="email"],
+.add-admin-form input[type="password"] {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.add-admin-form button {
+    background: linear-gradient(135deg, #FFD700, #FFC107);
+    color: #B71C1C;
+    font-weight: 700;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.add-admin-form button:hover {
+    box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    transform: translateY(-2px);
+}
+
+/* ---------- Feedback Toast ---------- */
+.feedback {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    padding: 14px 28px;
+    border-radius: 50px;
+    background-color: #B71C1C;
+    color: #FFD700;
+    font-weight: 700;
+    opacity: 0;
+    z-index: 9999;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.25);
+}
+
+.feedback.success { background-color: #4CAF50; color: #fff; }
+.feedback.error { background-color: #D32F2F; color: #fff; }
+
+/* ---------- Modals ---------- */
 .modal {
     display: none;
     position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    z-index: 999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
     overflow: auto;
-    background: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
 }
 
 .modal-content {
-    background: #fff;
-    margin: 60px auto;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 700px;
+    background: rgba(255,255,255,0.97);
+    margin: 6% auto;
+    padding: 30px 35px;
+    border-radius: 25px;
+    max-width: 650px;
     position: relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.25);
+    animation: modalFade 0.4s ease;
 }
 
 .modal-content h3 {
-    margin-top: 0;
+    color: #B71C1C;
+    margin-bottom: 15px;
 }
 
-.modal .close {
+.modal-content .close {
     position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 25px;
-    font-weight: bold;
+    right: 25px; top: 25px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #B71C1C;
     cursor: pointer;
-    color: #555;
 }
 
-.modal .close:hover {
-    color: #000;
+.modal-content .close:hover {
+    color: #FFD700;
 }
 
-/* -------------------------
-   Responsive
-------------------------- */
+/* ---------- Dashboard Bottom Section ---------- */
+.dashboard-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.dashboard-charts,
+.top-students,
+.admin-profile-card {
+    flex: 1 1 100%;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+}
+
+/* Charts Layout */
+.dashboard-charts canvas {
+    width: 100% !important;
+    max-height: 300px;
+    margin-bottom: 25px;
+}
+
+/* Top Students */
+.top-students h2 {
+    margin-bottom: 15px;
+    color: #B71C1C;
+    font-weight: 700;
+}
+
+/* Admin Profile */
+.admin-profile-card {
+    text-align: center;
+}
+
+.admin-profile-card .profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.admin-profile-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: #B71C1C;
+}
+
+.admin-profile-card p {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(15px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes modalFade {
+    from {opacity: 0; transform: translateY(-25px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+    .summary-cards { grid-template-columns: 1fr 1fr; }
+    .tab-btn { flex: 1 1 48%; text-align: center; }
+    .dashboard-bottom { flex-direction: column; }
+}
+
 @media (max-width: 768px) {
-    .summary-cards {
-        flex-direction: column;
-    }
+    .summary-cards { grid-template-columns: 1fr; }
+    .projects-table th, .projects-table td { padding: 10px; font-size: 0.9rem; }
+    .add-admin-form { padding: 20px; }
+    .tab-btn { flex: 1 1 100%; }
+}
 
-    .tab-btn {
-        flex: 1 1 100%;
-        text-align: center;
-    }
+@media (max-width: 480px) {
+    .projects-table th, .projects-table td { font-size: 0.8rem; }
+    .add-admin-form button { width: 100%; }
+    .admin-profile-card .profile-pic { width: 100px; height: 100px; }
 }

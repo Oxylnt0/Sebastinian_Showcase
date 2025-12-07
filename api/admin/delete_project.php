@@ -66,7 +66,7 @@ try {
         $admin_id = $_SESSION['user']['user_id'] ?? null;
         if ($admin_id) {
             $stmt_log = $conn->prepare("
-                INSERT INTO activity_log (user_id, action, details, created_at)
+                INSERT INTO activity_log (user_id, action, details, timestamp)
                 VALUES (?, 'delete_project', CONCAT('Deleted project ', ?), NOW())
             ");
             $stmt_log->bind_param("is", $admin_id, $title);
