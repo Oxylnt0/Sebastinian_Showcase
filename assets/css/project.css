@@ -1,351 +1,481 @@
-/* ============================= */
-/*         GLOBAL RESET          */
-/* ============================= */
+/* ===============================
+   Ultimate Premium CSS for Project Page
+   =============================== */
+
+/* --------------------------
+   Root Variables
+   -------------------------- */
+:root {
+    --primary-color: #b00020;      /* Deep red */
+    --secondary-color: #ffdd57;    /* Gold accent */
+    --bg-color: #fffdf9;           /* Warm off-white */
+    --text-color: #333;            /* Dark text */
+    --muted-color: #777;           /* Secondary text */
+    --like-color: #ff4d6d;         /* Heart color */
+    --own-comment-bg: #fff4c0;     /* Yellow for own comment */
+    --other-comment-bg: #ff7f7f;   /* Red for others' comments */
+    --reply-bg: #f9f9f9;           /* Reply bubble */
+    --reply-border: #ddd;          /* Reply left border */
+    --shadow-light: rgba(0,0,0,0.08);
+    --shadow-dark: rgba(0,0,0,0.15);
+    --font-main: 'Poppins', sans-serif;
+}
+
+/* --------------------------
+   Global Reset & Base
+   -------------------------- */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #f4f2f1;
-    color: #2c2c2c;
+    font-family: var(--font-main);
+    background: var(--bg-color);
+    color: var(--text-color);
     line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* ============================= */
-/*      PROJECT CONTAINER        */
-/* ============================= */
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* --------------------------
+   Project Container
+   -------------------------- */
 .project-container {
-    display: flex;
-    justify-content: center;
-    padding: 50px 20px;
-    min-height: 90vh;
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
 }
 
-/* ============================= */
-/*          PROJECT BOX          */
-/* ============================= */
 .project-box {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 50px 40px;
-    width: 100%;
-    max-width: 950px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-    transition: all 0.4s ease;
-    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 24px var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .project-box:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px var(--shadow-dark);
 }
 
-/* ============================= */
-/*         PROJECT TITLE         */
-/* ============================= */
+/* --------------------------
+   Project Title & Meta
+   -------------------------- */
 .project-title {
-    color: #B22222;
     font-size: 2.4rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
 }
 
-/* ============================= */
-/*         PROJECT META          */
-/* ============================= */
 .project-meta {
-    color: #555;
-    font-size: 1rem;
-    text-align: center;
-    margin-bottom: 30px;
+    font-size: 0.95rem;
+    color: var(--muted-color);
+    margin-bottom: 25px;
 }
 
-.project-meta strong.approved { color: #28a745; }
-.project-meta strong.rejected { color: #dc3545; }
-.project-meta strong.pending { color: #B22222; }
-
-/* ============================= */
-/*        PROJECT IMAGE          */
-/* ============================= */
-.project-image {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
+/* --------------------------
+   Project Image
+   -------------------------- */
 .project-image img {
-    max-width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 18px var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .project-image img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    transform: scale(1.03);
 }
 
-/* ============================= */
-/*       PROJECT DESCRIPTION     */
-/* ============================= */
-.project-description {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: #333;
-    margin-bottom: 30px;
-    padding: 0 10px;
+/* --------------------------
+   Project Description
+   -------------------------- */
+.project-description p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+    line-height: 1.7;
 }
 
-/* ============================= */
-/*         PROJECT FILE          */
-/* ============================= */
+/* --------------------------
+   Project File / Download
+   -------------------------- */
 .project-file {
-    text-align: center;
-    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
 }
 
 .download-btn {
-    display: inline-block;
-    padding: 14px 30px;
-    background-color: #B22222;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: #fff;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 10px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .download-btn:hover {
-    background-color: #8b1a1a;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--shadow-light);
 }
 
-/* ============================= */
-/*        ACTION BUTTONS         */
-/* ============================= */
-.action-btn {
-    padding: 12px 28px;
-    font-weight: 600;
-    border-radius: 10px;
-    border: none;
+#download-count {
+    font-size: 0.9rem;
+    color: var(--muted-color);
+}
+
+/* --------------------------
+   Project Actions
+   -------------------------- */
+.project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 35px;
+}
+
+.action-btn, .delete-btn, .like-btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin-right: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: all 0.25s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Edit & Delete Buttons */
+.edit-btn {
+    background-color: var(--secondary-color);
+    color: #333;
 }
 
 .delete-btn {
-    background-color: #B22222;
+    background-color: #ff6b6b;
     color: #fff;
 }
 
-.delete-btn:hover {
-    background-color: #8b1a1a;
-    transform: translateY(-2px);
-}
-
+/* --------------------------
+   Like Button (Heart SVG)
+   -------------------------- */
 .like-btn {
-    background-color: #FFD700;
-    color: #B22222;
-}
-
-.like-btn.liked {
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
-}
-
-.like-btn:hover {
-    background-color: #e6c200;
-    transform: translateY(-2px);
-}
-
-/* ============================= */
-/*       COMMENTS SECTION        */
-/* ============================= */
-.comments-section {
-    margin-top: 50px;
-}
-
-.comments-section h2 {
-    color: #B22222;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-}
-
-.comment {
-    background-color: #f9f7f6;
-    border-left: 5px solid #FFD700;
-    padding: 15px 20px;
-    margin-bottom: 18px;
-    border-radius: 12px;
-    position: relative;
-    transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.comment:hover {
-    background-color: #fff2cc;
-    transform: translateX(3px);
-}
-
-.comment p {
-    margin-bottom: 8px;
+    background-color: #fff;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
     font-size: 1rem;
 }
 
-.comment-date {
-    font-size: 0.85rem;
-    color: #888;
-    position: absolute;
-    top: 15px;
-    right: 20px;
+.like-btn i {
+    display: inline-block;
+    font-style: normal;
+    color: var(--primary-color);
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.comment .edit-comment-btn,
-.comment .delete-comment-btn,
-.comment .like-comment-btn,
-.comment .reply-btn {
-    margin-top: 5px;
-    margin-right: 5px;
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
+.like-btn.liked {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.like-btn.liked i {
+    color: var(--like-color);
+    transform: scale(1.3);
+}
+
+.action-btn:hover, .delete-btn:hover, .like-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px var(--shadow-light);
+}
+
+/* --------------------------
+   Comments Section
+   -------------------------- */
+.comments-section {
+    margin-top: 45px;
+}
+
+.comments-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 22px;
+}
+
+#comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#comments-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#comments-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+#comments-list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+/* --------------------------
+   Comment Bubble Styles
+   -------------------------- */
+.comment {
+    padding: 16px 22px;
+    border-radius: 14px;
+    box-shadow: 0 6px 14px var(--shadow-light);
+    position: relative;
     transition: all 0.3s ease;
 }
 
-.comment .edit-comment-btn { background: #FFD700; color: #B22222; }
-.comment .delete-comment-btn { background: #B22222; color: #fff; }
-.comment .like-comment-btn { background: #e6c200; color: #8b1a1a; }
-.comment .reply-btn { background: #28a745; color: #fff; }
+/* Own comment (yellow) */
+.comment.own-comment {
+    background: var(--own-comment-bg);
+    border-left: 4px solid var(--secondary-color);
+}
 
-.comment .edit-comment-btn:hover { background: #e6c200; }
-.comment .delete-comment-btn:hover { background: #8b1a1a; }
-.comment .like-comment-btn:hover { background: #ffd700; }
-.comment .reply-btn:hover { background: #218838; }
+/* Other users’ comment (red) */
+.comment:not(.own-comment) {
+    background: var(--other-comment-bg);
+    border-left: 4px solid var(--primary-color);
+}
 
+.comment p {
+    margin-bottom: 10px;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+}
+
+.comment-likes {
+    font-size: 0.9rem;
+    color: var(--muted-color);
+}
+
+/* --------------------------
+   Comment Buttons
+   -------------------------- */
+.comment button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.edit-comment-btn {
+    background-color: var(--secondary-color);
+    color: #333;
+}
+
+.delete-comment-btn {
+    background-color: #ff6b6b;
+    color: #fff;
+}
+
+/* --------------------------
+   Like Button in Comments - Improved
+   -------------------------- */
+.like-comment-btn {
+    background-color: #b00020;       /* Deep red for contrast */
+    color: #fff;                     /* Text color */
+    border: 1px solid #b00020;      /* Matching border */
+    padding: 6px 14px;               /* Comfortable size */
+    border-radius: 10px;             /* Rounded edges */
+    font-weight: 600;                /* Slightly bold */
+    font-size: 0.85rem;              /* Readable text */
+    cursor: pointer;                 /* Pointer on hover */
+    transition: 
+        all 0.25s ease, 
+        transform 0.2s ease, 
+        box-shadow 0.2s ease, 
+        background-color 0.2s ease; /* Smooth hover transitions */
+}
+
+/* Hover Effect */
+.like-comment-btn:hover {
+    background-color: #ff4d4d;        /* Slightly brighter red on hover */
+    border-color: #ff4d4d;            /* Match border */
+    transform: translateY(-2px);       /* Lift effect */
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15); /* Soft shadow */
+}
+
+/* Active / Clicked State */
+.like-comment-btn:active {
+    transform: scale(0.97);            /* Press effect */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* Liked State (if toggled) */
+.like-comment-btn.liked {
+    background-color: #ffdd57;         /* Gold to indicate liked */
+    color: #b00020;                    /* Text changes for contrast */
+    border-color: #ffdd57;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18); /* Slightly stronger shadow */
+}
+
+
+/* --------------------------
+   Reply Section
+   -------------------------- */
 .reply-section {
-    margin-top: 10px;
     display: flex;
-    gap: 5px;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
 }
 
 .reply-input {
     flex: 1;
-    padding: 8px 10px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 12px;
     border: 1px solid #ccc;
     font-size: 0.95rem;
+    transition: all 0.2s ease;
 }
 
-/* ============================= */
-/*       COMMENT FORM            */
-/* ============================= */
-#comment-form {
-    margin-top: 25px;
+.reply-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 6px var(--primary-color);
+    outline: none;
+}
+
+.reply-btn {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.reply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow-light);
+}
+
+/* Nested Replies */
+.nested-replies {
+    margin-top: 12px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+}
+
+/* View More Replies - Updated */
+.view-more-replies {
+    background-color: var(--primary-color);  /* Deep red */
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    align-self: flex-start;
+    border: none;
+}
+
+.view-more-replies:hover {
+    background-color: var(--secondary-color); /* Gold on hover */
+    color: var(--primary-color);             /* Contrast text */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow-light);
+}
+
+
+/* Comment Form */
+#comment-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 #comment-form textarea {
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
     resize: vertical;
-    min-height: 110px;
+    min-height: 90px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid #ccc;
     font-size: 1rem;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 }
 
 #comment-form textarea:focus {
-    border-color: #FFD700;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px var(--primary-color);
     outline: none;
 }
 
 .comment-btn {
     align-self: flex-end;
-    padding: 12px 28px;
-    background-color: #B22222;
+    background: var(--primary-color);
     color: #fff;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: all 0.25s ease;
 }
 
 .comment-btn:hover {
-    background-color: #8b1a1a;
     transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow-light);
 }
 
-/* ============================= */
-/*    LOGIN PROMPT MESSAGE       */
-/* ============================= */
-.login-to-comment {
-    font-size: 1rem;
-    color: #555;
-}
-
-.login-to-comment a {
-    color: #FFD700;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.login-to-comment a:hover {
-    color: #B22222;
-}
-
-/* ============================= */
-/*       OWNER BADGE             */
-/* ============================= */
-.owner-badge {
-    display: inline-block;
-    background-color: #FFD700;
-    color: #B22222;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 5px;
+/* Comment Messages */
+.comment-message {
     font-size: 0.85rem;
-    margin-left: 8px;
+    color: var(--muted-color);
+    transition: all 0.3s ease;
 }
 
-/* ============================= */
-/*       LIKE COUNTER            */
-/* ============================= */
-.like-counter {
-    margin-left: 6px;
-    font-weight: 600;
-    color: #B22222;
-    font-size: 0.95rem;
+.comment-message.success {
+    color: #28a745;
 }
 
-/* ============================= */
-/*       RESPONSIVE DESIGN       */
-/* ============================= */
-@media (max-width: 992px) {
-    .project-box { padding: 40px 30px; }
+.comment-message.error {
+    color: #ff6b6b;
+}
+
+/* --------------------------
+   Responsive
+   -------------------------- */
+@media (max-width: 768px) {
+    .project-container { padding: 15px; }
+    .project-box { padding: 22px; }
     .project-title { font-size: 2rem; }
-    .project-meta { font-size: 0.95rem; }
-    .download-btn, .action-btn, .comment-btn { width: 100%; margin-bottom: 10px; }
-}
-
-@media (max-width: 576px) {
-    .project-box { padding: 30px 20px; }
-    .project-title { font-size: 1.8rem; }
-    .project-description { font-size: 0.95rem; }
-    #comment-form textarea { font-size: 0.95rem; min-height: 90px; }
-    .comment-date { position: static; display: block; margin-top: 5px; }
+    .comment { font-size: 0.95rem; }
+    .reply-input, #comment-form textarea { font-size: 0.9rem; }
+    .comment-btn, .reply-btn, .view-more-replies { font-size: 0.85rem; padding: 6px 14px; }
 }

@@ -1,59 +1,109 @@
 <?php
-session_start();
-require_once("../config/db.php");
-require_once("../utils/auth_check.php");
-require_once("../utils/response.php");
+// delete_my_project.php - Delete a project along with related data
+require_once __DIR__ . '/../utils/auth_check.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/response.php';
 
-// User must be logged in
-Auth::requireLogin();
-$user = Auth::currentUser();
-$user_id = $user['user_id'] ?? null;
+auth_check(); // Ensure user is logged in
 
-// Only POST allowed
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    Response::error("Invalid request method", 405);
+// -----------------------
+// Parse input
+// -----------------------
+$input = json_decode(file_get_contents('php://input'), true) ?? [];
+$project_id = intval($input['project_id'] ?? 0);
+if ($project_id <= 0) Response::error('Project ID is required', 400);
+
+$conn = (new Database())->connect();
+$user_id = intval($_SESSION['user_id'] ?? 0);
+$user_role = $_SESSION['role'] ?? '';
+if ($user_id <= 0) Response::error('Authentication error', 401);
+
+// -----------------------
+// Verify ownership or admin
+// -----------------------
+$stmt = $conn->prepare("SELECT user_id, file FROM projects WHERE project_id = ? LIMIT 1");
+$stmt->bind_param("i", $project_id);
+$stmt->execute();
+$project = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$project) Response::error('Project not found', 404);
+if ($project['user_id'] !== $user_id && $user_role !== 'admin') {
+    Response::error('Permission denied', 403);
 }
 
-// Get input
-$input = json_decode(file_get_contents('php://input'), true);
-$project_id = isset($input['project_id']) ? intval($input['project_id']) : 0;
-
-if (!$project_id) {
-    Response::error("Invalid project ID", 400);
-}
-
+// -----------------------
+// Begin transaction
+// -----------------------
+$conn->begin_transaction();
 try {
-    $conn = (new Database())->connect();
+    // -----------------------
+    // Delete comment likes & comments
+    // -----------------------
+    $stmt = $conn->prepare("SELECT comment_id FROM comments WHERE project_id = ?");
+    $stmt->bind_param("i", $project_id);
+    $stmt->execute();
+    $commentIds = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 
-    // Check ownership
-    $stmt_check = $conn->prepare("SELECT file, image, title, user_id FROM projects WHERE project_id = ?");
-    $stmt_check->bind_param("i", $project_id);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
-    $project = $result->fetch_assoc();
+    if (!empty($commentIds)) {
+        $ids = array_column($commentIds, 'comment_id');
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $types = str_repeat('i', count($ids));
 
-    if (!$project) Response::error("Project not found", 404);
-    if ($project['user_id'] != $user_id) Response::error("You are not authorized to delete this project", 403);
+        // Delete comment likes
+        $stmt = $conn->prepare("DELETE FROM comment_likes WHERE comment_id IN ($placeholders)");
+        $stmt->bind_param($types, ...$ids);
+        $stmt->execute();
+        $stmt->close();
 
-    // Delete files
-    if ($project['file'] && file_exists(__DIR__ . "/../../uploads/project_files/{$project['file']}")) {
-        unlink(__DIR__ . "/../../uploads/project_files/{$project['file']}");
-    }
-    if ($project['image'] && file_exists(__DIR__ . "/../../uploads/project_images/{$project['image']}")) {
-        unlink(__DIR__ . "/../../uploads/project_images/{$project['image']}");
-    }
-
-    // Delete record
-    $stmt_delete = $conn->prepare("DELETE FROM projects WHERE project_id = ?");
-    $stmt_delete->bind_param("i", $project_id);
-    if ($stmt_delete->execute()) {
-        Response::success([], "Project deleted successfully");
-    } else {
-        Response::error("Failed to delete project: " . $stmt_delete->error);
+        // Delete comments
+        $stmt = $conn->prepare("DELETE FROM comments WHERE comment_id IN ($placeholders)");
+        $stmt->bind_param($types, ...$ids);
+        $stmt->execute();
+        $stmt->close();
     }
 
-} catch (mysqli_sql_exception $e) {
-    Response::error("Database error: " . $e->getMessage(), 500);
+    // -----------------------
+    // Delete project likes
+    // -----------------------
+    $stmt = $conn->prepare("DELETE FROM project_likes WHERE project_id = ?");
+    $stmt->bind_param("i", $project_id);
+    $stmt->execute();
+    $stmt->close();
+
+    // -----------------------
+    // Delete download logs
+    // -----------------------
+    $stmt = $conn->prepare("DELETE FROM downloads_log WHERE project_id = ?");
+    $stmt->bind_param("i", $project_id);
+    $stmt->execute();
+    $stmt->close();
+
+    // -----------------------
+    // Delete project file from server
+    // -----------------------
+    if (!empty($project['file'])) {
+        $filepath = __DIR__ . '/../../uploads/project_files/' . $project['file'];
+        if (file_exists($filepath) && !@unlink($filepath)) {
+            throw new Exception('Failed to delete project file from server.');
+        }
+    }
+
+    // -----------------------
+    // Delete project itself
+    // -----------------------
+    $stmt = $conn->prepare("DELETE FROM projects WHERE project_id = ?");
+    $stmt->bind_param("i", $project_id);
+    $stmt->execute();
+    $stmt->close();
+
+    // Commit transaction
+    $conn->commit();
+
+    Response::success([], 'Project deleted successfully');
+
 } catch (Exception $e) {
-    Response::error("Server error: " . $e->getMessage(), 500);
+    $conn->rollback();
+    Response::error('Failed to delete project: ' . $e->getMessage());
 }

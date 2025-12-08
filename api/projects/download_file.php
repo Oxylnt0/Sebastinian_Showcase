@@ -1,47 +1,75 @@
 <?php
-session_start();
-require_once("../config/db.php");
+require_once __DIR__ . '/../utils/auth_check.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/response.php';
 
-// Get project ID from GET parameter
+auth_check(); // Ensure user is logged in
+
+// -----------------------
+// Validate project_id
+// -----------------------
 $project_id = intval($_GET['project_id'] ?? 0);
-if ($project_id <= 0) {
-    die("Invalid project ID.");
-}
+if (!$project_id) Response::error('Project ID required', 400);
 
 $conn = (new Database())->connect();
 
-// Fetch project file info
-$stmt = $conn->prepare("SELECT file, downloads FROM projects WHERE project_id = ?");
+// -----------------------
+// Fetch project file
+// -----------------------
+$stmt = $conn->prepare("SELECT file FROM projects WHERE project_id = ?");
 $stmt->bind_param("i", $project_id);
 $stmt->execute();
-$result = $stmt->get_result();
+$project = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-if ($result->num_rows === 0) {
-    die("Project not found.");
+if (!$project || empty($project['file'])) {
+    Response::error('File not found', 404);
 }
 
-$project = $result->fetch_assoc();
-$file_name = $project['file'];
-$downloads = $project['downloads'] ?? 0;
-
-if (!$file_name || !file_exists(__DIR__ . "/../../uploads/project_files/" . $file_name)) {
-    die("File not found.");
+$filepath = __DIR__ . '/../../uploads/project_files/' . $project['file'];
+if (!file_exists($filepath)) {
+    Response::error('File does not exist on server', 404);
 }
 
-// Increment download count
-$update_stmt = $conn->prepare("UPDATE projects SET downloads = downloads + 1 WHERE project_id = ?");
-$update_stmt->bind_param("i", $project_id);
-$update_stmt->execute();
+// -----------------------
+// Log the download (avoid duplicates per day)
+// -----------------------
+$user_id = $_SESSION['user_id'];
 
-// Send file for download
-$file_path = __DIR__ . "/../../uploads/project_files/" . $file_name;
+// Check if already logged today
+$stmtCheck = $conn->prepare("
+    SELECT 1 FROM downloads_log 
+    WHERE project_id = ? AND user_id = ? AND DATE(downloaded_at) = CURDATE()
+    LIMIT 1
+");
+$stmtCheck->bind_param("ii", $project_id, $user_id);
+$stmtCheck->execute();
+$alreadyLogged = $stmtCheck->get_result()->num_rows > 0;
+$stmtCheck->close();
+
+if (!$alreadyLogged) {
+    $stmtLog = $conn->prepare("
+        INSERT INTO downloads_log (project_id, user_id, downloaded_at) 
+        VALUES (?, ?, NOW())
+    ");
+    $stmtLog->bind_param("ii", $project_id, $user_id);
+    $stmtLog->execute();
+    $stmtLog->close();
+}
+
+// -----------------------
+// Serve the file for download
+// -----------------------
+if (ob_get_level()) ob_end_clean();
+
 header('Content-Description: File Transfer');
 header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename="' . basename($file_name) . '"');
+header('Content-Disposition: attachment; filename="' . basename($filepath) . '"');
 header('Expires: 0');
 header('Cache-Control: must-revalidate');
 header('Pragma: public');
-header('Content-Length: ' . filesize($file_path));
+header('Content-Length: ' . filesize($filepath));
+
 flush();
-readfile($file_path);
+readfile($filepath);
 exit;

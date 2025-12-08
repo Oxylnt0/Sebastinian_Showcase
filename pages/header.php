@@ -45,6 +45,7 @@ $conn = (new Database())->connect();
     <link rel="stylesheet" href="<?= $assets ?>/css/register.css">
     <link rel="stylesheet" href="<?= $assets ?>/css/profile.css">
     <link rel="stylesheet" href="<?= $assets ?>/css/project.css">
+    <link rel="stylesheet" href="<?= $assets ?>/css/edit_project.css">
     <link rel="stylesheet" href="<?= $assets ?>/css/my_projects.css">
     <link rel="stylesheet" href="<?= $assets ?>/css/upload_projects.css">
     <link rel="stylesheet" href="<?= $assets ?>/css/admin_dashboard.css">
@@ -58,6 +59,7 @@ $conn = (new Database())->connect();
     <script src="<?= $assets ?>/js/login.js" defer></script>
     <script src="<?= $assets ?>/js/register.js" defer></script>
     <script src="<?= $assets ?>/js/project.js" defer></script>
+    <script src="<?= $assets ?>/js/edit_project.js" defer></script>
     <script src="<?= $assets ?>/js/my_projects.js" defer></script>
     <script src="<?= $assets ?>/js/upload_projects.js" defer></script>
     <script src="<?= $assets ?>/js/admin_dashboard.js" defer></script>

@@ -1,77 +1,89 @@
 <?php
-// ===========================================
-// api/projects/like_project.php
-// Toggle like for a project via AJAX
-// ===========================================
+// like_project.php - Toggle project like
+require_once __DIR__ . '/../utils/auth_check.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/response.php';
 
-session_start();
-require_once("../config/db.php");
-require_once("../utils/response.php");
-require_once("../utils/auth_check.php");
+// -----------------------
+// Start session safely
+// -----------------------
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Only logged-in users can like
+// -----------------------
+// Ensure user is logged in
+// -----------------------
 Auth::requireLogin();
-$user_id = $_SESSION['user_id'];
+$user_id = intval($_SESSION['user_id'] ?? 0);
+if ($user_id <= 0) Response::error('Authentication required', 401);
 
-// Only POST allowed
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    Response::error("Invalid request method", 405);
+// -----------------------
+// Parse input
+// -----------------------
+$input = json_decode(file_get_contents('php://input'), true) ?? [];
+$project_id = intval($input['project_id'] ?? 0);
+if ($project_id <= 0) Response::error('Project ID is required', 400);
+
+// -----------------------
+// Database connection
+// -----------------------
+$conn = (new Database())->connect();
+
+// -----------------------
+// Check if project exists
+// -----------------------
+$stmt = $conn->prepare("SELECT project_id FROM projects WHERE project_id = ? LIMIT 1");
+$stmt->bind_param("i", $project_id);
+$stmt->execute();
+$result = $stmt->get_result();
+if (!$result->fetch_assoc()) {
+    $stmt->close();
+    Response::error('Project not found', 404);
+}
+$stmt->close();
+
+// -----------------------
+// Toggle like
+// -----------------------
+$user_liked = false;
+
+// Check if the user already liked this project
+$stmtCheck = $conn->prepare("SELECT 1 FROM project_likes WHERE project_id = ? AND user_id = ? LIMIT 1");
+$stmtCheck->bind_param("ii", $project_id, $user_id);
+$stmtCheck->execute();
+$exists = $stmtCheck->get_result()->num_rows > 0;
+$stmtCheck->close();
+
+if ($exists) {
+    // Remove like
+    $stmtDel = $conn->prepare("DELETE FROM project_likes WHERE project_id = ? AND user_id = ?");
+    $stmtDel->bind_param("ii", $project_id, $user_id);
+    $stmtDel->execute();
+    $stmtDel->close();
+    $user_liked = false;
+} else {
+    // Add like
+    $stmtIns = $conn->prepare("INSERT INTO project_likes (project_id, user_id) VALUES (?, ?)");
+    $stmtIns->bind_param("ii", $project_id, $user_id);
+    $stmtIns->execute();
+    $stmtIns->close();
+    $user_liked = true;
 }
 
-// Decode JSON input
-$input = json_decode(file_get_contents('php://input'), true);
-$project_id = isset($input['project_id']) ? intval($input['project_id']) : 0;
+// -----------------------
+// Fetch updated like count
+// -----------------------
+$stmtCount = $conn->prepare("SELECT COUNT(*) AS total FROM project_likes WHERE project_id = ?");
+$stmtCount->bind_param("i", $project_id);
+$stmtCount->execute();
+$like_count = intval($stmtCount->get_result()->fetch_assoc()['total'] ?? 0);
+$stmtCount->close();
 
-if (!$project_id) {
-    Response::error("Invalid project ID", 400);
-}
-
-try {
-    $conn = (new Database())->connect();
-
-    // Check if project exists
-    $stmt_check = $conn->prepare("SELECT project_id FROM projects WHERE project_id = ?");
-    $stmt_check->bind_param("i", $project_id);
-    $stmt_check->execute();
-    $stmt_check->store_result();
-    if ($stmt_check->num_rows === 0) {
-        Response::error("Project not found", 404);
-    }
-
-    // Check if user already liked
-    $stmt_like_check = $conn->prepare("SELECT id FROM project_likes WHERE project_id = ? AND user_id = ?");
-    $stmt_like_check->bind_param("ii", $project_id, $user_id);
-    $stmt_like_check->execute();
-    $stmt_like_check->store_result();
-
-    if ($stmt_like_check->num_rows > 0) {
-        // Already liked → remove like
-        $stmt_delete = $conn->prepare("DELETE FROM project_likes WHERE project_id = ? AND user_id = ?");
-        $stmt_delete->bind_param("ii", $project_id, $user_id);
-        $stmt_delete->execute();
-        $action = "unliked";
-    } else {
-        // Not liked → add like
-        $stmt_insert = $conn->prepare("INSERT INTO project_likes (project_id, user_id, date_liked) VALUES (?, ?, NOW())");
-        $stmt_insert->bind_param("ii", $project_id, $user_id);
-        $stmt_insert->execute();
-        $action = "liked";
-    }
-
-    // Get updated like count
-    $stmt_count = $conn->prepare("SELECT COUNT(*) AS total_likes FROM project_likes WHERE project_id = ?");
-    $stmt_count->bind_param("i", $project_id);
-    $stmt_count->execute();
-    $like_count = $stmt_count->get_result()->fetch_assoc()['total_likes'];
-
-    Response::success([
-        "project_id" => $project_id,
-        "likes" => intval($like_count),
-        "action" => $action
-    ], "Project successfully $action.");
-
-} catch (mysqli_sql_exception $e) {
-    Response::error("Database error: " . $e->getMessage(), 500);
-} catch (Exception $e) {
-    Response::error("Server error: " . $e->getMessage(), 500);
-}
+// -----------------------
+// Return JSON response
+// -----------------------
+Response::success([
+    'like_count' => $like_count,
+    'user_liked' => $user_liked
+], 'Project like toggled successfully');
