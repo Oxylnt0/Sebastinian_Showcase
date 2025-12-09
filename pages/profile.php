@@ -98,3 +98,4 @@ $profileImage = !empty($user["profile_image"])
 
 <script src="../assets/js/profile.js"></script>
 <?php include 'footer.php'; ?>
+

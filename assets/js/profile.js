@@ -120,3 +120,4 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Accessibility Enhancement ----------
   profileImagePreview.addEventListener("click", () => profileImageInput.click());
 });
+
