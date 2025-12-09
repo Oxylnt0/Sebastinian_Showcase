@@ -1,17 +1,24 @@
+/* ============================
+   ULTIMATE HEADER & NAVIGATION
+   Red & Gold Theme – Modern & Responsive
+   ============================ */
+
 /* ===== Reset & Base ===== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 header {
-    background-color: #4982ec;
+    background: linear-gradient(90deg, #B22222, #FFD700); /* Red to gold gradient */
     color: white;
-    padding: 10px 20px;
+    padding: 15px 30px;
     position: relative;
     z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
 }
 
 /* ===== Navigation ===== */
@@ -24,16 +31,24 @@ nav {
 
 nav .logo a {
     color: white;
-    font-weight: bold;
-    font-size: 1.5rem;
+    font-weight: 700;
+    font-size: 1.8rem;
     text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+nav .logo a:hover {
+    transform: scale(1.05);
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
 }
 
 .nav-links {
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
+    transition: all 0.3s ease;
 }
 
 .nav-links li {
@@ -43,81 +58,88 @@ nav .logo a {
 .nav-links a {
     color: white;
     text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    position: relative;
     transition: all 0.3s ease;
 }
 
 .nav-links a:hover {
     background-color: rgba(255,255,255,0.2);
+    color: #FFD700; /* Gold highlight on hover */
 }
 
-/* ===== SDG Dropdown ===== */
-.sdg-dropdown:hover .sdg-menu,
-.sdg-dropdown.active .sdg-menu {
+/* Underline animation */
+.nav-links a::after {
+    content: '';
     display: block;
+    width: 0%;
+    height: 2px;
+    background: #FFD700;
+    transition: width 0.3s ease;
+    margin-top: 4px;
 }
 
-.sdg-menu {
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Active link indicator */
+.nav-links a.active {
+    background-color: rgba(255,255,255,0.3);
+    color: #FFD700;
+}
+
+/* ===== Mobile Menu Toggle ===== */
+.menu-toggle {
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: white;
-    color: #333;
-    min-width: 200px;
-    list-style: none;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    overflow: hidden;
-    z-index: 100;
-}
-
-.sdg-menu li a {
-    color: #333;
-    padding: 10px 15px;
-    display: block;
-    transition: background 0.2s ease;
-}
-
-.sdg-menu li a:hover {
-    background-color: #f0f0f0;
-}
-
-/* ===== Mobile ===== */
-.mobile-toggle {
-    display: none;
-    cursor: pointer;
     flex-direction: column;
-    gap: 4px;
+    cursor: pointer;
+    gap: 5px;
 }
 
-.mobile-toggle span {
-    width: 25px;
+.menu-toggle span {
+    width: 28px;
     height: 3px;
     background: white;
     border-radius: 2px;
     transition: all 0.3s ease;
 }
 
+/* Toggle animation when active */
+.menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* ===== Mobile Styles ===== */
 @media (max-width: 768px) {
     .nav-links {
         position: absolute;
-        top: 60px;
+        top: 70px;
         left: 0;
-        background-color: #4982ec;
+        background-color: #B22222;
         width: 100%;
         flex-direction: column;
         align-items: flex-start;
         gap: 0;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.3s ease;
+        transition: max-height 0.35s ease;
+        border-top: 2px solid #FFD700;
     }
 
     .nav-links.show {
         max-height: 500px;
-        padding: 10px 0;
+        padding: 15px 0;
     }
 
     .nav-links li {
@@ -126,10 +148,58 @@ nav .logo a {
 
     .nav-links a {
         width: 100%;
-        padding: 12px 20px;
+        padding: 14px 25px;
     }
 
-    .mobile-toggle {
+    .menu-toggle {
         display: flex;
+    }
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* space between logo and text */
+}
+
+.site-logo {
+    width: 40px; /* adjust as needed */
+    height: 40px; /* keep it square or adjust */
+    object-fit: contain;
+}
+
+/* ===== Optional: Shadow & Glow Effects ===== */
+.nav-links a:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+header.scrolled {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* ===== Smooth Scroll for anchor links ===== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== Optional: Prevent background scroll when menu open (add via JS) ===== */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* ===== Extra polish ===== */
+header, .nav-links a, .menu-toggle span {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Responsive Logo */
+@media (max-width: 768px) {
+    .site-logo {
+        width: 30px; /* smaller logo on mobile */
+        height: 30px;
+    }
+
+    .logo a span {
+        font-size: 1.4rem; /* adjust text size for mobile */
     }
 }

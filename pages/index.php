@@ -4,25 +4,26 @@ include("header.php"); // session + header
 
 $conn = (new Database())->connect();
 
-/* ---------------------------------------------------------
-   FETCH PROJECTS
---------------------------------------------------------- */
-
-// Featured project = most recent approved
-$sql_featured = "
-    SELECT p.*, u.full_name AS student_name
+/* ============================================================
+   FETCH FEATURED PROJECT — Most Liked Approved Project
+============================================================ */
+$featured_sql = "
+    SELECT p.*, u.full_name AS student_name, COUNT(pl.like_id) AS total_likes
     FROM projects p
     LEFT JOIN users u ON p.user_id = u.user_id
+    LEFT JOIN project_likes pl ON pl.project_id = p.project_id
     WHERE p.status = 'approved'
-    ORDER BY p.date_submitted DESC
+    GROUP BY p.project_id
+    ORDER BY total_likes DESC, p.date_submitted DESC
     LIMIT 1
 ";
-
-$featured_result = $conn->query($sql_featured);
+$featured_result = $conn->query($featured_sql);
 $featured = $featured_result ? $featured_result->fetch_assoc() : null;
 
-// Fetch all remaining approved projects excluding featured
-$sql_projects = "
+/* ============================================================
+   FETCH LATEST PROJECTS (excluding featured)
+============================================================ */
+$projects_sql = "
     SELECT p.*, u.full_name AS student_name
     FROM projects p
     LEFT JOIN users u ON p.user_id = u.user_id
@@ -30,67 +31,63 @@ $sql_projects = "
     ORDER BY p.date_submitted DESC
     LIMIT 50
 ";
-
-$projects_result = $conn->query($sql_projects);
+$projects_result = $conn->query($projects_sql);
 $projects = [];
 
 if ($projects_result) {
     while ($row = $projects_result->fetch_assoc()) {
-        // Skip the featured one
-        if ($featured && $row['project_id'] == $featured['project_id']) {
-            continue;
-        }
+        if ($featured && $row['project_id'] == $featured['project_id']) continue;
         $projects[] = $row;
     }
 }
 ?>
 
-<main class="homepage">
+<main id="home">
 
-    <!-- -----------------------------------------------------
-         HERO SECTION — MAGAZINE STYLE
-    ------------------------------------------------------ -->
+    <!-- ============================================================
+         HERO SECTION — Cinematic Intro
+    ============================================================= -->
     <section class="hero-banner">
         <div class="hero-overlay"></div>
-        <div class="hero-content">
+        <div class="hero-inner">
             <h1 class="hero-title">Sebastinian Showcase</h1>
-            <p class="hero-subtitle">
-                The official digital exhibit of outstanding student works aligned with the UN Sustainable Development Goals.
+            <p class="hero-tagline">
+                A curated digital exhibition of exceptional student works aligned with the UN Sustainable Development Goals.
             </p>
-            <a href="#projects" class="hero-btn">Explore Projects</a>
+            <a href="#projects" class="hero-cta">Explore Projects</a>
         </div>
     </section>
 
-    <!-- -----------------------------------------------------
-         FEATURED PROJECT (Editorial Layout)
-    ------------------------------------------------------ -->
+    <!-- ============================================================
+         FEATURED PROJECT — Compact Spotlight
+    ============================================================= -->
     <?php if ($featured): ?>
-    <section class="featured-section">
-        <h2 class="section-label">Featured Project</h2>
-
+    <section class="featured-wrapper">
+        <h2 class="section-heading">Featured Project</h2>
         <article class="featured-card">
 
-            <div class="featured-image">
+            <!-- IMAGE — Fixed square ratio -->
+            <div class="featured-media">
                 <?php if (!empty($featured['image'])): ?>
-                    <img src="../uploads/project_images/<?= htmlspecialchars($featured['image']) ?>"
-                         alt="<?= htmlspecialchars($featured['title']) ?>">
+                    <img
+                        src="../uploads/project_images/<?= htmlspecialchars($featured['image']) ?>"
+                        alt="<?= htmlspecialchars($featured['title']) ?>"
+                        loading="lazy"
+                    >
                 <?php else: ?>
-                    <div class="featured-placeholder">No Image Available</div>
+                    <div class="media-fallback">No Image</div>
                 <?php endif; ?>
             </div>
 
-            <div class="featured-info">
+            <!-- DETAILS — Compact, stacked below image -->
+            <div class="featured-details">
                 <h3 class="featured-title"><?= htmlspecialchars($featured['title']) ?></h3>
-
-                <p class="featured-author">
-                    By <?= htmlspecialchars($featured['student_name']) ?>
+                <p class="featured-author">By <?= htmlspecialchars($featured['student_name']) ?></p>
+                <p class="featured-summary">
+                    <?= htmlspecialchars(substr($featured['description'], 0, 200)) ?>...
                 </p>
-
-                <p class="featured-desc">
-                    <?= htmlspecialchars(substr($featured['description'], 0, 350)) ?>...
-                </p>
-
-                <a href="project.php?id=<?= $featured['project_id'] ?>" class="featured-cta">
+                <p class="featured-likes">❤️ <?= $featured['total_likes'] ?> Likes</p>
+                <a href="project.php?id=<?= $featured['project_id'] ?>" class="featured-link">
                     Read Full Project
                 </a>
             </div>
@@ -99,41 +96,37 @@ if ($projects_result) {
     </section>
     <?php endif; ?>
 
-    <!-- -----------------------------------------------------
-         PROJECT GRID — Editorial Card Layout
-    ------------------------------------------------------ -->
-    <section id="projects" class="projects-section">
-        <h2 class="section-label">Latest Contributions</h2>
+    <!-- ============================================================
+         MAIN PROJECT GRID — Compact, Uniform Cards
+    ============================================================= -->
+    <section id="projects" class="projects-gallery">
+        <h2 class="section-heading">Latest Contributions</h2>
 
-        <?php if (count($projects) > 0): ?>
-        <div class="projects-grid">
+        <?php if (!empty($projects)): ?>
+        <div class="gallery-grid">
 
-            <?php foreach ($projects as $project): ?>
+            <?php foreach ($projects as $p): ?>
             <article class="project-card">
 
-                <div class="project-image">
-                    <?php if (!empty($project['image'])): ?>
-                        <img src="../uploads/project_images/<?= htmlspecialchars($project['image']) ?>"
-                             alt="<?= htmlspecialchars($project['title']) ?>">
+                <div class="project-media">
+                    <?php if (!empty($p['image'])): ?>
+                        <img
+                            src="../uploads/project_images/<?= htmlspecialchars($p['image']) ?>"
+                            alt="<?= htmlspecialchars($p['title']) ?>"
+                            loading="lazy"
+                        >
                     <?php else: ?>
-                        <div class="img-placeholder">No Image</div>
+                        <div class="media-fallback">No Image</div>
                     <?php endif; ?>
                 </div>
 
-                <div class="project-body">
-                    <h3 class="project-title">
-                        <?= htmlspecialchars($project['title']) ?>
-                    </h3>
-
-                    <p class="project-author">
-                        By <?= htmlspecialchars($project['student_name']) ?>
-                    </p>
-
+                <div class="project-info">
+                    <h3 class="project-title"><?= htmlspecialchars($p['title']) ?></h3>
+                    <p class="project-author">By <?= htmlspecialchars($p['student_name']) ?></p>
                     <p class="project-excerpt">
-                        <?= htmlspecialchars(substr($project['description'], 0, 160)) ?>...
+                        <?= htmlspecialchars(substr($p['description'], 0, 160)) ?>...
                     </p>
-
-                    <a href="project.php?id=<?= $project['project_id'] ?>" class="project-cta">
+                    <a href="project.php?id=<?= $p['project_id'] ?>" class="project-link">
                         View Project
                     </a>
                 </div>
@@ -142,10 +135,10 @@ if ($projects_result) {
             <?php endforeach; ?>
 
         </div>
-
         <?php else: ?>
-            <p class="no-content">No projects available at the moment.</p>
+            <p class="no-projects">No approved projects available at the moment.</p>
         <?php endif; ?>
+
     </section>
 
 </main>

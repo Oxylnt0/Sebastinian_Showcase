@@ -1,31 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.createElement('div');
-    toggle.classList.add('mobile-toggle');
-    toggle.innerHTML = '<span></span><span></span><span></span>';
     const nav = document.querySelector('nav');
-    nav.insertBefore(toggle, nav.querySelector('.nav-links'));
-
     const navLinks = document.querySelector('.nav-links');
-    toggle.addEventListener('click', () => {
+    const toggle = document.querySelector('.menu-toggle');
+    const body = document.body;
+
+    // ===== Toggle Mobile Menu =====
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent immediate close
         navLinks.classList.toggle('show');
         toggle.classList.toggle('active');
+        body.classList.toggle('no-scroll'); // Prevent background scroll
     });
 
-    // Optional: Make SDG dropdown toggle on mobile click
-    const sdgDropdown = document.querySelector('.sdg-dropdown');
-    sdgDropdown.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768) {
-            e.preventDefault(); // Prevent page jump
-            sdgDropdown.classList.toggle('active');
-        }
-    });
-
-    // Close mobile menu when clicking outside
+    // ===== Close menu when clicking outside =====
     document.addEventListener('click', (e) => {
         if (!nav.contains(e.target)) {
             navLinks.classList.remove('show');
             toggle.classList.remove('active');
-            sdgDropdown.classList.remove('active');
+            body.classList.remove('no-scroll');
+        }
+    });
+
+    // ===== Close menu on link click (mobile only) =====
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                navLinks.classList.remove('show');
+                toggle.classList.remove('active');
+                body.classList.remove('no-scroll');
+            }
+        });
+    });
+
+    // ===== Add shadow on scroll =====
+    const header = document.querySelector('header');
+    const scrollShadow = () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    };
+    window.addEventListener('scroll', scrollShadow);
+    scrollShadow(); // Initialize on load
+
+    // ===== Responsive cleanup on window resize =====
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            navLinks.classList.remove('show');
+            toggle.classList.remove('active');
+            body.classList.remove('no-scroll');
         }
     });
 });

@@ -14,24 +14,29 @@ $conn = (new Database())->connect();
 <header>
     <nav>
         <div class="logo">
-            <a href="<?= $base ?>/index.php">Sebastinian Showcase</a>
+            <a href="<?= $base ?>/index.php">
+                <img src="<?= $assets ?>/img/sebastinian_showcase_logo.png" alt="Sebastinian Showcase Logo" class="site-logo">
+                <span>Sebastinian Showcase</span>
+            </a>
         </div>
         <ul class="nav-links">
             <li><a href="<?= $base ?>/index.php">Home</a></li>
             <li><a href="<?= $base ?>/about.php">About</a></li>
 
             <?php if(isset($_SESSION['user_id'])): ?>
-                <li><a href="<?= $base ?>/dashboard.php">Dashboard</a></li>
+
                 <li><a href="<?= $base ?>/profile.php">Profile</a></li>
 
                 <?php if($_SESSION['role'] === 'admin'): ?>
                     <li><a href="<?= $base ?>/admin/admin_dashboard.php">Admin</a></li>
                 <?php else: ?>
+                    <li><a href="<?= $base ?>/dashboard.php">Dashboard</a></li>
                     <li><a href="<?= $base ?>/my_projects.php">My Projects</a></li>
                     <li><a href="<?= $base ?>/upload_projects.php">Upload Project</a></li>
                 <?php endif; ?>
 
                 <li><a href="/Sebastinian_Showcase/api/auth/logout.php">Logout</a></li>
+
             <?php else: ?>
                 <li><a href="<?= $base ?>/login.php">Login</a></li>
                 <li><a href="<?= $base ?>/register.php">Register</a></li>

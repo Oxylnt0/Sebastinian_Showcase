@@ -82,9 +82,15 @@ h1, h2, h3, h4 {
     padding: 1.8rem 1.5rem;
     border-radius: 10px;
     box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
+    border-top: 4px solid #B22222; /* add red horizontal line */
 }
+
+/* Optional: Different colors for each card */
+.card.approved { border-top-color: #228B22; } /* green */
+.card.rejected { border-top-color: #B22222; } /* red */
+.card.pending { border-top-color: #DAA520; }  /* goldenrod */
+
 
 .card:hover {
     transform: translateY(-5px);

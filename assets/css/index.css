@@ -1,265 +1,378 @@
-/* ===============================
-INDEX.CSS — Sebastinian Showcase
-Elite Magazine-style University Portal
-Primary Colors: Red (#C8102E), Gold (#FFD700)
-=============================== */
-
-/* ====== RESET ====== */
+/* ============================================================
+   GLOBAL RESET & BASE STYLES
+============================================================ */
 *,
 *::before,
 *::after {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html {
-font-size: 16px;
-scroll-behavior: smooth;
+    scroll-behavior: smooth;
+    font-size: 16px;
 }
 
 body {
-font-family: 'Poppins', sans-serif;
-line-height: 1.6;
-background-color: #FAFAFA;
-color: #333333;
-overflow-x: hidden;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    background-color: #fdf7f0;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
-/* ====== CONTAINER ====== */
-.container {
-width: 90%;
-max-width: 1400px;
-margin: 0 auto;
-padding: 2rem 0;
+/* ============================================================
+   LINKS & BUTTONS
+============================================================ */
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
-/* ====== HERO SECTION ====== */
-.hero {
-text-align: center;
-padding: 6rem 2rem 4rem 2rem;
-background: linear-gradient(135deg, #C8102E 0%, #FFD700 100%);
-color: #fff;
-border-radius: 1rem;
-box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-position: relative;
-overflow: hidden;
-margin-bottom: 5rem;
+.hero-cta,
+.featured-link,
+.project-link,
+.read-more-btn {
+    display: inline-block;
+    background: #b20000; /* primary red */
+    color: #fff;
+    padding: 0.65rem 1.4rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.35s ease;
+    cursor: pointer;
+    border: none;
 }
 
-.hero::before {
-content: '';
-position: absolute;
-top: -50%;
-left: -50%;
-width: 200%;
-height: 200%;
-background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 70%);
-transform: rotate(25deg);
+.hero-cta:hover,
+.featured-link:hover,
+.project-link:hover,
+.read-more-btn:hover {
+    background: #ffcc00; /* gold */
+    color: #1a1a1a;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.hero h1 {
-font-size: 3.2rem;
-font-weight: 800;
-margin-bottom: 1rem;
-text-shadow: 2px 2px 8px rgba(0,0,0,0.25);
-line-height: 1.2;
+/* ============================================================
+   HEADER & SCROLL EFFECT
+============================================================ */
+header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(255,255,255,0.95);
+    z-index: 999;
+    transition: all 0.3s ease;
+    padding: 0.8rem 2rem;
+    box-shadow: none;
 }
 
-.hero p {
-font-size: 1.35rem;
-max-width: 850px;
-margin: 0 auto;
-line-height: 1.6;
-text-shadow: 1px 1px 5px rgba(0,0,0,0.15);
+header.scroll-shadow {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Hero highlight underline */
-.hero::after {
-content: '';
-display: block;
-width: 120px;
-height: 4px;
-background: #FFD700;
-margin: 2rem auto 0 auto;
-border-radius: 2px;
+/* ============================================================
+   HERO SECTION — Cinematic Intro
+============================================================ */
+.hero-banner {
+    position: relative;
+    height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: url('../assets/img/hero-bg.jpg') center/cover no-repeat;
+    color: #fff;
+    border-radius: 0; /* remove any curves */
+    overflow: hidden; /* ensures no parts overflow */
 }
 
-/* ====== PROJECTS GRID ====== */
-.projects-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-gap: 3rem;
-margin-bottom: 6rem;
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #B22222; /* solid red */
+    z-index: 1;
+    border-radius: 0; /* remove any curves */
+    box-shadow: none; /* remove any shadows that might appear as lines */
+}   
+
+.hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    padding: 0 1rem;
 }
 
-/* ====== PROJECT CARD ====== */
+.hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ffcc00;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    margin-bottom: 1rem;
+}
+
+.hero-tagline {
+    font-size: 1.35rem;
+    margin-bottom: 2rem;
+}
+
+.hero-cta {
+    font-size: 1.1rem;
+}
+
+/* ============================================================
+   SECTION HEADINGS
+============================================================ */
+.section-heading {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #b20000;
+    text-align: center;
+    margin: 3rem 0 2rem;
+    position: relative;
+}
+
+.section-heading::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #ffcc00;
+    margin: 0.5rem auto 0;
+    border-radius: 2px;
+}
+
+/* ============================================================
+   FEATURED PROJECT — Compact Spotlight
+============================================================ */
+.featured-wrapper {
+    max-width: 1000px;
+    margin: 0 auto 4rem;
+    padding: 0 1rem;
+}
+
+.featured-card {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.35s ease;
+}
+
+.featured-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.18);
+}
+
+.featured-media {
+    width: 100%;
+    max-width: 400px;
+    height: 220px; /* fixed height for uniformity */
+    overflow: hidden;
+    border-radius: 12px;
+    margin: 1rem auto;
+    position: relative;
+}
+
+.featured-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.featured-media img:hover {
+    transform: scale(1.05);
+}
+
+.featured-details {
+    padding: 1.5rem 2rem;
+    text-align: center;
+}
+
+.featured-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #b20000;
+}
+
+.featured-author {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.8rem;
+}
+
+.featured-summary {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.featured-link {
+    font-weight: 600;
+}
+
+/* ============================================================
+   PROJECT GRID — Clean, Uniform Thumbnails
+============================================================ */
+.projects-gallery {
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+    padding: 0 1rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
 .project-card {
-background-color: #fff;
-border-radius: 1rem;
-overflow: hidden;
-box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-display: flex;
-flex-direction: column;
-transition: transform 0.35s ease, box-shadow 0.35s ease;
-position: relative;
-}
-
-.project-card::before {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 5px;
-background: linear-gradient(90deg, #C8102E, #FFD700);
-transform: scaleX(0);
-transform-origin: left;
-transition: transform 0.4s ease;
-}
-
-.project-card:hover::before {
-transform: scaleX(1);
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.35s ease;
 }
 
 .project-card:hover {
-transform: translateY(-10px);
-box-shadow: 0 16px 36px rgba(0,0,0,0.22);
+    transform: translateY(-6px);
+    box-shadow: 0 14px 35px rgba(0,0,0,0.15);
 }
 
-/* Project Image */
-.project-card img,
-.project-card .placeholder-img {
-width: 100%;
-height: 240px;
-object-fit: cover;
-display: block;
-background-color: #f0f0f0;
-text-align: center;
-line-height: 240px;
-font-size: 1.2rem;
-color: #aaa;
-transition: transform 0.35s ease;
+.project-media {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
 }
 
-.project-card:hover img {
-transform: scale(1.05);
+.project-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
 }
 
-/* Project Content */
-.project-content {
-padding: 2rem 1.8rem;
-display: flex;
-flex-direction: column;
-flex: 1;
+.project-media img:hover {
+    transform: scale(1.08);
 }
 
-.project-content h2 {
-font-size: 1.65rem;
-font-weight: 700;
-margin-bottom: 0.6rem;
-color: #C8102E;
-line-height: 1.2;
+.project-info {
+    padding: 1rem 1.2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
-.project-content .student-name {
-font-size: 0.95rem;
-color: #666;
-margin-bottom: 0.9rem;
-font-style: italic;
+.project-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #b20000;
+    margin-bottom: 0.25rem;
 }
 
-.project-content .project-desc {
-flex-grow: 1;
-font-size: 1rem;
-color: #333;
-margin-bottom: 1.4rem;
-transition: color 0.3s ease;
+.project-author {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #777;
+    margin-bottom: 0.5rem;
 }
 
-.project-content .project-desc:hover {
-color: #C8102E;
+.project-excerpt {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 0.8rem;
+    flex-grow: 1;
 }
 
-/* View Project Button */
-.view-btn {
-text-decoration: none;
-padding: 0.75rem 1.5rem;
-background: linear-gradient(45deg, #FFD700, #C8102E);
-color: #fff;
-font-weight: 600;
-border-radius: 0.6rem;
-text-align: center;
-transition: all 0.35s ease;
-align-self: flex-start;
-box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+.read-more-btn {
+    margin-top: 0.5rem;
 }
 
-.view-btn:hover {
-background: linear-gradient(45deg, #C8102E, #FFD700);
-color: #fff;
-box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-transform: translateY(-2px);
+/* ============================================================
+   PRE-FADES & FADE-SLIDE EFFECTS
+============================================================ */
+.pre-fade-slide {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.6s ease-out;
 }
 
-/* ====== NO PROJECTS MESSAGE ====== */
-.no-projects {
-font-size: 1.25rem;
-color: #888;
-text-align: center;
-grid-column: 1 / -1;
-padding: 3rem 1rem;
-font-weight: 500;
+.fade-slide-in {
+    opacity: 1 !important;
+    transform: translateY(0px) !important;
 }
 
-/* ====== RESPONSIVE ====== */
-@media (max-width: 1024px) {
-.hero h1 { font-size: 2.8rem; }
-.hero p { font-size: 1.25rem; }
-.projects-grid { gap: 2.5rem; }
+/* ============================================================
+   BACK TO TOP BUTTON
+============================================================ */
+#back-to-top {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: #b20000;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s ease;
+    z-index: 999;
 }
 
-@media (max-width: 768px) {
-.hero h1 { font-size: 2.4rem; }
-.hero p { font-size: 1.15rem; }
-.projects-grid { gap: 2rem; }
+#back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ============================================================
+   RESPONSIVE MEDIA QUERIES
+============================================================ */
+@media (min-width: 768px) {
+    .featured-card {
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: space-between;
+    }
+
+    .featured-media {
+        width: 45%;
+        height: 250px; /* larger on desktop */
+        margin: 0;
+    }
+
+    .featured-details {
+        flex: 1;
+        padding: 2rem;
+        text-align: left;
+    }
 }
 
 @media (max-width: 480px) {
-.hero h1 { font-size: 2rem; }
-.hero p { font-size: 1rem; }
-.view-btn { width: 100%; text-align: center; }
-}
-
-/* ====== ADDITIONAL ELITE FLARES ====== /
-/ Floating card hover shimmer */
-.project-card::after {
-content: '';
-position: absolute;
-top: -50%;
-left: -50%;
-width: 200%;
-height: 200%;
-background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%);
-transform: rotate(25deg) scale(0);
-transition: transform 0.5s ease;
-pointer-events: none;
-}
-
-.project-card:hover::after {
-transform: rotate(25deg) scale(1);
-}
-
-/* Smooth fade-in animation */
-.fade-in {
-opacity: 0;
-transform: translateY(20px);
-animation: fadeInUp 0.8s forwards;
-}
-
-@keyframes fadeInUp {
-to {
-opacity: 1;
-transform: translateY(0);
-}
+    .hero-title { font-size: 2rem; }
+    .section-heading { font-size: 1.6rem; }
+    .project-title { font-size: 1rem; }
+    .featured-title { font-size: 1.4rem; }
+    .featured-summary { font-size: 0.9rem; }
 }

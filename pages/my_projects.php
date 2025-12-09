@@ -34,7 +34,7 @@ while ($row = $result->fetch_assoc()) {
 <div class="my-projects-container">
     <h1>My Projects</h1>
     <?php if (count($projects) === 0): ?>
-        <p class="no-projects">You haven't submitted any projects yet. <a href="project.php">Submit a new project</a>.</p>
+        <p class="no-projects">You haven't submitted any projects yet. <a href="upload_projects.php">Submit a new project</a>.</p>
     <?php else: ?>
         <div class="project-list">
             <?php foreach ($projects as $proj): ?>
