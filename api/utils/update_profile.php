@@ -1,4 +1,5 @@
 <?php
+// api/utils/update_profile.php
 session_start();
 
 // --- Enable error reporting for development (disable in production) ---
