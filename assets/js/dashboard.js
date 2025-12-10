@@ -1,28 +1,63 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // =========================================================
-    // 0. SINGLETON LOCK & UTILITIES
-    // =========================================================
-    // Prevents the script from running multiple times if loaded twice
-    if (window.dashboardLoaded) return; 
-    window.dashboardLoaded = true;
 
-    const dashboardWrapper = document.querySelector('.dashboard-wrapper');
-    const heroPanel = document.querySelector('.dashboard-hero-panel');
-    const statsGrid = document.querySelector('.stats-grid');
-    const recentList = document.querySelector('.recent-list');
+    // =========================================================
+    // 0. SINGLETON LOCK & GLOBAL CONFIG
+    // =========================================================
+    if (window.adminDashboardLoaded) return; 
+    window.adminDashboardLoaded = true;
+
+    // Elements
+    const API_BASE = '../../api/admin/';
+    const feedbackToast = document.getElementById('dashboardFeedback');
+    const csrfToken = document.getElementById('csrfToken')?.value || 'missing'; // Assuming token is available somewhere
     
+    // Tab Elements
+    const tabs = document.querySelectorAll(".tab-btn");
+    const panes = document.querySelectorAll(".tab-pane");
+
+    // Containers for dynamic content
+    const adminsContainer = document.getElementById("admins-container");
+    const projectsContainer = document.getElementById("projects-container");
+    const addAdminForm = document.getElementById("addAdminForm");
+
+    let projectSearchTimeout = null;
+    
+    // --- Utility Functions ---
+    const showFeedback = (msg, type = "error") => {
+        if (!feedbackToast) return;
+        feedbackToast.textContent = msg;
+        feedbackToast.className = `feedback ${type}`;
+        feedbackToast.style.opacity = 1;
+        feedbackToast.style.transform = "translateY(0)";
+        feedbackToast.style.pointerEvents = "auto";
+        setTimeout(() => {
+            feedbackToast.style.opacity = 0;
+            feedbackToast.style.transform = "translateY(-20px)";
+            feedbackToast.style.pointerEvents = "none";
+        }, 4000);
+    };
+
+    const startLoading = (container) => {
+        container.innerHTML = `<div class="loading-state-overlay"><div class="sebastinian-loader"></div><p>Loading data...</p></div>`;
+        container.classList.add('loading');
+    };
+
+    const stopLoading = (container) => {
+        container.classList.remove('loading');
+    };
+
     // =========================================================
-    // 1. CINEMATIC COUNTER (Animated Stat Cards)
+    // 1. CINEMATIC NUMBERS & TILT (Dashboard Tab)
     // =========================================================
+    
     const animateCounters = () => {
-        const counters = document.querySelectorAll('.stat-data .counter');
-        const speed = 1500; // Duration in ms
+        const counters = document.querySelectorAll('.stat-card .counter');
+        const speed = 1500;
 
         counters.forEach(counter => {
             const target = +counter.innerText;
             const start = 0;
-            const increment = target / (speed / 16); 
+            const increment = target / (speed / 16);
 
             let current = start;
             const updateCount = () => {
@@ -34,129 +69,289 @@ document.addEventListener("DOMContentLoaded", () => {
                     counter.innerText = target;
                 }
             };
-            // Start the count animation
             updateCount();
         });
     };
     
-    // =========================================================
-    // 2. PARALLAX AND TILT ENGINE
-    // =========================================================
+    // Observer for stats animation on scroll visibility
+    const statsGrid = document.querySelector('.stats-overview-grid');
+    if (statsGrid) {
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        counterObserver.observe(statsGrid);
+    }
     
-    // A. Init 3D Tilt Library
+    // Init 3D Tilt
     if (typeof VanillaTilt !== "undefined") {
         VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
-            max: 5,
-            speed: 1000,
-            scale: 1.02,
-            glare: true,
-            "max-glare": 0.1,
+            max: 5, speed: 1000, scale: 1.01, glare: true, "max-glare": 0.1,
         });
     }
 
-    // B. Floating Orb Parallax
-    document.addEventListener('mousemove', (e) => {
-        const orbs = document.querySelectorAll('.gold-orb');
-        const x = (window.innerWidth - e.pageX * 2) / 100;
-        const y = (window.innerHeight - e.pageY * 2) / 100;
+    // =========================================================
+    // 2. TABS SWITCHING & SPA MANAGEMENT
+    // =========================================================
 
-        orbs.forEach((orb, index) => {
-            const speed = index === 0 ? 1 : -1; // Opposite directions
-            orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            panes.forEach(p => p.classList.remove("active"));
+
+            tab.classList.add("active");
+            const activePane = document.getElementById(tab.dataset.tab);
+            activePane.classList.add("active");
+            
+            const tabName = tab.dataset.tab;
+            if (tabName === "manage-admins") loadAdmins();
+            if (tabName === "projects") loadProjects();
         });
     });
-
-    // C. Holographic Mouse Trail (Glow effect on the main panel)
-    if (heroPanel) {
-        heroPanel.addEventListener('mousemove', (e) => {
-            const rect = heroPanel.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            // Apply a subtle radial background that follows the mouse
-            heroPanel.style.background = `
-                radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85) 40%)
-            `;
-            heroPanel.style.transition = 'none'; // Prevent interpolation on background for smooth movement
-        });
-        
-        heroPanel.addEventListener('mouseleave', () => {
-             // Reset background to pure glass (smooth fade back)
-            heroPanel.style.transition = 'background 0.5s ease';
-            heroPanel.style.background = `rgba(255, 255, 255, 0.85)`; 
-        });
-    }
-
-
+    
     // =========================================================
-    // 3. WAYPOINT ANIMATIONS (Scroll Reveal)
+    // 3. ADMIN MANAGEMENT TAB LOGIC
     // =========================================================
     
-    const animateSection = (entry, observer) => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+    // --- 3.1 Fetch & Render Admins ---
+    const loadAdmins = async () => {
+        if (!adminsContainer) return;
+        startLoading(adminsContainer);
 
-            // Stagger items if it's the recent list
-            if (entry.target.classList.contains('recent-list')) {
-                const items = entry.target.querySelectorAll('.recent-item');
-                items.forEach((item, index) => {
-                    item.style.animationDelay = `${0.1 + index * 0.1}s`;
-                    item.classList.add('animate-in');
-                });
-            }
-            
-            // Start the counter animation once the stat grid is visible
-            if (entry.target.classList.contains('stats-grid')) {
-                animateCounters();
-            }
+        try {
+            const res = await fetch(`${API_BASE}get_admins.php`);
+            const data = await res.json();
+            stopLoading(adminsContainer);
+            if (data.status !== "success") throw new Error(data.message);
 
-            observer.unobserve(entry.target);
+            let html = `
+                <table class="responsive-table admin-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminsTableBody">`; 
+            data.data.forEach(admin => {
+                html += `
+                    <tr data-user-id="${admin.user_id}">
+                        <td><i class="fas fa-user-shield text-gold"></i> ${admin.username}</td>
+                        <td>${admin.email}</td>
+                        <td>${admin.full_name}</td>
+                        <td>${new Date(admin.date_created).toLocaleDateString()}</td>
+                        <td class="actions-cell">
+                            <button class="action-btn delete-admin-btn" data-user-id="${admin.user_id}" title="Delete Admin"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            html += `</tbody></table>`;
+            adminsContainer.innerHTML = html;
+
+        } catch (err) {
+            stopLoading(adminsContainer);
+            adminsContainer.innerHTML = `<p class="error-message">Error fetching admins: ${err.message}</p>`;
         }
     };
 
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => animateSection(entry, observer));
-    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+    // --- 3.2 Delegate Admin Actions (Delete) ---
+    if (adminsContainer) {
+        adminsContainer.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".delete-admin-btn");
+            if (!btn) return;
 
+            const row = btn.closest("tr");
+            const userId = btn.dataset.userId;
 
-    // Apply animation classes and observe targets
-    if (statsGrid) {
-        statsGrid.classList.add('animate-up');
-        observer.observe(statsGrid);
-    }
-    if (recentList) {
-        recentList.classList.add('animate-up');
-        recentList.querySelectorAll('.recent-item').forEach(item => {
-            item.classList.add('animate-up'); // Add entrance animation class to items
+            if (!confirm(`CONFIRM: Permanently delete admin user ${row.querySelector('td').textContent.trim()}?`)) return;
+
+            try {
+                row.style.opacity = 0.5;
+                const res = await fetch(`${API_BASE}delete_admin.php`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId, csrf_token: csrfToken })
+                });
+                const data = await res.json();
+                if (data.status !== "success") throw new Error(data.message);
+
+                row.style.transform = 'scale(0.9)';
+                setTimeout(() => row.remove(), 300); 
+                showFeedback("Admin deleted successfully", "success");
+            } catch (err) {
+                row.style.opacity = 1;
+                showFeedback(err.message, "error");
+            }
         });
-        observer.observe(recentList);
+    }
+    
+    // --- 3.3 Add Admin Form Submission ---
+    if (addAdminForm) {
+        addAdminForm.addEventListener("submit", async e => {
+            e.preventDefault();
+            const formData = Object.fromEntries(new FormData(addAdminForm).entries());
+
+            if (formData.password !== formData.confirm_password) {
+                showFeedback("Passwords do not match", "error");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}add_admin.php`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...formData, csrf_token: csrfToken })
+                });
+                const data = await res.json();
+                if (data.status !== "success") throw new Error(data.message);
+
+                addAdminForm.reset();
+                loadAdmins();
+                showFeedback("Admin added successfully", "success");
+            } catch (err) {
+                showFeedback(err.message, "error");
+            }
+        });
     }
 
-    // Append CSS for Waypoint Animations (required since it's JS-driven)
-    const styleSheet = document.createElement("style");
-    styleSheet.innerText = `
-        /* Base hidden state */
-        .animate-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    // =========================================================
+    // 4. PROJECT MANAGEMENT TAB LOGIC
+    // =========================================================
+
+    // --- 4.1 Fetch & Render Projects ---
+    const loadProjects = async (search = "") => {
+        if (!projectsContainer) return;
+        startLoading(projectsContainer);
+
+        try {
+            let url = `${API_BASE}search_projects.php`;
+            if (search) url += `?query=${encodeURIComponent(search)}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+            stopLoading(projectsContainer);
+            if (data.status !== "success") throw new Error(data.message);
+
+            const projects = data.data.projects;
+            
+            if (!projects.length) {
+                projectsContainer.innerHTML = `<p class="empty-state">No projects found.</p>`;
+                return;
+            }
+
+            let html = `<table class="responsive-table projects-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Student</th>
+                            <th>Status</th>
+                            <th>Date Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectsTableBody">`;
+            projects.forEach(proj => {
+                const statusClass = proj.status.toLowerCase();
+                html += `
+                    <tr data-project-id="${proj.project_id}" data-user-id="${proj.user_id}">
+                        <td><a href="../project.php?id=${proj.project_id}" target="_blank">${proj.title}</a></td>
+                        <td><span class="view-student">${proj.student_name}</span></td>
+                        <td class="status-cell">
+                            <span class="status-pill ${statusClass}">
+                                ${proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>${new Date(proj.date_submitted).toLocaleDateString()}</td>
+                        <td class="actions-cell">
+                            ${statusClass === "pending" ? 
+                                `<button class="action-btn approve-btn" data-status="approved" title="Approve"><i class="fas fa-check"></i></button>
+                                 <button class="action-btn reject-btn" data-status="rejected" title="Reject"><i class="fas fa-times"></i></button>` : ""}
+                            <button class="action-btn delete-project-btn" title="Delete" data-project-id="${proj.project_id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            html += `</tbody></table>`;
+            projectsContainer.innerHTML = html;
+
+        } catch (err) {
+            stopLoading(projectsContainer);
+            projectsContainer.innerHTML = `<p class="error-message">Error loading projects: ${err.message}</p>`;
         }
-        /* Visible state */
-        .animate-up.visible {
-            opacity: 1;
-            transform: translateY(0);
+    };
+
+    // --- 4.2 Status Update & Delete Delegation ---
+    if (projectsContainer) {
+        projectsContainer.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".approve-btn, .reject-btn, .delete-project-btn");
+            if (!btn) return;
+            
+            const row = btn.closest("tr");
+            const projectId = btn.dataset.projectId || row.dataset.projectId;
+            
+            let url = '';
+            let body = { project_id: projectId, csrf_token: csrfToken };
+            let actionType = '';
+            
+            if (btn.classList.contains('delete-project-btn')) {
+                if (!confirm(`CONFIRM: Permanently delete project ${projectId}?`)) return;
+                url = `${API_BASE}delete_project.php`;
+                actionType = 'delete';
+            } else {
+                url = `${API_BASE}update_project_status.php`;
+                body.status = btn.dataset.status;
+                actionType = btn.dataset.status;
+            }
+
+            try {
+                row.style.opacity = 0.5;
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                
+                if (data.status !== "success") throw new Error(data.message);
+
+                if (actionType === 'delete') {
+                    row.style.transform = 'scale(0.9)';
+                    setTimeout(() => row.remove(), 300); 
+                } else {
+                    // Update Status Pill
+                    const statusPill = row.querySelector(".status-pill");
+                    if (statusPill) {
+                        statusPill.textContent = actionType.charAt(0).toUpperCase() + actionType.slice(1);
+                        statusPill.className = `status-pill ${actionType}`;
+                    }
+                    // Remove action buttons if status is no longer pending
+                    if (actionType !== 'pending') {
+                         row.querySelector('.actions-cell').innerHTML = `<a href="../project.php?id=${projectId}" target="_blank" class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></a> <button class="action-btn delete-project-btn" title="Delete"><i class="fas fa-trash"></i></button>`;
+                    }
+                }
+                
+                showFeedback(`Project status updated.`, "success");
+
+            } catch (err) {
+                showFeedback(err.message, "error");
+            } finally {
+                 row.style.opacity = 1;
+            }
+        });
+
+        // Search input with debouncing
+        const projectsSearchInput = document.getElementById("projectsSearch");
+        if (projectsSearchInput) {
+            projectsSearchInput.addEventListener("input", () => {
+                clearTimeout(projectSearchTimeout);
+                projectSearchTimeout = setTimeout(() => loadProjects(projectsSearchInput.value.trim()), 400);
+            });
         }
-        /* Staggered item entrance */
-        .recent-item.animate-up {
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-            animation-fill-mode: both;
-        }
-        .recent-item.animate-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    `;
-    document.head.appendChild(styleSheet);
+    }
 });
