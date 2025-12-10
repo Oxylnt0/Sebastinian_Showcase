@@ -1,187 +1,420 @@
-/* Reset & Base */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
+/* =========================================
+   Sebastinian Portfolio - GOD MODE THEME
+   Concept: "Academic Luxury"
+   Tech: CSS Grid, Glassmorphism 2.0, 3D Transforms
+========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* --- HSL Color System (For dynamic opacity) --- */
+    --hsl-red: 355, 84%, 35%;      /* #A30E18 */
+    --hsl-gold: 46, 65%, 52%;      /* #D4AF37 */
+    --hsl-dark: 210, 24%, 16%;     /* #1F2933 */
+    --hsl-light: 210, 20%, 98%;    /* #F5F7FA */
+
+    --clr-red: hsl(var(--hsl-red));
+    --clr-gold: hsl(var(--hsl-gold));
+    --clr-dark: hsl(var(--hsl-dark));
+    --clr-text: #52606D;
+    
+    /* --- Status Indicators --- */
+    --status-approved-bg: #E3F9E5;
+    --status-approved-text: #137333;
+    --status-pending-bg: #FFF4E5;
+    --status-pending-text: #B76E00;
+    --status-rejected-bg: #FCE8E6;
+    --status-rejected-text: #C5221F;
+
+    /* --- Physics & Depth --- */
+    --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --glass-surface: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-highlight: rgba(255, 255, 255, 0.9);
+    --glass-blur: blur(24px);
+
+    --shadow-1: 0 2px 10px rgba(0,0,0,0.03);
+    --shadow-2: 0 15px 40px rgba(0,0,0,0.08);
+    --shadow-3: 0 30px 60px rgba(163, 14, 24, 0.15); /* Red tinted shadow */
+    --shadow-gold: 0 10px 30px rgba(212, 175, 55, 0.3);
 }
+
+/* =========================================
+   1. THE NUCLEAR LAYOUT ENGINE
+   (Zero-Shift Footer Guarantee)
+========================================= */
+html { height: 100%; scroll-behavior: smooth; }
 
 body {
-    background-color: #f8f8f8;
-    color: #333;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-.my-projects-container {
-    max-width: 1200px;
-    margin: 50px auto;
-    padding: 0 20px;
-}
-
-.my-projects-container h1 {
-    color: #b71c1c; /* Deep Red */
-    text-align: center;
-    margin-bottom: 40px;
-    font-size: 2.5rem;
-    font-weight: bold;
-}
-
-/* No projects message */
-.no-projects {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #666;
-}
-
-.no-projects a {
-    color: #d4af37; /* Gold */
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-.no-projects a:hover {
-    color: #bfa028;
-}
-
-/* Project List */
-.project-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
+    grid-template-rows: auto 1fr auto; /* Header, Content, Footer */
+    min-height: 100vh;
+    margin: 0;
+    background-color: #F8F9FB;
+    color: var(--clr-dark);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    /* Subtly textured background */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(163, 14, 24, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
 }
 
-/* Project Card */
-.project-card {
-    background-color: #fff;
-    border-radius: 12px;
+.portfolio-wrapper {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    padding-bottom: 120px; /* Luxury spacing above footer */
+}
+
+footer { position: relative !important; z-index: 50; width: 100%; }
+
+/* =========================================
+   2. LUXURY HERO SECTION
+   (Parallax & Gradient Text)
+========================================= */
+.portfolio-hero {
+    position: relative;
+    padding: 160px 20px 100px;
+    text-align: center;
     overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    display: flex;
-    flex-direction: column;
+}
+
+/* Floating Orbs */
+.luxury-layer {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+}
+.gold-orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.4;
+    animation: float 20s infinite alternate ease-in-out;
+}
+.orb-top { top: -10%; right: -5%; width: 600px; height: 600px; background: var(--clr-gold); }
+.orb-bottom { bottom: -10%; left: -5%; width: 500px; height: 500px; background: var(--clr-red); animation-delay: -5s; }
+
+.eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--clr-red);
+    background: rgba(163, 14, 24, 0.08);
+    padding: 10px 20px; border-radius: 100px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(163, 14, 24, 0.1);
+    box-shadow: 0 4px 15px rgba(163, 14, 24, 0.05);
+}
+
+.portfolio-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5rem); /* Responsive Fluid Type */
+    line-height: 1.1; margin-bottom: 20px;
+    color: var(--clr-dark);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--clr-red) 0%, #C41E3A 50%, var(--clr-gold) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    position: relative; display: inline-block;
+}
+
+.portfolio-hero p {
+    font-size: 1.2rem; color: var(--clr-text); max-width: 600px; margin: 0 auto 60px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   3. STATS DASHBOARD (Glass Cards)
+========================================= */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+    max-width: 1000px; margin: 0 auto;
+    perspective: 1000px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.8);
+    padding: 30px; border-radius: 20px;
+    display: flex; align-items: center; gap: 20px;
+    transition: transform 0.4s var(--ease-elastic), box-shadow 0.4s ease;
+    box-shadow: var(--shadow-1);
+}
+
+.stat-card:hover {
+    transform: translateY(-10px) rotateX(2deg);
+    box-shadow: var(--shadow-2);
+    background: rgba(255,255,255,0.8);
+}
+
+.stat-icon {
+    width: 60px; height: 60px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    background: white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Stat Variants */
+.stat-card .stat-icon { color: var(--clr-dark); }
+.stat-card.success .stat-icon { color: #137333; background: #E3F9E5; }
+.stat-card.warning .stat-icon { color: #B76E00; background: #FFF4E5; }
+
+.stat-info h3 { font-size: 2.5rem; font-weight: 700; margin: 0; line-height: 1; color: var(--clr-dark); }
+.stat-info span { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--clr-text); font-weight: 600; }
+
+/* =========================================
+   4. CONTROL CENTER (Floating HUD)
+========================================= */
+.control-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(20px);
+    padding: 15px; border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: var(--shadow-2);
+    margin: 0 auto 60px;
+    position: sticky; top: 120px; z-index: 40;
+    max-width: 1100px;
+    transition: transform 0.3s ease;
+}
+
+/* Search Input */
+.search-wrapper { position: relative; flex: 1; max-width: 350px; }
+.search-wrapper i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #999; }
+.search-wrapper input {
+    width: 100%; padding: 14px 20px 14px 50px;
+    border: 2px solid transparent; border-radius: 50px;
+    background: #F0F2F5; font-family: inherit; font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+.search-wrapper input:focus {
+    background: white; border-color: var(--clr-gold);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1); outline: none;
+}
+
+/* Filter Pills */
+.filter-group {
+    display: flex; gap: 8px; background: #F0F2F5;
+    padding: 5px; border-radius: 50px;
+}
+.filter-btn {
+    border: none; background: transparent;
+    padding: 10px 24px; border-radius: 40px;
+    font-weight: 600; color: var(--clr-text); font-size: 0.9rem;
+    cursor: pointer; transition: all 0.3s var(--ease-smooth);
+}
+.filter-btn:hover { color: var(--clr-dark); }
+.filter-btn.active {
+    background: white; color: var(--clr-red);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Add Button */
+.btn-new-project {
+    background: linear-gradient(135deg, var(--clr-gold), #B08D26);
+    color: white; text-decoration: none;
+    padding: 14px 30px; border-radius: 50px;
+    font-weight: 700; letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-gold);
+    transition: all 0.3s ease;
+}
+.btn-new-project:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4); }
+
+/* =========================================
+   5. PROJECT CARD (The Main Event)
+========================================= */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-1);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    display: flex; flex-direction: column;
+    /* Entrance Animation */
+    opacity: 0; animation: fadeUp 0.8s forwards;
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-3);
+    z-index: 10;
 }
 
-.project-card img, .project-card .placeholder-img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    background-color: #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-    font-size: 1.2rem;
-    font-weight: bold;
+/* Stagger Animations */
+.project-card:nth-child(1) { animation-delay: 0.1s; }
+.project-card:nth-child(2) { animation-delay: 0.2s; }
+.project-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* --- Card Image Area --- */
+.card-media {
+    position: relative; height: 240px; overflow: hidden;
+    background: #eee;
+}
+.card-media img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.8s ease;
+}
+.project-card:hover .card-media img { transform: scale(1.15); }
+
+/* Overlay & View Button */
+.card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.1));
+    opacity: 0; transition: opacity 0.4s ease;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(3px);
+}
+.project-card:hover .card-overlay { opacity: 1; }
+
+.btn-view {
+    padding: 12px 32px; background: white; color: var(--clr-dark);
+    text-decoration: none; font-weight: 700; border-radius: 50px;
+    transform: translateY(30px); opacity: 0;
+    transition: all 0.4s var(--ease-elastic);
+}
+.project-card:hover .btn-view { transform: translateY(0); opacity: 1; }
+
+/* Status Badges */
+.status-badge {
+    position: absolute; top: 15px; left: 15px;
+    padding: 6px 14px; border-radius: 8px;
+    font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: white; color: var(--clr-dark); /* Default */
+}
+.status-badge.approved { background: var(--status-approved-bg); color: var(--status-approved-text); }
+.status-badge.pending { background: var(--status-pending-bg); color: var(--status-pending-text); }
+.status-badge.rejected { background: var(--status-rejected-bg); color: var(--status-rejected-text); }
+
+/* Placeholder Art */
+.placeholder-art {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(45deg, #F0F2F5, #E1E4E8); color: #B0B3B8; font-size: 4rem;
 }
 
-.project-info {
-    padding: 20px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+/* --- Card Content Area --- */
+.card-content { padding: 30px; flex: 1; display: flex; flex-direction: column; }
+
+.card-meta {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+}
+.date { font-size: 0.85rem; color: #999; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+
+.sdg-pill {
+    font-size: 0.75rem; font-weight: 700; color: var(--clr-gold);
+    background: rgba(212, 175, 55, 0.1); padding: 4px 10px; border-radius: 6px;
 }
 
-.project-info h3 {
-    font-size: 1.5rem;
-    color: #b71c1c; /* Deep Red */
-    margin-bottom: 10px;
+.card-title { margin: 0 0 10px; line-height: 1.3; }
+.card-title a {
+    font-family: var(--font-heading); font-size: 1.6rem; color: var(--clr-dark);
+    text-decoration: none; transition: color 0.3s ease;
+    background: linear-gradient(to right, var(--clr-dark), var(--clr-dark)), 
+                linear-gradient(to right, var(--clr-red), var(--clr-gold));
+    background-size: 100% 2px, 0 2px;
+    background-position: 100% 100%, 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s;
+}
+.card-title a:hover { background-size: 0 2px, 100% 2px; color: var(--clr-red); }
+
+.card-excerpt {
+    font-size: 0.95rem; line-height: 1.7; color: var(--clr-text);
+    margin-bottom: 25px; flex: 1;
 }
 
-.project-info p {
-    font-size: 0.95rem;
-    color: #555;
-    margin-bottom: 15px;
-    line-height: 1.4;
+/* --- Footer Actions --- */
+.card-footer {
+    padding-top: 20px; border-top: 1px solid #f0f0f0;
+    display: flex; justify-content: space-between; align-items: center;
 }
 
-/* SDG Tag */
-.sdg-tag {
-    display: inline-block;
-    background-color: #d4af37; /* Gold */
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    transition: background-color 0.3s;
+.action-link.download {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #F7F9FC; color: var(--clr-dark);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+}
+.action-link.download:hover { background: var(--clr-gold); color: white; transform: rotate(-15deg); }
+
+.footer-actions { display: flex; gap: 10px; }
+.action-btn {
+    width: 36px; height: 36px; border-radius: 8px; border: none; background: transparent;
+    color: #A0AEC0; cursor: pointer; transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.action-btn.edit:hover { background: #E2E8F0; color: var(--clr-dark); }
+.action-btn.delete:hover { background: var(--status-rejected-bg); color: var(--status-rejected-text); }
+
+/* =========================================
+   6. EMPTY STATE (Artistic)
+========================================= */
+.empty-state-card {
+    grid-column: 1 / -1;
+    text-align: center; padding: 100px 20px;
+    background: white; border-radius: 30px;
+    box-shadow: var(--shadow-soft); border: 2px dashed rgba(212, 175, 55, 0.3);
+}
+.empty-icon {
+    width: 120px; height: 120px; margin: 0 auto 30px;
+    background: linear-gradient(135deg, #FFF9E6, #FFF);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; color: var(--clr-gold);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+}
+.empty-state-card h2 {
+    font-family: var(--font-heading); font-size: 2.5rem; color: var(--clr-dark); margin-bottom: 10px;
+}
+.btn-gold-3d {
+    display: inline-block; padding: 16px 40px; margin-top: 30px;
+    background: linear-gradient(135deg, var(--clr-gold), #B08D26);
+    color: white; text-decoration: none; border-radius: 50px; font-weight: 700;
+    position: relative; overflow: hidden; transition: transform 0.3s ease;
+    box-shadow: var(--shadow-gold);
+}
+.btn-gold-3d:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4); }
+
+/* =========================================
+   7. ANIMATIONS
+========================================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(40px, -40px); }
 }
 
-.sdg-tag:hover {
-    background-color: #bfa028;
+/* =========================================
+   8. RESPONSIVE MAGIC
+========================================= */
+@media (max-width: 992px) {
+    .control-bar { flex-direction: column; align-items: stretch; border-radius: 20px; padding: 25px; }
+    .search-wrapper { max-width: 100%; }
+    .filter-group { justify-content: center; flex-wrap: wrap; }
+    .btn-new-project { justify-content: center; }
 }
 
-/* Status Labels */
-.status {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    color: #fff;
-}
-
-.status.pending {
-    background-color: #fbc02d; /* Amber/Gold */
-}
-
-.status.approved {
-    background-color: #388e3c; /* Green */
-}
-
-.status.rejected {
-    background-color: #d32f2f; /* Red */
-}
-
-/* Buttons */
-.project-actions {
-    margin-top: auto;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.gold-btn {
-    background-color: #d4af37;
-    color: #fff;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    text-align: center;
-    transition: background-color 0.3s;
-}
-
-.gold-btn:hover {
-    background-color: #bfa028;
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
-    .project-list {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .my-projects-container h1 {
-        font-size: 2rem;
-    }
-
-    .project-info h3 {
-        font-size: 1.2rem;
-    }
+    .portfolio-hero { padding-top: 120px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .stat-card { flex-direction: column; text-align: center; }
 }

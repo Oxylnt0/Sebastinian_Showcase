@@ -1,6 +1,6 @@
 <?php
 // ===============================================
-// admin_students.php - Sebastinian Showcase Admin Panel
+// pages/admin/admin_students.php - Sebastinian Showcase Admin Panel
 // ===============================================
 
 session_start();

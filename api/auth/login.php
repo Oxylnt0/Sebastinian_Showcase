@@ -1,4 +1,5 @@
 <?php
+// api/auth/login.php
 require_once("../config/db.php");
 require_once("../utils/response.php");
 require_once("../utils/validation.php");

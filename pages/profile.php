@@ -1,4 +1,5 @@
 <?php
+// pages/profile.php
 session_start();
 require_once("../api/config/db.php");
 require_once("../api/utils/response.php");
@@ -28,10 +29,18 @@ if ($result->num_rows !== 1) {
 
 $user = $result->fetch_assoc();
 
-// Fallback profile image
-$profileImage = !empty($user["profile_image"]) 
-    ? "../uploads/profile_images/" . htmlspecialchars($user["profile_image"])
-    : "../uploads/profile_images/default.png";
+// --- IMAGE LOGIC FIX ---
+// 1. Define the directory path relative to this file
+$uploadDir = "../uploads/profile_images/";
+$imageFromDb = $user["profile_image"];
+
+// 2. Check if DB has value AND if file physically exists
+if (!empty($imageFromDb) && file_exists($uploadDir . $imageFromDb)) {
+    $profileImage = $uploadDir . htmlspecialchars($imageFromDb);
+} else {
+    // 3. Fallback to default if empty or missing
+    $profileImage = $uploadDir . "default.png";
+}
 ?>
 
 <?php include 'header.php'; ?>
@@ -42,10 +51,12 @@ $profileImage = !empty($user["profile_image"])
     </div>
 
     <div class="profile-card">
-        <!-- LEFT: PROFILE IMAGE -->
         <div class="profile-photo-section">
             <div class="photo-frame">
-                <img id="profileImagePreview" src="<?php echo $profileImage; ?>" alt="Profile Image">
+                <img id="profileImagePreview" 
+                     src="<?php echo $profileImage; ?>" 
+                     alt="Profile Image"
+                     onerror="this.onerror=null;this.src='../uploads/profile_images/default.png';">
             </div>
 
             <label class="upload-btn" for="profileImage">Change Photo</label>
@@ -53,7 +64,6 @@ $profileImage = !empty($user["profile_image"])
             <small class="photo-guidelines">JPG, PNG — Max 3MB</small>
         </div>
 
-        <!-- RIGHT: USER INFO -->
         <div class="profile-info-section">
             <form id="profileForm" autocomplete="off">
                 <div class="form-group">
@@ -98,4 +108,3 @@ $profileImage = !empty($user["profile_image"])
 
 <script src="../assets/js/profile.js"></script>
 <?php include 'footer.php'; ?>
-

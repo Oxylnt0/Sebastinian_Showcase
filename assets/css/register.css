@@ -1,163 +1,303 @@
-/* ============================= */
-/*         GLOBAL RESET          */
-/* ============================= */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
+/* =========================================
+   Sebastinian Showcase - Ultimate Register CSS
+   Theme: Deep Red & Metallic Gold
+========================================= */
+
+:root {
+    /* --- Brand Palette --- */
+    --primary-red: #800000;      /* Sebastinian Red */
+    --primary-red-dark: #5c0000;
+    
+    --primary-gold: #D4AF37;     /* Metallic Gold */
+    --primary-gold-hover: #C5A028;
+
+    --text-dark: #2C3E50;        /* Deep Charcoal */
+    --text-muted: #7F8C8D;       /* Soft Gray */
+    
+    --bg-body: #F4F6F8;          /* Light contrast background */
+    --bg-surface: #FFFFFF;       /* Pure White */
+
+    --error-color: #E74C3C;
+    --success-color: #27AE60;
+
+    /* --- Dimensions --- */
+    --input-height: 50px;
+    --radius-lg: 12px;
 }
 
-body {
-    background: #f7f5f3;
-    color: #333;
-}
+/* Base Reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ============================= */
-/*      REGISTER CONTAINER       */
-/* ============================= */
-.register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+body { 
+    font-family: 'Poppins', sans-serif; 
+    background-color: var(--bg-body); 
+    color: var(--text-dark); 
+    
+    /* 1. FLEX COLUMN LAYOUT (Push Header/Footer apart) */
     min-height: 100vh;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* ============================= */
-/*         REGISTER BOX          */
-/* ============================= */
-.register-box {
-    background: #fff;
-    border-radius: 15px;
-    padding: 40px 30px;
+/* =========================================
+   1. Layout Containers
+========================================= */
+.register-container {
+    /* 2. FILL AVAILABLE SPACE */
+    flex: 1; 
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* 3. HUGE BREATHING ROOM */
+    padding: 80px 20px; 
+    
+    position: relative;
+    z-index: 1;
+}
+
+.register-wrapper {
+    display: flex;
     width: 100%;
-    max-width: 450px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    max-width: 1000px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* =========================================
+   2. Left Side: Branding (Red)
+========================================= */
+.register-intro {
+    flex: 0 0 40%;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+    color: #fff;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 
-.register-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+/* Texture Overlay */
+.register-intro::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 60%);
+    pointer-events: none;
 }
 
-.register-box h1 {
-    color: #B22222;
+.intro-logo {
+    width: 110px;
+    height: auto;
+    margin-bottom: 25px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+.register-intro h1 {
     font-size: 2rem;
-    margin-bottom: 10px;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-bottom: 15px;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.register-box p {
-    color: #555;
-    font-size: 0.95rem;
-    margin-bottom: 30px;
+.register-intro p {
+    font-size: 1rem;
+    opacity: 0.95;
+    line-height: 1.6;
 }
 
-/* ============================= */
-/*         FORM ELEMENTS         */
-/* ============================= */
-.form-group {
-    text-align: left;
-    margin-bottom: 20px;
+/* =========================================
+   3. Right Side: Form (White)
+========================================= */
+.register-form-box {
+    flex: 1;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
+
+.form-header { text-align: center; margin-bottom: 30px; }
+.form-header h2 { font-size: 1.8rem; color: var(--primary-red); margin-bottom: 5px; font-weight: 700; }
+.subtitle { color: var(--text-muted); font-size: 0.95rem; }
+
+/* =========================================
+   4. Input Styling (LOCKED STABILITY FIX)
+========================================= */
+.form-group { margin-bottom: 20px; }
+.form-row { display: flex; gap: 15px; }
+.form-group.half { flex: 1; }
 
 .form-group label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 6px;
-    color: #B22222;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
 }
 
-.form-group input {
+/* Wrapper: The Fixed Anchor */
+.input-wrapper {
+    position: relative;
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: border 0.3s, box-shadow 0.3s;
+    height: 50px; /* Locked Height */
 }
 
-.form-group input:focus {
+/* Left Icon: Pinned Center (Using Login Page Strategy) */
+.input-icon {
+    position: absolute;
+    left: 15px;
+    
+    /* THE STABILITY FIX: */
+    /* Instead of transform, we use top/bottom 0 + margin auto. */
+    /* This physically locks the element to the center of the 50px parent. */
+    top: 0; 
+    bottom: 0; 
+    margin: auto;
+    
+    height: 7px; /* specific height needed for margin:auto to calculate */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    z-index: 5;
+    pointer-events: none; /* Allows clicks to pass through to the input */
+}
+
+/* Input Field: Text Alignment via Padding */
+.input-wrapper input {
+    width: 100%;
+    height: 100%; /* Fills the 50px wrapper exactly */
+    display: block;
+    
+    /* TEXT ALIGNMENT: */
+    /* Left padding (45px) creates the gap for the User Icon */
+    /* Right padding (50px) creates the gap for the Eye Button */
+    padding: 0 50px 0 45px !important; 
+    
+    margin: 0;
+    border: 2px solid #E0E0E0; /* Keep border constant width to prevent jump on focus */
+}
+
+.input-wrapper input:focus {
+    border-color: var(--primary-gold);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
     outline: none;
-    border-color: #FFD700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
 }
 
-/* ============================= */
-/*       REGISTER BUTTON         */
-/* ============================= */
-.register-btn {
+.input-wrapper input:focus + .input-icon { color: var(--primary-gold); }
+
+/* Right Eye Button: High Z-Index & Fixed Position */
+.toggle-password {
+    position: absolute;
+    right: 5px;
+    
+    /* THE STABILITY FIX REPEATED: */
+    top: 27; 
+    bottom: auto; 
+    margin: 0;
+    
+    width: 40px;
+    height: 40px;
+    
+    background: transparent;
+    border: none; /* Removes default button borders that cause shifts */
+    cursor: pointer;
+    z-index: 999;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: var(--primary-red);
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* Inner icon ignores clicks */
+.toggle-password i, 
+.toggle-password svg { 
+    pointer-events: none; 
+}
+
+/* =========================================
+   5. Strength Meter & Buttons
+========================================= */
+.strength-meter-container { margin-top: -10px; margin-bottom: 25px; }
+.strength-bar-bg { height: 4px; background: #eee; border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+.strength-bar-fill { height: 100%; width: 0%; transition: width 0.4s ease, background-color 0.4s ease; }
+#strengthText { font-size: 0.8rem; float: right; font-weight: 500; }
+
+.btn-register {
     width: 100%;
-    padding: 12px;
-    background-color: #B22222;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: bold;
+    height: 52px;
+    background: linear-gradient(to right, var(--primary-gold), var(--primary-gold-hover));
     border: none;
     border-radius: 8px;
+    color: var(--primary-red);
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+    margin-top: 10px;
 }
 
-.register-btn:hover {
-    background-color: #8b1a1a;
+.btn-register:hover {
     transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
 }
 
-/* ============================= */
-/*        LOGIN LINK             */
-/* ============================= */
-.login-link {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    color: #555;
+.btn-register:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.login-link a {
-    color: #FFD700;
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-.login-link a:hover {
-    color: #B22222;
-}
-
-/* ============================= */
-/*      REGISTER MESSAGE DIV     */
-/* ============================= */
-.register-message {
+.form-feedback {
     margin-top: 20px;
+    padding: 12px;
+    border-radius: 6px;
     font-size: 0.9rem;
-    color: #B22222;
-    font-weight: bold;
+    text-align: center;
+    display: none;
+}
+.form-feedback.error { background: #FDE8E8; color: var(--error-color); border: 1px solid #FBD5D5; }
+.form-feedback.success { background: #DEF7EC; color: var(--success-color); border: 1px solid #B4F3D6; }
+
+.form-footer { margin-top: 30px; text-align: center; font-size: 0.95rem; color: var(--text-muted); }
+.link-highlight { color: var(--primary-red); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.link-highlight:hover { text-decoration: underline; color: var(--primary-red-dark); }
+
+/* =========================================
+   6. Responsive
+========================================= */
+@media (max-width: 900px) {
+    .register-wrapper { flex-direction: column; max-width: 500px; }
+    .register-intro { padding: 40px 30px; }
+    .register-form-box { padding: 40px 30px; }
+    .form-row { flex-direction: column; gap: 0; }
 }
 
-/* ============================= */
-/*        RESPONSIVE DESIGN      */
-/* ============================= */
 @media (max-width: 480px) {
-    .register-box {
-        padding: 30px 20px;
-    }
-
-    .register-box h1 {
-        font-size: 1.6rem;
-    }
-
-    .register-box p {
-        font-size: 0.9rem;
-    }
-
-    .form-group input {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-    }
-
-    .register-btn {
-        padding: 10px;
-        font-size: 0.95rem;
-    }
+    .register-intro h1 { font-size: 1.5rem; }
+    .btn-register { font-size: 0.9rem; }
+    /* Slightly less padding on mobile, but still spaced */
+    .register-container { padding: 40px 15px; } 
 }

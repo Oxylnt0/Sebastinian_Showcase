@@ -1,3 +1,4 @@
+// assets/js/profile.js
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- Elements ----------
   const profileForm = document.getElementById("profileForm");

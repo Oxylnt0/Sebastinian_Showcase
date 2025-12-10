@@ -1,159 +1,162 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // =========================
-    // Count-Up Animation for Stats Cards
-    // =========================
-    const animateCount = (element, endValue, duration = 1200) => {
-        let start = 0;
-        const increment = endValue / (duration / 16); // approx 60fps
-        const counter = () => {
-            start += increment;
-            if (start < endValue) {
-                element.textContent = Math.floor(start);
-                requestAnimationFrame(counter);
-            } else {
-                element.textContent = endValue;
-            }
-        };
-        requestAnimationFrame(counter);
-    };
+    
+    // =========================================================
+    // 0. SINGLETON LOCK & UTILITIES
+    // =========================================================
+    // Prevents the script from running multiple times if loaded twice
+    if (window.dashboardLoaded) return; 
+    window.dashboardLoaded = true;
 
-    const cardValues = document.querySelectorAll(".card-value");
-    cardValues.forEach(card => {
-        const value = parseInt(card.textContent);
-        card.textContent = "0"; // start from zero
-        animateCount(card, value);
-    });
+    const dashboardWrapper = document.querySelector('.dashboard-wrapper');
+    const heroPanel = document.querySelector('.dashboard-hero-panel');
+    const statsGrid = document.querySelector('.stats-grid');
+    const recentList = document.querySelector('.recent-list');
+    
+    // =========================================================
+    // 1. CINEMATIC COUNTER (Animated Stat Cards)
+    // =========================================================
+    const animateCounters = () => {
+        const counters = document.querySelectorAll('.stat-data .counter');
+        const speed = 1500; // Duration in ms
 
-    // =========================
-    // Project Card Hover Animation
-    // =========================
-    const projectCards = document.querySelectorAll(".project-card");
-    projectCards.forEach(card => {
-        card.addEventListener("mouseenter", () => {
-            card.style.transform = "translateY(-5px) scale(1.02)";
-            card.style.boxShadow = "0 18px 30px rgba(0,0,0,0.25)";
-        });
-        card.addEventListener("mouseleave", () => {
-            card.style.transform = "translateY(0) scale(1)";
-            card.style.boxShadow = "0 8px 18px rgba(0,0,0,0.12)";
-        });
-    });
+        counters.forEach(counter => {
+            const target = +counter.innerText;
+            const start = 0;
+            const increment = target / (speed / 16); 
 
-    // =========================
-    // Status Filter for Recent Projects
-    // =========================
-    const statusFilterContainer = document.createElement("div");
-    statusFilterContainer.classList.add("status-filter-container");
-    statusFilterContainer.style.marginBottom = "1.5rem";
-    statusFilterContainer.style.textAlign = "center";
-
-    const statuses = ["all", "approved", "pending", "rejected"];
-    statuses.forEach(status => {
-        const btn = document.createElement("button");
-        btn.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-        btn.dataset.status = status;
-        btn.className = "filter-btn";
-        btn.style.margin = "0 0.5rem";
-        btn.style.padding = "0.4rem 0.9rem";
-        btn.style.border = "none";
-        btn.style.borderRadius = "6px";
-        btn.style.fontWeight = "600";
-        btn.style.cursor = "pointer";
-        btn.style.transition = "all 0.3s ease";
-
-        if (status === "all") {
-            btn.style.backgroundColor = "#B22222";
-            btn.style.color = "#FFD700";
-        } else {
-            btn.style.backgroundColor = "#eee";
-            btn.style.color = "#333";
-        }
-
-        btn.addEventListener("mouseenter", () => {
-            btn.style.backgroundColor = "#B22222";
-            btn.style.color = "#FFD700";
-        });
-
-        btn.addEventListener("mouseleave", () => {
-            if (btn.dataset.active !== "true") {
-                btn.style.backgroundColor = status === "all" ? "#B22222" : "#eee";
-                btn.style.color = status === "all" ? "#FFD700" : "#333";
-            }
-        });
-
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".filter-btn").forEach(b => b.dataset.active = "false");
-            btn.dataset.active = "true";
-            statuses.forEach(b => {
-                if (b !== status) {
-                    const otherBtn = document.querySelector(`.filter-btn[data-status='${b}']`);
-                    if (otherBtn) {
-                        otherBtn.style.backgroundColor = b === "all" ? "#B22222" : "#eee";
-                        otherBtn.style.color = b === "all" ? "#FFD700" : "#333";
-                    }
+            let current = start;
+            const updateCount = () => {
+                current += increment;
+                if (current < target) {
+                    counter.innerText = Math.ceil(current);
+                    requestAnimationFrame(updateCount);
+                } else {
+                    counter.innerText = target;
                 }
-            });
-            filterProjects(status);
-        });
-
-        statusFilterContainer.appendChild(btn);
-    });
-
-    const recentProjectsSection = document.querySelector(".recent-projects");
-    recentProjectsSection.insertBefore(statusFilterContainer, recentProjectsSection.querySelector(".project-list"));
-
-    const filterProjects = (status) => {
-        projectCards.forEach(card => {
-            const cardStatus = card.querySelector(".status").textContent.toLowerCase();
-            if (status === "all" || cardStatus === status) {
-                card.style.display = "flex";
-                card.style.opacity = "1";
-                card.style.transition = "opacity 0.3s ease";
-            } else {
-                card.style.opacity = "0";
-                setTimeout(() => card.style.display = "none", 300);
-            }
+            };
+            // Start the count animation
+            updateCount();
         });
     };
-
-    // =========================
-    // Button Animations (view-btn & admin-btn)
-    // =========================
-    const buttons = document.querySelectorAll(".view-btn, .gold-btn");
-    buttons.forEach(btn => {
-        btn.addEventListener("mouseenter", () => {
-            btn.style.transform = "translateY(-3px) scale(1.05)";
-            btn.style.boxShadow = "0 6px 15px rgba(0,0,0,0.2)";
-        });
-        btn.addEventListener("mouseleave", () => {
-            btn.style.transform = "translateY(0) scale(1)";
-            btn.style.boxShadow = "none";
-        });
-    });
-
-    // =========================
-    // Optional: Smooth Scroll to Admin Section
-    // =========================
-    const adminBtn = document.querySelector(".admin-link .gold-btn");
-    if (adminBtn) {
-        adminBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => window.location.href = adminBtn.href, 300);
+    
+    // =========================================================
+    // 2. PARALLAX AND TILT ENGINE
+    // =========================================================
+    
+    // A. Init 3D Tilt Library
+    if (typeof VanillaTilt !== "undefined") {
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+            max: 5,
+            speed: 1000,
+            scale: 1.02,
+            glare: true,
+            "max-glare": 0.1,
         });
     }
 
-    // =========================
-    // Elite Finish: Subtle Fade-In for Section
-    // =========================
-    const sections = document.querySelectorAll("main > section");
-    sections.forEach((sec, i) => {
-        sec.style.opacity = "0";
-        sec.style.transform = "translateY(20px)";
-        setTimeout(() => {
-            sec.style.transition = "all 0.6s ease";
-            sec.style.opacity = "1";
-            sec.style.transform = "translateY(0)";
-        }, i * 150);
+    // B. Floating Orb Parallax
+    document.addEventListener('mousemove', (e) => {
+        const orbs = document.querySelectorAll('.gold-orb');
+        const x = (window.innerWidth - e.pageX * 2) / 100;
+        const y = (window.innerHeight - e.pageY * 2) / 100;
+
+        orbs.forEach((orb, index) => {
+            const speed = index === 0 ? 1 : -1; // Opposite directions
+            orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+        });
     });
+
+    // C. Holographic Mouse Trail (Glow effect on the main panel)
+    if (heroPanel) {
+        heroPanel.addEventListener('mousemove', (e) => {
+            const rect = heroPanel.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Apply a subtle radial background that follows the mouse
+            heroPanel.style.background = `
+                radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85) 40%)
+            `;
+            heroPanel.style.transition = 'none'; // Prevent interpolation on background for smooth movement
+        });
+        
+        heroPanel.addEventListener('mouseleave', () => {
+             // Reset background to pure glass (smooth fade back)
+            heroPanel.style.transition = 'background 0.5s ease';
+            heroPanel.style.background = `rgba(255, 255, 255, 0.85)`; 
+        });
+    }
+
+
+    // =========================================================
+    // 3. WAYPOINT ANIMATIONS (Scroll Reveal)
+    // =========================================================
+    
+    const animateSection = (entry, observer) => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+
+            // Stagger items if it's the recent list
+            if (entry.target.classList.contains('recent-list')) {
+                const items = entry.target.querySelectorAll('.recent-item');
+                items.forEach((item, index) => {
+                    item.style.animationDelay = `${0.1 + index * 0.1}s`;
+                    item.classList.add('animate-in');
+                });
+            }
+            
+            // Start the counter animation once the stat grid is visible
+            if (entry.target.classList.contains('stats-grid')) {
+                animateCounters();
+            }
+
+            observer.unobserve(entry.target);
+        }
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => animateSection(entry, observer));
+    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+
+    // Apply animation classes and observe targets
+    if (statsGrid) {
+        statsGrid.classList.add('animate-up');
+        observer.observe(statsGrid);
+    }
+    if (recentList) {
+        recentList.classList.add('animate-up');
+        recentList.querySelectorAll('.recent-item').forEach(item => {
+            item.classList.add('animate-up'); // Add entrance animation class to items
+        });
+        observer.observe(recentList);
+    }
+
+    // Append CSS for Waypoint Animations (required since it's JS-driven)
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
+        /* Base hidden state */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        /* Visible state */
+        .animate-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Staggered item entrance */
+        .recent-item.animate-up {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        .recent-item.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    `;
+    document.head.appendChild(styleSheet);
 });

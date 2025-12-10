@@ -1,10 +1,11 @@
 <?php 
 // ===============================================
-// admin_dashboard.php - Sebastinian Showcase Admin Panel
+// pages/admin/admin_dashboard.php
 // ===============================================
 
 session_start();
 
+// Adjust paths for the "admin" subdirectory
 require_once("../../api/config/db.php");
 require_once("../../api/utils/auth_check.php");
 require_once("../../api/utils/response.php");
@@ -129,14 +130,12 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
 
 <div class="admin-dashboard-container">
 
-    <!-- Dashboard Top Panel -->
     <div class="dashboard-top-panel">
         <div class="dashboard-header">
             <h1>Admin Dashboard</h1>
             <p class="dashboard-subtitle">Overview of Projects & Users</p>
         </div>
 
-        <!-- Summary Cards -->
         <div class="summary-cards">
             <div class="card total-projects"><h3>Total Projects</h3><p><?= $stats['total'] ?></p></div>
             <div class="card approved-projects"><h3>Approved</h3><p><?= $stats['approved'] ?></p></div>
@@ -148,23 +147,24 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
         </div>
     </div>
 
-    <!-- Tabs Navigation -->
     <nav class="tabs-nav">
         <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
         <button class="tab-btn" data-tab="manage-admins">Manage Admins</button>
         <button class="tab-btn" data-tab="projects">Projects</button>
     </nav>
 
-    <!-- Tabs Content -->
     <div class="tabs-content">
 
-        <!-- Dashboard Tab -->
         <section class="tab-pane active" id="dashboard">
 
-            <!-- Admin Profile -->
             <?php if($admin_profile): ?>
+                <?php 
+                    $profile_path = !empty($admin_profile['profile_image']) 
+                        ? "../../uploads/profile_images/" . htmlspecialchars($admin_profile['profile_image']) 
+                        : "../../uploads/profile_images/default.png"; 
+                ?>
             <div class="admin-profile-card">
-                <img src="<?= $admin_profile['profile_image'] ?? '../assets/img/default-profile.png' ?>" alt="Profile" class="profile-pic">
+                <img src="<?= $profile_path ?>" alt="Profile" class="profile-pic">
                 <h3><?= htmlspecialchars($admin_profile['full_name']) ?></h3>
                 <p>Username: <?= htmlspecialchars($admin_profile['username']) ?></p>
                 <p>Email: <?= htmlspecialchars($admin_profile['email']) ?></p>
@@ -173,7 +173,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
             </div>
             <?php endif; ?>
 
-            <!-- Recent Submissions -->
             <div class="recent-projects">
                 <h2>Recent Submissions</h2>
                 <?php if(empty($recent_projects)): ?>
@@ -204,7 +203,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
                 <?php endif; ?>
             </div>
 
-            <!-- Recent Activity -->
             <div class="recent-activity">
                 <h2>Recent Activity</h2>
                 <?php if(empty($recent_activity)): ?>
@@ -223,7 +221,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
                 <?php endif; ?>
             </div>
 
-            <!-- Top Students -->
             <div class="top-students">
                 <h2>Top Students (Most Submissions)</h2>
                 <?php if(empty($top_students)): ?>
@@ -250,7 +247,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
                 <?php endif; ?>
             </div>
 
-            <!-- Dashboard Charts -->
             <div class="dashboard-charts">
                 <canvas id="projectsChart" height="150"></canvas>
                 <canvas id="trendChart" height="150"></canvas>
@@ -258,7 +254,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
 
         </section>
 
-        <!-- Manage Admins Tab -->
         <section class="tab-pane" id="manage-admins">
             <h2>Manage Admins</h2>
             <div class="add-admin-form">
@@ -286,10 +281,8 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
             <div id="admins-container"><p>Loading admins...</p></div>
         </section>
 
-        <!-- Projects Tab -->
         <section class="tab-pane" id="projects">
             <h2>Project Management</h2>
-            <!-- ONLY ONE SEARCH -->
             <input type="text" id="projectsSearch" class="projects-search" placeholder="Search projects...">
             <div id="projects-container">
                 <p>Loading projects...</p>
@@ -299,7 +292,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
     </div>
 </div>
 
-<!-- Feedback & Modals -->
 <div id="studentModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -310,7 +302,6 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
 
 <?php include("../footer.php"); ?>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="admin_dashboard.js"></script>
 
