@@ -263,18 +263,32 @@ $admin_profile = $result_admin_profile ? $result_admin_profile->fetch_assoc() : 
                         <label for="username">Username</label>
                         <input type="text" name="username" id="username" placeholder="Enter username" required>
                     </div>
+
                     <div class="form-group">
                         <label for="email">Institutional Email</label>
-                        <input type="email" name="email" id="email" placeholder="Enter email" required>
+                        <input type="email" name="email" id="email" placeholder="name@sscr.edu" required>
+                        <small style="color: #666; display: block; margin-top: 5px;">
+                            Must be a valid <strong>@sscr.edu</strong> account.
+                        </small>
                     </div>
+
                     <div class="form-group">
                         <label for="password">Access Password</label>
-                        <input type="password" name="password" id="password" placeholder="Enter password" required>
+                        <div class="input-container" style="position: relative;">
+                            <input type="password" name="password" id="password" placeholder="Enter secure password" required style="width: 100%;">
+                        <small style="color: #666; line-height: 1.4; display: block; margin-top: 5px;">
+                            Requirements: <br>
+                            • Minimum <strong>12 characters</strong> <br>
+                            • At least <strong>one uppercase letter</strong> <br>
+                            • At least <strong>one number</strong> & <strong>one special character</strong>
+                        </small>
                     </div>
+
                     <div class="form-group">
                         <label for="confirm_password">Confirm Access Password</label>
                         <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password" required>
                     </div>
+
                     <button type="submit" class="btn-primary">Grant Access</button>
                 </form>
             </div>
