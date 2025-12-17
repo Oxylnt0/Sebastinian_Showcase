@@ -1,8 +1,7 @@
 <?php
 // =========================================
 // api/projects/upload_projects.php
-// Handles file upload and project creation
-// Always returns JSON
+// Updated for Research Repository (PDF + Auto-Thumb)
 // =========================================
 
 // Show PHP errors only during development
@@ -10,82 +9,71 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include required system files
 require_once("../config/db.php");
 require_once("../utils/auth_check.php");
 require_once("../utils/response.php");
 require_once("../utils/upload_handler.php");
 
-// Always respond as JSON
 header("Content-Type: application/json");
 
-// ---------------------------------------------------------
-// GLOBAL ERROR HANDLERS (Return JSON even for PHP fatals)
-// ---------------------------------------------------------
+// GLOBAL ERROR HANDLERS
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     Response::error("PHP Error [$errno]: $errstr in $errfile on line $errline");
 });
-
 set_exception_handler(function($e) {
     Response::error("Uncaught Exception: " . $e->getMessage());
 });
 
-// ==========================================
-// MAIN EXECUTION BLOCK
-// ==========================================
 try {
-
-    // -------------------------
-    // Verify login + role
-    // -------------------------
+    // 1. AUTHENTICATION
     Auth::requireLogin();
-    Auth::requireRole(['student', 'admin']);
-
     $user_id = $_SESSION['user_id'] ?? null;
-    if (!$user_id) {
-        Response::error("Authentication failed. Please log in again.");
-    }
+    if (!$user_id) Response::error("Authentication failed. Please log in again.");
 
-    // -------------------------
-    // Accept only POST
-    // -------------------------
     if ($_SERVER['REQUEST_METHOD'] !== "POST") {
         Response::error("Invalid request method", 405);
     }
 
-    // -------------------------
-    // Validate input fields
-    // -------------------------
+    // 2. VALIDATE INPUTS (New Research Fields)
     $title = trim($_POST['title'] ?? '');
+    $authors = trim($_POST['authors'] ?? '');
+    $pub_date = trim($_POST['publication_date'] ?? '');
+    $res_type = trim($_POST['research_type'] ?? '');
+    $dept = trim($_POST['department'] ?? '');
     $description = trim($_POST['description'] ?? '');
 
-    if ($title === '') Response::error("Project title is required");
-    if ($description === '') Response::error("Project description is required");
+    // Strict validation for required fields
+    if ($title === '') Response::error("Research title is required");
+    if ($authors === '') Response::error("Authors are required");
+    if ($pub_date === '') Response::error("Publication date is required");
+    if ($res_type === '') Response::error("Research methodology is required");
+    if ($dept === '') Response::error("Department is required");
+    if ($description === '') Response::error("Abstract is required");
 
-    // -------------------------
-    // Connect to DB
-    // -------------------------
+    // 3. DATABASE CONNECTION
     $db = new Database();
     $conn = $db->connect();
     if (!$conn) Response::error("Database connection failed");
 
-    // ===========================================================
-    // REQUIRED FILE UPLOAD: PROJECT FILE
-    // ===========================================================
+    // 4. HANDLE MAIN PDF UPLOAD
     if (!isset($_FILES['project_file']) || $_FILES['project_file']['error'] === UPLOAD_ERR_NO_FILE) {
-        Response::error("Project file is required");
+        Response::error("Research PDF is required");
     }
+
+    // Define upload path for Files
+    // ENSURE THIS FOLDER EXISTS: /uploads/project_files/
+    $uploadDirFiles = __DIR__ . "/../../uploads/project_files/"; 
+    if (!is_dir($uploadDirFiles)) mkdir($uploadDirFiles, 0777, true);
 
     $file_result = UploadHandler::handle(
         $_FILES['project_file'],
-        realpath(__DIR__ . "/../../uploads/project_files/") . "/",
-        ['pdf', 'doc', 'docx', 'pptx', 'txt', 'zip'],
-        10 * 1024 * 1024 // 10MB
+        $uploadDirFiles,
+        ['pdf'], // Strict PDF only
+        15 * 1024 * 1024 // 15MB Limit
     );
 
     if (!$file_result['success']) {
@@ -93,35 +81,54 @@ try {
     }
 
     $file_upload = $file_result['filename'];
+    $file_size = $_FILES['project_file']['size']; // Capture size for DB
+    $file_type = "pdf"; // Hardcoded since we only allow PDF
 
-    // ===========================================================
-    // OPTIONAL FILE UPLOAD: PROJECT IMAGE
-    // ===========================================================
+    // 5. HANDLE AUTO-GENERATED THUMBNAIL (Base64)
     $image_upload = null;
+    $base64_string = $_POST['generated_thumbnail'] ?? '';
 
-    if (isset($_FILES['project_image']) && $_FILES['project_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+    if (!empty($base64_string)) {
+        // Define upload path for Images
+        // ENSURE THIS FOLDER EXISTS: /uploads/project_images/
+        $uploadDirImages = __DIR__ . "/../../uploads/project_images/";
+        if (!is_dir($uploadDirImages)) mkdir($uploadDirImages, 0777, true);
 
-        $image_result = UploadHandler::handle(
-            $_FILES['project_image'],
-            realpath(__DIR__ . "/../../uploads/project_images/") . "/",
-            ['png', 'jpg', 'jpeg', 'webp'],
-            5 * 1024 * 1024 // 5MB
-        );
+        // Process Base64 String
+        // Format is usually: "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64_string, $type)) {
+            $base64_string = substr($base64_string, strpos($base64_string, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, etc.
 
-        if (!$image_result['success']) {
-            Response::error($image_result['error']);
+            if (!in_array($type, ['jpg', 'jpeg', 'png'])) {
+                // Fallback if type is weird, assume jpg
+                $type = 'jpg'; 
+            }
+
+            $decoded_image = base64_decode($base64_string);
+
+            if ($decoded_image === false) {
+                Response::error("Failed to decode thumbnail image.");
+            }
+
+            // Generate unique name: thumb_TIMESTAMP_RANDOM.jpg
+            $image_name = 'thumb_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $type;
+            $image_path = $uploadDirImages . $image_name;
+
+            // Save the file
+            if (file_put_contents($image_path, $decoded_image)) {
+                $image_upload = $image_name;
+            } else {
+                Response::error("Failed to save thumbnail to server.");
+            }
         }
-
-        $image_upload = $image_result['filename'];
     }
 
-    // ===========================================================
-    // INSERT PROJECT RECORD INTO DATABASE
-    // ===========================================================
-    $sql = "
-        INSERT INTO projects (user_id, title, description, file, image)
-        VALUES (?, ?, ?, ?, ?)
-    ";
+    // 6. INSERT INTO DATABASE (New Columns)
+    // Note: 'status' defaults to 'pending' in your DB structure, so we omit it here or force it.
+    $sql = "INSERT INTO projects 
+            (user_id, title, authors, publication_date, research_type, department, description, file, image, file_type, file_size, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -129,24 +136,30 @@ try {
     }
 
     $stmt->bind_param(
-        "issss",
+        "isssssssssi", // 11 parameters: i = int, s = string
         $user_id,
         $title,
+        $authors,
+        $pub_date,
+        $res_type,
+        $dept,
         $description,
         $file_upload,
-        $image_upload
+        $image_upload, // Can be null, but DB column should allow NULL
+        $file_type,
+        $file_size
     );
 
     if ($stmt->execute()) {
         Response::success([
             "project_id" => $stmt->insert_id,
-            "file" => $file_upload,
-            "image" => $image_upload
-        ], "Project uploaded successfully");
+            "title" => $title
+        ], "Research archived successfully");
     } else {
-        Response::error("Failed to save project: " . $stmt->error);
+        Response::error("Failed to save to database: " . $stmt->error);
     }
 
 } catch (Exception $e) {
-    Response::error("Unexpected error: " . $e->getMessage());
+    Response::error("Server Error: " . $e->getMessage());
 }
+?>

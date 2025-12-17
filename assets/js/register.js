@@ -1,142 +1,130 @@
-/**
- * assets/js/register.js
- * The Ultimate Registration Logic
- * * Features:
- * - Robust Password Visibility Toggling (Works with SVG or I tags)
- * - Real-time Password Strength Analysis
- * - Secure AJAX Form Submission
- * - Interactive UI Feedback (Loading states, Shaking on error)
- */
-
 document.addEventListener("DOMContentLoaded", () => {
     
-    // =========================================================
-    // 1. GLOBAL ELEMENTS
-    // =========================================================
+    // Elements
     const form = document.getElementById("registerForm");
     const submitBtn = document.getElementById("submitBtn");
     const feedback = document.getElementById("formFeedback");
-    
     const passwordInput = document.getElementById("password");
     const confirmInput = document.getElementById("confirm_password");
-    
-    const strengthBar = document.getElementById("strengthBar");
-    const strengthText = document.getElementById("strengthText");
-    
-    // Select all toggle buttons
+    const emailInput = document.getElementById("email");
     const toggleBtns = document.querySelectorAll(".toggle-password");
+    
+    // Password Checklist Elements
+    const checklistBox = document.getElementById("passwordChecklist");
+    const ruleLength = document.getElementById("rule-length");
+    const ruleUpper = document.getElementById("rule-upper");
+    const ruleSpecial = document.getElementById("rule-special");
 
+    let isSubmitting = false; 
 
-    // =========================================================
-    // 2. ROBUST PASSWORD TOGGLE LOGIC
-    // =========================================================
+    // 1. Password Toggle
     toggleBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
-            // Prevent default behavior (submission or focus jump)
-            e.preventDefault();
-            e.stopPropagation();
-
-            // 1. Find the parent wrapper relative to this button
-            const wrapper = btn.closest('.input-wrapper');
-            
-            // 2. Find the input and icon within this specific wrapper
-            const input = wrapper.querySelector('input');
-            const icon = btn.querySelector('i, svg'); // Works for both FontAwesome <i> and <svg>
-
-            if (!input || !icon) return; // Safety check
-
-            // 3. Toggle Logic
+            e.preventDefault(); 
+            const input = btn.closest('.input-wrapper').querySelector('input');
+            const icon = btn.querySelector('i, svg');
             if (input.type === "password") {
-                // Show Password
                 input.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
+                icon.classList.replace("fa-eye", "fa-eye-slash");
             } else {
-                // Hide Password
                 input.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+                icon.classList.replace("fa-eye-slash", "fa-eye");
             }
         });
     });
 
+    // 2. Real-Time Password Validation Logic
+    if (passwordInput && checklistBox) {
+        
+        // Show requirements on focus
+        passwordInput.addEventListener("focus", () => {
+            checklistBox.style.display = "block";
+        });
 
-    // =========================================================
-    // 3. PASSWORD STRENGTH METER
-    // =========================================================
-    if (passwordInput) {
+        passwordInput.addEventListener("blur", () => {
+            checklistBox.style.display = "none";
+        });
+
+        // Check rules while typing
         passwordInput.addEventListener("input", () => {
+            checklistBox.style.display = "block"; 
             const val = passwordInput.value;
-            const result = calculateStrength(val);
-            
-            // Update the Bar
-            strengthBar.style.width = result.width;
-            strengthBar.style.backgroundColor = result.color;
-            
-            // Update the Text
-            strengthText.textContent = result.text;
-            strengthText.style.color = result.color;
+
+            // UPDATED RULE: Length 12+
+            if (val.length >= 12) {
+                setValid(ruleLength, true);
+            } else {
+                setValid(ruleLength, false);
+            }
+
+            // Rule 2: One Uppercase
+            if (/[A-Z]/.test(val)) {
+                setValid(ruleUpper, true);
+            } else {
+                setValid(ruleUpper, false);
+            }
+
+            // Rule 3: One Special Character
+            if (/[\W_]/.test(val)) {
+                setValid(ruleSpecial, true);
+            } else {
+                setValid(ruleSpecial, false);
+            }
         });
     }
 
-    /**
-     * Helper to calculate strength score (0-4)
-     */
-    function calculateStrength(val) {
-        let score = 0;
-        if (val.length > 5) score++;           // Length > 5
-        if (/[A-Z]/.test(val)) score++;        // Has Uppercase
-        if (/[0-9]/.test(val)) score++;        // Has Number
-        if (/[^A-Za-z0-9]/.test(val)) score++; // Has Special Char
-
-        // Logic Mapping
-        if (val.length > 0 && val.length < 6) {
-            return { width: "20%", color: "#E74C3C", text: "Too Short" }; 
-        } else if (score === 1) {
-            return { width: "40%", color: "#E67E22", text: "Weak" };      
-        } else if (score === 2) {
-            return { width: "60%", color: "#F1C40F", text: "Fair" };      
-        } else if (score === 3) {
-            return { width: "80%", color: "#27AE60", text: "Good" };      
-        } else if (score >= 4) {
-            return { width: "100%", color: "#2ECC71", text: "Strong" };   
+    function setValid(element, isValid) {
+        const icon = element.querySelector("i");
+        if (isValid) {
+            element.classList.remove("invalid");
+            element.classList.add("valid");
+            icon.className = "fa-solid fa-check";
         } else {
-            return { width: "0%", color: "#E0E0E0", text: "Password Strength" }; // Default
+            element.classList.remove("valid");
+            element.classList.add("invalid");
+            icon.className = "fa-solid fa-circle"; 
         }
     }
 
-
-    // =========================================================
-    // 4. AJAX FORM SUBMISSION
-    // =========================================================
+    // 3. FORM SUBMISSION
     if (form) {
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-
-            // --- A. Reset UI ---
+            if (isSubmitting) return; 
             hideFeedback();
+
+            // --- A. Email Validation (@sscr.edu) ---
+            const emailVal = emailInput.value.trim();
+            if (!emailVal.endsWith("@sscr.edu")) {
+                showFeedback("Email must end with @sscr.edu", "error");
+                shakeElement(emailInput.closest('.input-wrapper'));
+                return;
+            }
+
+            // --- B. Password Validation ---
+            const passVal = passwordInput.value;
+            // UPDATED REGEX: 12 chars minimum
+            const passRegex = /^(?=.*[A-Z])(?=.*[\W_]).{12,}$/;
             
-            // --- B. Client Validation ---
-            // 1. Check Matching Passwords
-            if (passwordInput.value !== confirmInput.value) {
+            if (!passRegex.test(passVal)) {
+                showFeedback("Password does not meet requirements (Min 12 chars).", "error");
+                checklistBox.style.display = "block"; 
+                shakeElement(passwordInput.closest('.input-wrapper'));
+                return;
+            }
+
+            if (passVal !== confirmInput.value) {
                 showFeedback("Passwords do not match.", "error");
                 shakeElement(confirmInput.closest('.input-wrapper'));
                 return;
             }
 
-            // 2. Check Minimum Length
-            if (passwordInput.value.length < 6) {
-                showFeedback("Password must be at least 6 characters.", "error");
-                shakeElement(passwordInput.closest('.input-wrapper'));
-                return;
-            }
-
-            // --- C. Set Loading State ---
-            const originalBtnHTML = submitBtn.innerHTML;
+            // --- C. Submit ---
+            isSubmitting = true;
+            const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating Account...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
 
-            // --- D. Send Data ---
             const formData = new FormData(form);
 
             try {
@@ -148,86 +136,101 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await response.json();
 
                 if (data.status === "success") {
-                    // SUCCESS
-                    showFeedback("Account created! Redirecting to login...", "success");
-                    form.reset();
-                    strengthBar.style.width = "0%";
-                    
-                    // Redirect after 1.5 seconds
-                    setTimeout(() => {
-                        window.location.href = "login.php";
-                    }, 1500);
-
-                } else {
-                    // API ERROR (e.g., Username taken)
-                    showFeedback(data.message || "Registration failed.", "error");
-                    resetButton(originalBtnHTML);
-                    
-                    // Shake specific fields if mentioned in error
-                    if(data.message.toLowerCase().includes("username")) {
-                        shakeElement(document.getElementById("username").closest('.input-wrapper'));
+                    if (data.action === "verify_otp") {
+                        showOtpInterface(data.email);
+                    } else {
+                        showFeedback("Account created!", "success");
+                        setTimeout(() => window.location.href = "login.php", 1500);
                     }
+                } else {
+                    showFeedback(data.message, "error");
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    isSubmitting = false; 
                 }
 
             } catch (error) {
-                // NETWORK ERROR
-                console.error("Error:", error);
-                showFeedback("Network error. Please try again later.", "error");
-                resetButton(originalBtnHTML);
+                console.error(error);
+                showFeedback("Network error.", "error");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                isSubmitting = false;
             }
         });
     }
 
-
-    // =========================================================
-    // 5. UTILITY FUNCTIONS
-    // =========================================================
-    
-    function showFeedback(message, type) {
+    // --- Helpers ---
+    function showFeedback(msg, type) {
         if (!feedback) return;
-        feedback.textContent = message;
-        // Reset classes then add the specific type
-        feedback.className = "form-feedback"; 
-        feedback.classList.add(type); // .error or .success
+        feedback.textContent = msg;
+        feedback.className = `form-feedback ${type}`;
         feedback.style.display = "block";
     }
 
     function hideFeedback() {
-        if (!feedback) return;
-        feedback.style.display = "none";
-        feedback.className = "form-feedback";
+        if (feedback) feedback.style.display = "none";
     }
 
-    function resetButton(originalHTML) {
-        if (!submitBtn) return;
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalHTML;
-    }
-
-    // Adds a temporary shake animation class
     function shakeElement(element) {
         if (!element) return;
-        // Remove animation if present to allow re-triggering
         element.style.animation = 'none';
-        element.offsetHeight; // Trigger reflow
-        
+        element.offsetHeight; 
         element.style.animation = "shake 0.4s ease-in-out";
-        
-        // Remove after animation completes
-        setTimeout(() => {
-            element.style.animation = "";
-        }, 400);
     }
-    
-    // Inject Shake Keyframes dynamically if not in CSS
-    const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-    `;
-    document.head.appendChild(styleSheet);
+
+    function showOtpInterface(email) {
+        const container = document.querySelector('.register-wrapper');
+        container.innerHTML = `
+            <section class="register-form-box" style="text-align: center;">
+                <div class="form-header">
+                    <i class="fa-solid fa-envelope-circle-check" style="font-size: 3rem; color: #D4AF37;"></i>
+                    <h2>Verify Email</h2>
+                    <p>Code sent to <strong>${email}</strong></p>
+                </div>
+                <div class="input-wrapper" style="margin: 20px 0;">
+                    <input type="text" id="otpCode" maxlength="6" placeholder="000000" 
+                        style="width: 100%; padding: 15px; font-size: 1.5rem; text-align: center; letter-spacing: 5px; font-weight: bold; border: 2px solid #eee; border-radius: 8px;">
+                </div>
+                <button id="btnVerify" class="btn-register"><span class="btn-text">Verify</span></button>
+                <div id="otpMessage" style="margin-top: 15px;"></div>
+            </section>
+        `;
+
+        const btnVerify = document.getElementById('btnVerify');
+        const otpInput = document.getElementById('otpCode');
+        const msgBox = document.getElementById('otpMessage');
+
+        btnVerify.addEventListener('click', async () => {
+            const code = otpInput.value.trim();
+            if(code.length !== 6) {
+                msgBox.textContent = "Enter 6-digit code";
+                msgBox.style.color = "red";
+                return;
+            }
+            btnVerify.disabled = true;
+            btnVerify.innerText = "Verifying...";
+
+            try {
+                const fd = new FormData();
+                fd.append('email', email);
+                fd.append('otp', code);
+                const res = await fetch('../api/auth/verify_otp.php', { method: 'POST', body: fd });
+                const d = await res.json();
+
+                if (d.status === 'success') {
+                    msgBox.textContent = "Verified! Redirecting...";
+                    msgBox.style.color = "green";
+                    setTimeout(() => window.location.href = 'login.php', 1500);
+                } else {
+                    msgBox.textContent = d.message;
+                    msgBox.style.color = "red";
+                    btnVerify.disabled = false;
+                    btnVerify.innerText = "Verify";
+                }
+            } catch (err) {
+                msgBox.textContent = "Network Error";
+                btnVerify.disabled = false;
+            }
+        });
+    }
 });

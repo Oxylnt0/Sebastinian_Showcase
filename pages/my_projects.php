@@ -8,37 +8,28 @@ Auth::requireLogin();
 $user_id = $_SESSION['user_id'];
 $user = Auth::currentUser();
 
-// 2. Security: Generate Anti-CSRF Token
+// 2. Security
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// 3. Fetch Projects
+// 3. Stats Calculation (Keep this for the top counters)
 $conn = (new Database())->connect();
-
-// Fixed Query: Removed 's.sdg_color' which caused the error
-$stmt = $conn->prepare("
-    SELECT p.*, s.sdg_name
-    FROM projects p
-    LEFT JOIN sdgs s ON p.sdg_id = s.sdg_id
-    WHERE p.user_id = ?
-    ORDER BY p.date_submitted DESC
-");
-
+$stmt = $conn->prepare("SELECT status FROM projects WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$projects = [];
-while ($row = $result->fetch_assoc()) {
-    $projects[] = $row;
-}
+$totalProjects = 0;
+$approvedCount = 0;
+$pendingCount  = 0;
 
-// 4. Stats Calculation
-$totalProjects = count($projects);
-// Adjust string comparison if your DB uses different capitalization (e.g., 'Approved')
-$approvedCount = count(array_filter($projects, fn($p) => strtolower($p['status']) === 'approved'));
-$pendingCount  = count(array_filter($projects, fn($p) => strtolower($p['status']) === 'pending'));
+while ($row = $result->fetch_assoc()) {
+    $totalProjects++;
+    $status = strtolower($row['status']);
+    if ($status === 'approved') $approvedCount++;
+    if ($status === 'pending') $pendingCount++;
+}
 ?>
 
 <!DOCTYPE html>
@@ -49,14 +40,10 @@ $pendingCount  = count(array_filter($projects, fn($p) => strtolower($p['status']
     <title>My Portfolio | Sebastinian Showcase</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="../assets/css/my_projects.css">
 </head>
-<body>
-
-    <?php include "header.php"; ?>
+<body data-csrf="<?php echo $_SESSION['csrf_token']; ?>"> <?php include "header.php"; ?>
 
     <div class="luxury-layer">
         <div class="gold-orb orb-top"></div>
@@ -68,17 +55,17 @@ $pendingCount  = count(array_filter($projects, fn($p) => strtolower($p['status']
         
         <section class="portfolio-hero" data-tilt>
             <div class="hero-content">
-                <span class="eyebrow"><i class="fas fa-crown text-gold"></i> Sebastinian Innovator</span>
-                <h1>My <span class="text-gradient">Showcase</span></h1>
-                <p>Manage, track, and showcase your academic contributions.</p>
+                <span class="eyebrow"><i class="fas fa-graduation-cap text-gold"></i> Sebastinian Scholar</span>
+                <h1>Research <span class="text-gradient">Portfolio</span></h1>
+                <p>Manage, track, and publish your academic contributions.</p>
             </div>
             
             <div class="stats-row">
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-icon"><i class="fas fa-book"></i></div>
                     <div class="stat-info">
                         <h3><?php echo $totalProjects; ?></h3>
-                        <span>Total Projects</span>
+                        <span>Total Studies</span>
                     </div>
                 </div>
                 <div class="stat-card success">
@@ -92,143 +79,78 @@ $pendingCount  = count(array_filter($projects, fn($p) => strtolower($p['status']
                     <div class="stat-icon"><i class="fas fa-clock"></i></div>
                     <div class="stat-info">
                         <h3><?php echo $pendingCount; ?></h3>
-                        <span>Pending</span>
+                        <span>Under Review</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <div class="container">
-            <div class="control-bar glass-panel">
-                <div class="search-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="projectSearch" placeholder="Search your projects...">
+            <div class="search-toolbar glass-panel" style="margin-bottom: 40px; padding: 30px;">
+                
+                <div class="search-bar-wrapper" style="position: relative; margin-bottom: 20px;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
+                    <input type="text" id="mySearchInput" placeholder="Search your thesis title, keywords..." 
+                           style="width: 100%; padding: 15px 15px 15px 45px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.9);">
                 </div>
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="approved">Published</button>
-                    <button class="filter-btn" data-filter="pending">Pending</button>
-                    <button class="filter-btn" data-filter="rejected">Drafts</button>
+
+        <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+            
+            <select id="filterStatus" style="padding: 10px; border-radius: 6px;">
+                <option value="all">All Statuses</option>
+                <option value="approved">Published</option>
+                <option value="pending">Pending Review</option>
+                <option value="rejected">Returned</option>
+            </select>
+
+            <select id="filterType" style="padding: 10px; border-radius: 6px;">
+                <option value="all">All Methodologies</option>
+                <option value="Quantitative">Quantitative</option>
+                <option value="Qualitative">Qualitative</option>
+                <option value="Mixed Methods">Mixed Methods</option>
+                <option value="Experimental">Experimental</option>
+                <option value="Descriptive">Descriptive</option>
+                <option value="Case Study">Case Study</option>
+            </select>
+
+            <select id="filterYear" style="padding: 10px; border-radius: 6px;">
+                <option value="all">All Years</option>
+                <?php 
+                $curYear = date("Y");
+                for($y = $curYear; $y >= 2020; $y--) echo "<option value='$y'>$y</option>";
+                ?>
+            </select>
+
+            <select id="sortOrder" style="padding: 10px; border-radius: 6px;">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="az">A-Z Title</option>
+                <option value="za">Z-A Title</option>
+            </select>
+        </div>
+
+                <div style="margin-top: 20px; text-align: right;">
+                    <a href="upload_projects.php" class="btn-new-project" style="display: inline-block; padding: 10px 20px; background: #D4AF37; color: white; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                        <i class="fas fa-plus"></i> Archive New Research
+                    </a>
                 </div>
-                <a href="upload_projects.php" class="btn-new-project">
-                    <i class="fas fa-plus"></i> <span>New Project</span>
-                </a>
             </div>
         </div>
 
         <div class="container">
-            
-            <?php if (empty($projects)): ?>
-                
-                <div class="empty-state-card glass-panel" data-tilt>
-                    <div class="empty-icon">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <h2>Your Portfolio is Empty</h2>
-                    <p>Great innovation starts with a single step. Share your first project today.</p>
-                    <a href="upload_projects.php" class="btn-gold-3d">
-                        <span>Upload Now</span>
-                        <div class="btn-shine"></div>
-                    </a>
+            <div class="projects-grid" id="projectsGrid">
+                <div class="loading-spinner" style="text-align: center; width: 100%; grid-column: 1 / -1; padding: 50px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: #D4AF37;"></i>
+                    <p style="margin-top: 10px; color: #888;">Loading your research...</p>
                 </div>
+            </div>
 
-            <?php else: ?>
-
-                <div class="projects-grid" id="projectsGrid">
-                    
-                    <?php foreach ($projects as $proj): ?>
-                        <?php 
-                            // 1. Data Safety & Formatting
-                            $title = htmlspecialchars($proj['title']);
-                            $status = strtolower($proj['status'] ?? 'draft');
-                            $statusLabel = ucfirst($status);
-                            
-                            // 2. Image Handling
-                            $imageName = $proj['image'] ?? '';
-                            $imagePath = !empty($imageName) ? '../uploads/project_images/' . htmlspecialchars($imageName) : null;
-                            $hasImage = $imagePath && file_exists(__DIR__ . '/../uploads/project_images/' . $imageName);
-                            
-                            // 3. File Handling
-                            $fileName = $proj['file'] ?? '';
-                            $filePath = !empty($fileName) ? '../uploads/project_files/' . htmlspecialchars($fileName) : '#';
-                            $hasFile = !empty($fileName) && file_exists(__DIR__ . '/../uploads/project_files/' . $fileName);
-
-                            // 4. Date Formatting
-                            $dateStr = $proj['date_submitted'] ?? null;
-                            $dateDisplay = $dateStr ? date("M d, Y", strtotime($dateStr)) : 'No Date';
-                        ?>
-
-                        <article class="project-card glass-card" data-status="<?php echo $status; ?>" data-tilt>
-                            
-                            <div class="card-media">
-                                <?php if ($hasImage): ?>
-                                    <img src="<?php echo $imagePath; ?>" alt="Project Cover" loading="lazy">
-                                <?php else: ?>
-                                    <div class="placeholder-art">
-                                        <i class="fas fa-cube"></i>
-                                    </div>
-                                <?php endif; ?>
-                                
-                                <div class="card-overlay">
-                                    <a href="project.php?id=<?php echo $proj['project_id']; ?>" class="btn-view">
-                                        View Project <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                </div>
-                                
-                                <span class="status-badge <?php echo $status; ?>">
-                                    <?php echo $statusLabel; ?>
-                                </span>
-                            </div>
-
-                            <div class="card-content">
-                                <div class="card-meta">
-                                    <span class="date"><i class="far fa-calendar-alt"></i> <?php echo $dateDisplay; ?></span>
-                                    <?php if (!empty($proj['sdg_name'])): ?>
-                                        <span class="sdg-pill" title="Aligned with <?php echo htmlspecialchars($proj['sdg_name']); ?>">
-                                            <i class="fas fa-globe-americas"></i> SDG
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-
-                                <h3 class="card-title">
-                                    <a href="project.php?id=<?php echo $proj['project_id']; ?>">
-                                        <?php echo $title; ?>
-                                    </a>
-                                </h3>
-                                
-                                <p class="card-excerpt">
-                                    <?php 
-                                        $desc = strip_tags($proj['description']);
-                                        echo htmlspecialchars(substr($desc, 0, 90)) . (strlen($desc) > 90 ? "..." : ""); 
-                                    ?>
-                                </p>
-
-                                <div class="card-footer">
-                                    <?php if ($hasFile): ?>
-                                        <a href="<?php echo $filePath; ?>" class="action-link download" download title="Download Assets">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    <?php else: ?>
-                                        <span class="action-link disabled" title="No file available"><i class="fas fa-ban"></i></span>
-                                    <?php endif; ?>
-                                    
-                                    <div class="footer-actions">
-                                        <button class="action-btn edit" data-id="<?php echo $proj['project_id']; ?>" title="Edit Project">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="action-btn delete" data-id="<?php echo $proj['project_id']; ?>" data-token="<?php echo $_SESSION['csrf_token']; ?>" title="Delete Project">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-
-                    <?php endforeach; ?>
-                </div>
-
-            <?php endif; ?>
+            <div id="noResults" style="display:none; text-align:center; padding:50px; color:#888;">
+                <i class="fas fa-search" style="font-size:3rem; margin-bottom:15px;"></i>
+                <p>No research found matching your filters.</p>
+            </div>
         </div>
+
     </main>
 
     <?php include "footer.php"; ?>

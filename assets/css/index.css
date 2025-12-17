@@ -78,53 +78,104 @@ header.scroll-shadow {
 /* ============================================================
    HERO SECTION — Cinematic Intro
 ============================================================ */
+/* --- Hero Banner Section --- */
 .hero-banner {
     position: relative;
-    height: 75vh;
+    /* Matches Header & Footer Gradient */
+    background: linear-gradient(135deg, #800000 0%, #4a0000 100%);
+    min-height: 80vh;
+    /* Takes up 80% of screen height */
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    background: url('../assets/img/hero-bg.jpg') center/cover no-repeat;
-    color: #fff;
-    border-radius: 0; /* remove any curves */
-    overflow: hidden; /* ensures no parts overflow */
+    color: #ffffff;
+    padding: 60px 20px;
+    overflow: hidden;
 }
 
+/* Subtle background pattern/overlay */
 .hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #B22222; /* solid red */
-    z-index: 1;
-    border-radius: 0; /* remove any curves */
-    box-shadow: none; /* remove any shadows that might appear as lines */
-}   
+    background: url('../img/pattern-overlay.png');
+    /* If you have a subtle texture */
+    opacity: 0.1;
+    pointer-events: none;
+}
 
 .hero-inner {
     position: relative;
     z-index: 2;
     max-width: 900px;
-    padding: 0 1rem;
 }
 
+/* --- The Typography --- */
 .hero-title {
-    font-size: 3rem;
-    font-weight: 900;
-    color: #ffcc00;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+/* --- GOLD GRADIENT LOGIC --- */
+.gold-gradient-text {
+    background: linear-gradient(to bottom, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .hero-tagline {
-    font-size: 1.35rem;
-    margin-bottom: 2rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+    line-height: 1.6;
+    font-weight: 300;
 }
 
+/* --- Hero CTA Button --- */
 .hero-cta {
-    font-size: 1.1rem;
+    display: inline-block;
+    background-color: #D4AF37;
+    /* Solid Gold */
+    color: #000000;
+    padding: 18px 45px;
+    border-radius: 50px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border: 2px solid #D4AF37;
+}
+
+.hero-cta:hover {
+    background-color: transparent;
+    color: #D4AF37;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-tagline {
+        font-size: 1rem;
+    }
 }
 
 /* ============================================================
@@ -376,3 +427,4 @@ header.scroll-shadow {
     .featured-title { font-size: 1.4rem; }
     .featured-summary { font-size: 0.9rem; }
 }
+

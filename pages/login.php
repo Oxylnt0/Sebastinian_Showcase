@@ -30,7 +30,7 @@ include("header.php");
             <img src="../assets/img/sebastinian_showcase_logo.png" alt="Sebastinian Showcase Logo" class="intro-logo">
             
             <h1>Welcome Back</h1>
-            <p>Access your portfolio, manage your projects, and connect with the Sebastinian community.</p>
+            <p>Access your research profile, manage your thesis submissions, and share knowledge with the Sebastinian community.</p>
         </section>
 
         <section class="login-form-box">

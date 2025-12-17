@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 08, 2025 at 12:47 PM
+-- Generation Time: Dec 17, 2025 at 07:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,26 +34,6 @@ CREATE TABLE `activity_log` (
   `details` text DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `activity_log`
---
-
-INSERT INTO `activity_log` (`log_id`, `user_id`, `action`, `details`, `timestamp`) VALUES
-(1, 2, 'add_admin', 'Admin test created', '2025-12-06 23:28:33'),
-(2, 2, 'delete_admin', 'Deleted admin ID 5', '2025-12-06 23:29:49'),
-(3, 2, 'add_admin', 'Admin Try created', '2025-12-07 00:59:29'),
-(4, 2, 'delete_admin', 'Deleted admin ID 6', '2025-12-07 00:59:40'),
-(5, 2, 'delete_project', 'Deleted project PokéDexDB — Pokémon Database', '2025-12-07 05:54:44'),
-(6, 2, 'project_status_update', 'Project 11 set to rejected', '2025-12-07 06:07:42'),
-(7, 2, 'project_status_update', 'Project 12 set to approved', '2025-12-07 06:07:56'),
-(8, 2, 'delete_project', 'Deleted project Test2', '2025-12-07 06:08:31'),
-(9, 2, 'delete_project', 'Deleted project Test', '2025-12-07 06:08:33'),
-(10, 2, 'delete_project', 'Deleted project PokéDexDB — Pokémon Database', '2025-12-07 06:08:34'),
-(11, 2, 'add_admin', 'Admin Test created', '2025-12-07 06:09:58'),
-(12, 2, 'project_status_update', 'Project 13 set to approved', '2025-12-07 07:14:03'),
-(13, 2, 'project_status_update', 'Project 15 set to approved', '2025-12-08 04:34:01'),
-(14, 2, 'project_status_update', 'Project 16 set to approved', '2025-12-08 09:13:15');
 
 -- --------------------------------------------------------
 
@@ -150,12 +130,15 @@ CREATE TABLE `projects` (
   `project_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
+  `authors` varchar(255) DEFAULT NULL,
+  `publication_date` date DEFAULT NULL,
+  `research_type` varchar(100) DEFAULT NULL,
+  `department` varchar(100) DEFAULT NULL,
   `description` text NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `file` varchar(255) DEFAULT NULL,
   `file_type` varchar(50) DEFAULT '',
   `file_size` int(11) UNSIGNED DEFAULT 0,
-  `sdg_id` int(11) DEFAULT NULL,
   `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   `date_submitted` timestamp NOT NULL DEFAULT current_timestamp(),
   `views` int(11) UNSIGNED NOT NULL DEFAULT 0,
@@ -178,27 +161,6 @@ CREATE TABLE `project_likes` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sdgs`
---
-
-CREATE TABLE `sdgs` (
-  `sdg_id` int(11) NOT NULL,
-  `sdg_name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `sdgs`
---
-
-INSERT INTO `sdgs` (`sdg_id`, `sdg_name`) VALUES
-(3, 'SDG 11 – Sustainable Cities & Communities'),
-(4, 'SDG 13 – Climate Action'),
-(1, 'SDG 4 – Quality Education'),
-(2, 'SDG 9 – Industry, Innovation, and Infrastructure');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
 --
 
@@ -210,19 +172,11 @@ CREATE TABLE `users` (
   `email` varchar(100) DEFAULT NULL,
   `role` enum('student','admin') NOT NULL DEFAULT 'student',
   `date_created` timestamp NOT NULL DEFAULT current_timestamp(),
-  `profile_image` varchar(255) DEFAULT NULL
+  `profile_image` varchar(255) DEFAULT NULL,
+  `otp_code` varchar(6) DEFAULT NULL,
+  `otp_expires_at` datetime DEFAULT NULL,
+  `is_verified` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`user_id`, `username`, `password`, `full_name`, `email`, `role`, `date_created`, `profile_image`) VALUES
-(1, 'Kae', '$2y$10$7A/guBYK9radV2UX0io8guuXsg2r5MhUhX9d0Phcie1BFkpbDmorG', 'Ken Adrien Arceno', 'kaearceno@gmail.com', 'student', '2025-11-30 14:48:18', NULL),
-(2, 'Ken', '$2y$10$ljkmHd4tKG5Hz6IDv5uMSu.uUjqXh79eua9QhAx/RIVPzAXU/gpHK', 'Ken', 's.ken.adrien.arceno@sscr.edu', 'admin', '2025-12-06 06:15:32', NULL),
-(7, 'Test', '$2y$10$GNJMdPpHL4K4trcxOBkkeu/YRiUBjPDupoig/2/Hbgindw6SlGlye', 'Test', 'Test@gmail.com', 'admin', '2025-12-07 06:09:58', NULL),
-(8, 'TestUser', '$2y$10$SPgoMD7DafyJBdC1Z1MtmeJqHKM7pmwuQTGVBjaBRrCQ4T5rINI1W', 'TestUser', 'TestUser@gmail.com', 'student', '2025-12-07 06:25:04', NULL),
-(9, 'User1', '$2y$10$qKx8w087QNQvIDhRojqh8urcUnpfO4VaCKPm27grYLFG4MIPZxBy2', 'User1', 'User@gmail.com', 'student', '2025-12-07 06:30:16', NULL);
 
 -- --------------------------------------------------------
 
@@ -234,18 +188,20 @@ CREATE TABLE `view_approved_projects` (
 `project_id` int(11)
 ,`user_id` int(11)
 ,`title` varchar(255)
+,`authors` varchar(255)
+,`publication_date` date
+,`research_type` varchar(100)
+,`department` varchar(100)
 ,`description` text
 ,`image` varchar(255)
 ,`file` varchar(255)
 ,`file_type` varchar(50)
 ,`file_size` int(11) unsigned
-,`sdg_id` int(11)
 ,`status` enum('pending','approved','rejected')
 ,`date_submitted` timestamp
 ,`views` int(11) unsigned
 ,`downloads` int(11) unsigned
 ,`owner_name` varchar(100)
-,`sdg_name` varchar(255)
 );
 
 -- --------------------------------------------------------
@@ -271,7 +227,7 @@ CREATE TABLE `view_project_stats` (
 --
 DROP TABLE IF EXISTS `view_approved_projects`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_approved_projects`  AS SELECT `p`.`project_id` AS `project_id`, `p`.`user_id` AS `user_id`, `p`.`title` AS `title`, `p`.`description` AS `description`, `p`.`image` AS `image`, `p`.`file` AS `file`, `p`.`file_type` AS `file_type`, `p`.`file_size` AS `file_size`, `p`.`sdg_id` AS `sdg_id`, `p`.`status` AS `status`, `p`.`date_submitted` AS `date_submitted`, `p`.`views` AS `views`, `p`.`downloads` AS `downloads`, `u`.`full_name` AS `owner_name`, `s`.`sdg_name` AS `sdg_name` FROM ((`projects` `p` left join `users` `u` on(`p`.`user_id` = `u`.`user_id`)) left join `sdgs` `s` on(`p`.`sdg_id` = `s`.`sdg_id`)) WHERE `p`.`status` = 'approved' ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_approved_projects`  AS SELECT `p`.`project_id` AS `project_id`, `p`.`user_id` AS `user_id`, `p`.`title` AS `title`, `p`.`authors` AS `authors`, `p`.`publication_date` AS `publication_date`, `p`.`research_type` AS `research_type`, `p`.`department` AS `department`, `p`.`description` AS `description`, `p`.`image` AS `image`, `p`.`file` AS `file`, `p`.`file_type` AS `file_type`, `p`.`file_size` AS `file_size`, `p`.`status` AS `status`, `p`.`date_submitted` AS `date_submitted`, `p`.`views` AS `views`, `p`.`downloads` AS `downloads`, `u`.`full_name` AS `owner_name` FROM (`projects` `p` left join `users` `u` on(`p`.`user_id` = `u`.`user_id`)) WHERE `p`.`status` = 'approved' ;
 
 -- --------------------------------------------------------
 
@@ -342,9 +298,7 @@ ALTER TABLE `downloads_log`
 ALTER TABLE `projects`
   ADD PRIMARY KEY (`project_id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `sdg_id` (`sdg_id`),
   ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_sdg_id` (`sdg_id`),
   ADD KEY `idx_date_submitted` (`date_submitted`);
 
 --
@@ -356,19 +310,14 @@ ALTER TABLE `project_likes`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `sdgs`
---
-ALTER TABLE `sdgs`
-  ADD PRIMARY KEY (`sdg_id`),
-  ADD UNIQUE KEY `sdg_name` (`sdg_name`);
-
---
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `username_2` (`username`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `email_2` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -378,7 +327,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `admin_settings`
@@ -390,7 +339,7 @@ ALTER TABLE `admin_settings`
 -- AUTO_INCREMENT for table `approvals`
 --
 ALTER TABLE `approvals`
-  MODIFY `approval_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `approval_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `comments`
@@ -414,7 +363,7 @@ ALTER TABLE `downloads_log`
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `project_likes`
@@ -423,16 +372,10 @@ ALTER TABLE `project_likes`
   MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT for table `sdgs`
---
-ALTER TABLE `sdgs`
-  MODIFY `sdg_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
@@ -477,8 +420,7 @@ ALTER TABLE `downloads_log`
 -- Constraints for table `projects`
 --
 ALTER TABLE `projects`
-  ADD CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `projects_ibfk_2` FOREIGN KEY (`sdg_id`) REFERENCES `sdgs` (`sdg_id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `project_likes`

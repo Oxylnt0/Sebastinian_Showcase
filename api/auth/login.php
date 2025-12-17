@@ -25,8 +25,9 @@ if (!Validation::required($password)) {
 try {
     $conn = (new Database())->connect();
 
+    // 1. Fetch user data INCLUDING is_verified
     $stmt = $conn->prepare("
-        SELECT user_id, username, password, role, full_name
+        SELECT user_id, username, password, role, full_name, is_verified
         FROM users 
         WHERE username = ?
         LIMIT 1
@@ -41,8 +42,17 @@ try {
 
     $user = $result->fetch_assoc();
 
+    // 2. Verify Password
     if (!password_verify($password, $user["password"])) {
         Response::error("Invalid password", 401);
+    }
+
+    // =========================================================
+    // 3. CRITICAL SECURITY CHECK: IS VERIFIED?
+    // =========================================================
+    if ($user['is_verified'] == 0) {
+        // Prevent login and instruct user to register again to verify
+        Response::error("Your email is not verified. Please register again to verify your account.", 403);
     }
 
     // -------------------------------
@@ -76,3 +86,4 @@ try {
 } catch (Exception $e) {
     Response::error("Server error: " . $e->getMessage(), 500);
 }
+?>

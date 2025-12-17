@@ -11,12 +11,22 @@ require_once "../api/utils/auth_check.php";
 
 // 1. Strict Authentication
 Auth::requireLogin();
-$user = Auth::currentUser();
+$session_user = Auth::currentUser(); // User data from Session (might be stale)
 $conn = (new Database())->connect();
 
-$user_id   = $user['user_id'];
-$user_role = $user['role'];
-$full_name = htmlspecialchars($_SESSION['full_name'] ?? $user['username']);
+$user_id = $session_user['user_id'];
+$user_role = $session_user['role'];
+
+// --- FIX: Fetch Fresh User Data from Database ---
+// This ensures we see the new profile pic immediately without logging out/in
+$user_stmt = $conn->prepare("SELECT full_name, username, profile_image FROM users WHERE user_id = ?");
+$user_stmt->bind_param("i", $user_id);
+$user_stmt->execute();
+$fresh_user = $user_stmt->get_result()->fetch_assoc();
+
+// Use fresh data, fallback to session if DB fails (unlikely)
+$full_name = htmlspecialchars($fresh_user['full_name'] ?? $session_user['username']);
+$profile_image_name = $fresh_user['profile_image'] ?? 'default.png';
 
 // 2. Time-Based Greeting Logic
 $hour = date('H');
@@ -92,11 +102,14 @@ define('PROFILE_IMG_PATH', '../uploads/profile_images/');
                 
                 <div class="hero-avatar-area">
                     <?php 
-                        $profileImg = PROFILE_IMG_PATH . htmlspecialchars($user['profile_image'] ?? 'default.png');
-                        $profileSrc = file_exists($profileImg) ? $profileImg : PROFILE_IMG_PATH . 'default.png';
+                        // Updated Logic: Check file existence based on DB data
+                        $profileImgPath = PROFILE_IMG_PATH . htmlspecialchars($profile_image_name);
+                        $profileSrc = file_exists($profileImgPath) && !empty($profile_image_name) 
+                                      ? $profileImgPath 
+                                      : PROFILE_IMG_PATH . 'default.png';
                     ?>
                     <div class="avatar-frame">
-                        <img src="<?php echo $profileSrc; ?>" alt="User Avatar">
+                        <img src="<?php echo $profileSrc; ?>?v=<?php echo time(); ?>" alt="User Avatar">
                     </div>
                 </div>
 
@@ -132,7 +145,7 @@ define('PROFILE_IMG_PATH', '../uploads/profile_images/');
                     <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
                     <div class="stat-data">
                         <h2 class="counter"><?php echo $stats['total']; ?></h2>
-                        <span>Total Projects</span>
+                        <span>Total Research Projects</span>
                     </div>
                     <div class="stat-bg-icon"><i class="fas fa-folder"></i></div>
                 </div>
@@ -190,10 +203,9 @@ define('PROFILE_IMG_PATH', '../uploads/profile_images/');
                                 // Logic: Check if image exists
                                 $imgName = $proj['image'];
                                 $hasImage = !empty($imgName) && file_exists(IMG_PATH . $imgName);
-                                $imgSrc = $hasImage ? IMG_PATH . htmlspecialchars($imgName) : '../assets/images/placeholder.png'; // Use a default or icon
+                                $imgSrc = $hasImage ? IMG_PATH . htmlspecialchars($imgName) : '../assets/images/placeholder.png';
                                 
                                 $status = strtolower($proj['status']);
-                                // FIX: Use date_submitted here as well
                                 $date = date("M d, Y", strtotime($proj['date_submitted']));
                             ?>
                             
