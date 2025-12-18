@@ -147,6 +147,19 @@ grid.addEventListener('click', (e) => {
     }
 });
 
+// --- EDIT LOGIC ---
+grid.addEventListener('click', (e) => {
+    // Check if the clicked element (or its parent) is the edit button
+    const editBtn = e.target.closest('.action-btn.edit');
+    if (!editBtn) return;
+
+    // Get the project ID from the data-id attribute
+    const id = editBtn.dataset.id;
+
+    // Redirect the user to the edit page with the project ID
+    window.location.href = `edit_project.php?id=${id}`;
+});
+
 const performDelete = async (id, btn) => {
     // Add a processing state to the button
     btn.classList.add('is-processing');

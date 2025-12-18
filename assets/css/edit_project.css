@@ -1,217 +1,241 @@
-/* ===============================
+/* ==========================================
+   Sebastinian Showcase - Edit Project CSS
+   Premium Red & Gold Edition
+   ========================================== */
+
+/* --------------------------
    Root Variables
-   =============================== */
+   -------------------------- */
 :root {
-    --primary-color: #b00020; /* deep red */
-    --secondary-color: #ffdd57; /* gold */
+    --primary-color: #800000;
+    /* Deep Sebastinian Red */
+    --primary-light: #a30000;
+    /* Brighter Red */
+    --secondary-color: #D4AF37;
+    /* Luxury Gold */
+    --secondary-hover: #C5A028;
+    /* Darker Gold */
     --bg-color: #fffdf9;
-    --text-color: #222;
+    /* Warm off-white */
+    --text-color: #1a1a1a;
+    /* Near black */
     --muted-color: #666;
+    /* Secondary text */
     --shadow-color: rgba(0, 0, 0, 0.1);
     --font-main: 'Poppins', sans-serif;
     --border-radius: 12px;
 }
 
-/* ===============================
+/* --------------------------
    Global Styles
-   =============================== */
+   -------------------------- */
 body {
     font-family: var(--font-main);
     background: var(--bg-color);
     color: var(--text-color);
     margin: 0;
     padding: 0;
+    line-height: 1.6;
 }
 
 .project-container {
-    max-width: 900px;
+    max-width: 800px;
+    /* Slightly narrower for better readability */
     margin: 50px auto;
     padding: 20px;
 }
 
-/* ===============================
-   Project Box
-   =============================== */
+/* --------------------------
+   Project Box (The Form Wrapper)
+   -------------------------- */
 .project-box {
     background: #ffffff;
-    padding: 30px;
+    padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 8px 24px var(--shadow-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    border-top: 6px solid var(--primary-color);
+    /* Theme Red Accent */
+    transition: transform 0.3s ease;
 }
 
-.project-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px var(--shadow-color);
-}
-
-/* ===============================
+/* --------------------------
    Titles & Labels
-   =============================== */
+   -------------------------- */
 .project-title {
     font-size: 2.4rem;
     color: var(--primary-color);
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     text-align: center;
+    font-weight: 800;
 }
 
 label {
     display: block;
-    margin: 12px 0 6px;
-    font-weight: 600;
+    margin: 15px 0 8px;
+    font-weight: 700;
     color: var(--primary-color);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* ===============================
+/* --------------------------
    Inputs & Textareas
-   =============================== */
+   -------------------------- */
 input[type="text"],
 textarea,
 input[type="file"] {
     width: 100%;
-    padding: 14px;
+    padding: 14px 18px;
     font-size: 1rem;
     border-radius: var(--border-radius);
-    border: 1px solid #ccc;
-    margin-bottom: 18px;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    border: 2px solid #eee;
+    /* Light gray border */
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    background: #fafafa;
 }
 
 input[type="text"]:focus,
-textarea:focus,
-input[type="file"]:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(176, 0, 32, 0.2);
+textarea:focus {
+    border-color: var(--secondary-color);
+    /* Gold focus */
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
     outline: none;
 }
 
 textarea {
-    min-height: 140px;
+    min-height: 160px;
     resize: vertical;
 }
 
-/* ===============================
+/* --------------------------
    Buttons
-   =============================== */
+   -------------------------- */
+/* Main Update Button */
 button.action-btn.edit-btn {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: #fff;
-    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: var(--secondary-color);
+    /* Gold text on Red */
+    font-weight: 800;
     font-size: 1.1rem;
-    border: none;
-    padding: 14px 30px;
-    border-radius: var(--border-radius);
+    border: 2px solid var(--secondary-color);
+    border-radius: 50px;
+    /* Pill shape */
     cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: all 0.3s ease;
     display: block;
-    margin-top: 10px;
+    margin: 30px auto 10px;
     width: 100%;
+    height: 6%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 button.action-btn.edit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px var(--shadow-color);
-}
-
-/* ===============================
-   Error & Success Messages
-   =============================== */
-.error-messages, .success-message {
-    margin-bottom: 20px;
-    padding: 15px 20px;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-}
-
-.error {
-    color: #b00020;
-    background: #ffdada;
-    margin-bottom: 8px;
-    padding: 8px 12px;
-}
-
-.success {
-    color: #155724;
-    background: #d4edda;
-    margin-bottom: 8px;
-    padding: 8px 12px;
-}
-
-/* ===============================
-   Image Preview
-   =============================== */
-.image-preview {
-    margin-bottom: 12px;
-    text-align: center;
-}
-
-.image-preview img {
-    max-width: 220px;
-    border-radius: var(--border-radius);
-    border: 2px solid var(--primary-color);
-    box-shadow: 0 4px 16px var(--shadow-color);
-    transition: transform 0.25s ease;
-}
-
-.image-preview img:hover {
-    transform: scale(1.05);
-}
-
-/* ===============================
-   File Input Styling
-   =============================== */
-input[type="file"] {
-    cursor: pointer;
-}
-
-input[type="file"]::file-selector-button {
-    border: none;
-    padding: 8px 20px;
-    border-radius: var(--border-radius);
-    background: var(--primary-color);
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.25s ease;
-}
-
-input[type="file"]::file-selector-button:hover {
     background: var(--secondary-color);
-    color: #222;
-}
-
-/* ===============================
-   Responsive
-   =============================== */
-@media screen and (max-width: 600px) {
-    .project-box {
-        padding: 20px;
-    }
-
-    button.action-btn.edit-btn {
-        padding: 12px 20px;
-        font-size: 1rem;
-    }
-
-    .image-preview img {
-        max-width: 150px;
-    }
+    color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
 }
 
 /* Back Button */
 .back-btn {
     display: inline-block;
-    margin-bottom: 20px;
-    padding: 8px 16px;
-    background:#b00020; /* Gold to Red */
-    color: #fff;
-    font-weight: 600;
-    border-radius: 12px;
+    margin-bottom: 25px;
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--primary-color);
+    font-weight: 700;
+    border: 2px solid var(--primary-color);
+    border-radius: 50px;
     text-decoration: none;
-    transition: all 0.25s ease;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .back-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    background: var(--primary-color);
+    color: #fff;
+    transform: translateX(-5px);
+}
+
+/* --------------------------
+   Image Preview
+   -------------------------- */
+.image-preview {
+    margin: 10px 0 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    text-align: center;
+    border: 2px dashed #ddd;
+}
+
+.image-preview img {
+    max-width: 250px;
+    border-radius: var(--border-radius);
+    border: 3px solid var(--secondary-color);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+/* --------------------------
+   File Input Styling
+   -------------------------- */
+input[type="file"]::file-selector-button {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* --------------------------
+   Status Messages
+   -------------------------- */
+.error {
+    color: #800000;
+    background: #fff0f0;
+    border-left: 5px solid #800000;
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.success {
+    color: #155724;
+    background: #d4edda;
+    border-left: 5px solid #28a745;
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* --------------------------
+   Responsive
+   -------------------------- */
+@media screen and (max-width: 768px) {
+    .project-container {
+        padding: 10px;
+    }
+
+    .project-box {
+        padding: 25px;
+    }
+
+    .project-title {
+        font-size: 1.8rem;
+    }
 }
