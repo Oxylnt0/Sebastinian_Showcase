@@ -137,7 +137,7 @@ $comment_stmt->close();
             <?php if ($is_owner): ?>
                 <div class="owner-actions" style="display: flex; gap: 15px;">
                     <button id="delete-project-btn" class="delete-btn">
-                        <i class="fas fa-trash-alt"></i> Delete Project
+                        <i class="fas fa-trash-alt"></i> Delete Research
                     </button>
 
                     <?php if ($project['status'] !== 'approved'): ?>
