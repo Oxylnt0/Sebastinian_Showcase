@@ -130,7 +130,6 @@ $comment_stmt->close();
         <div class="project-file">
             <a href="../api/projects/download_file.php?project_id=<?= $project_id ?>" 
                class="download-btn" id="download-file-btn">Download Research</a>
-            <span id="download-count">Downloaded: <?= intval($project['downloads']) ?></span>
         </div>
         <?php endif; ?>
 

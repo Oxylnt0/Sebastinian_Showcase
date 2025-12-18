@@ -51,66 +51,77 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // --- RENDER CARDS ---
-    const renderMyProjects = (projects) => {
-        grid.innerHTML = '';
-        
-        if (projects.length === 0) {
-            noResults.style.display = 'block';
-            return;
-        }
-        noResults.style.display = 'none';
-
-        projects.forEach(p => {
-            const dateStr = new Date(p.date_submitted).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' });
-            const imagePath = p.image ? `../uploads/project_images/${p.image}` : null;
-            const filePath = p.file ? `../uploads/project_files/${p.file}` : '#';
-            const status = p.status || 'draft';
-            const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+        const renderMyProjects = (projects) => {
+            grid.innerHTML = '';
             
-            const article = document.createElement('article');
-            article.className = 'project-card glass-card';
-            article.dataset.status = status;
-            article.setAttribute('data-tilt', '');
+            if (projects.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+            noResults.style.display = 'none';
 
-            let mediaHtml = imagePath 
-                ? `<img src="${imagePath}" alt="Cover" loading="lazy">` 
-                : `<div class="placeholder-art"><i class="fas fa-book-open"></i></div>`;
+            projects.forEach(p => {
+                const dateStr = new Date(p.date_submitted).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' });
+                const imagePath = p.image ? `../uploads/project_images/${p.image}` : null;
+                const filePath = p.file ? `../uploads/project_files/${p.file}` : '#';
+                
+                // Normalize status for comparison
+                const status = (p.status || 'pending').toLowerCase();
+                const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+                
+                const article = document.createElement('article');
+                article.className = 'project-card glass-card';
+                article.dataset.status = status;
+                article.setAttribute('data-tilt', '');
 
-            let deptBadge = p.department 
-                ? `<span class="sdg-pill" title="${p.department}"><i class="fas fa-university"></i> ${p.department}</span>` 
-                : '';
+                let mediaHtml = imagePath 
+                    ? `<img src="${imagePath}" alt="Cover" loading="lazy">` 
+                    : `<div class="placeholder-art"><i class="fas fa-book-open"></i></div>`;
 
-            article.innerHTML = `
-                <div class="card-media">
-                    ${mediaHtml}
-                    <div class="card-overlay">
-                        <a href="project.php?id=${p.project_id}" class="btn-view">Read Thesis <i class="fas fa-arrow-right"></i></a>
+                let deptBadge = p.department 
+                    ? `<span class="sdg-pill" title="${p.department}"><i class="fas fa-university"></i> ${p.department}</span>` 
+                    : '';
+
+                // ==========================================
+                // UI LOGIC: Hide Edit Button if Approved
+                // ==========================================
+                const isApproved = status === 'approved';
+                
+                const editButton = !isApproved 
+                    ? `<button class="action-btn edit" data-id="${p.project_id}" title="Edit Thesis"><i class="fas fa-pen"></i></button>` 
+                    : `<span class="locked-icon" title="Approved research cannot be edited"><i class="fas fa-lock"></i></span>`;
+
+                article.innerHTML = `
+                    <div class="card-media">
+                        ${mediaHtml}
+                        <div class="card-overlay">
+                            <a href="project.php?id=${p.project_id}" class="btn-view">Read Thesis <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <span class="status-badge ${status}">${statusLabel}</span>
                     </div>
-                    <span class="status-badge ${status}">${statusLabel}</span>
-                </div>
-                <div class="card-content">
-                    <div class="card-meta">
-                        <span class="date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
-                        ${deptBadge}
-                    </div>
-                    <h3 class="card-title"><a href="project.php?id=${p.project_id}">${p.title}</a></h3>
-                    <p class="card-excerpt">${p.description.substring(0, 90)}...</p>
-                    <div class="card-footer">
-                        <a href="${filePath}" class="action-link download" download><i class="fas fa-file-pdf"></i></a>
-                        <div class="footer-actions">
-                            <button class="action-btn edit" data-id="${p.project_id}"><i class="fas fa-pen"></i></button>
-                            <button class="action-btn delete" data-id="${p.project_id}" data-token="${document.body.dataset.csrf}"><i class="fas fa-trash"></i></button>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                            ${deptBadge}
+                        </div>
+                        <h3 class="card-title"><a href="project.php?id=${p.project_id}">${p.title}</a></h3>
+                        <p class="card-excerpt">${p.description.substring(0, 90)}...</p>
+                        <div class="card-footer">
+                            <a href="${filePath}" class="action-link download" download title="Download PDF"><i class="fas fa-file-pdf"></i></a>
+                            <div class="footer-actions">
+                                ${editButton}
+                                <button class="action-btn delete" data-id="${p.project_id}" data-token="${document.body.dataset.csrf}" title="Delete Thesis"><i class="fas fa-trash"></i></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            grid.appendChild(article);
-        });
+                `;
+                grid.appendChild(article);
+            });
 
-        if (typeof VanillaTilt !== "undefined") {
-            VanillaTilt.init(document.querySelectorAll("[data-tilt]"));
-        }
-    };
+            if (typeof VanillaTilt !== "undefined") {
+                VanillaTilt.init(document.querySelectorAll("[data-tilt]"));
+            }
+        };
 
     // --- EVENT LISTENERS ---
     if (searchInput) {
