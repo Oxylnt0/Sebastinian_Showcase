@@ -125,6 +125,7 @@ include("header.php");
                         <li id="rule-length" class="invalid"><i class="fa-solid fa-circle"></i> 12+ Characters</li>
                         <li id="rule-upper" class="invalid"><i class="fa-solid fa-circle"></i> One Uppercase Letter</li>
                         <li id="rule-special" class="invalid"><i class="fa-solid fa-circle"></i> One Special Character (!@#$...)</li>
+                        <li id="rule-number" class="invalid"><i class="fa-solid fa-circle"></i> One Number</li>
                     </ul>
                 </div>
 

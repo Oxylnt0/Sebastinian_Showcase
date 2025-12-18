@@ -117,6 +117,16 @@ $comment_stmt->close();
         </div>
 
         <?php if (!empty($project['file'])): ?>
+            <div class="pdf-action-container">
+                <a href="/Sebastinian_Showcase/uploads/project_files/<?= htmlspecialchars($project['file']) ?>" 
+                target="_blank" 
+                class="btn-view-pdf">
+                    <i class="fas fa-external-link-alt"></i> View Full Research
+                </a>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($project['file'])): ?>
         <div class="project-file">
             <a href="../api/projects/download_file.php?project_id=<?= $project_id ?>" 
                class="download-btn" id="download-file-btn">Download Research</a>
@@ -126,10 +136,19 @@ $comment_stmt->close();
 
         <div class="project-actions">
             <?php if ($is_owner): ?>
-                <button id="delete-project-btn" class="delete-btn">Delete Project</button>
-                <?php if ($project['status'] !== 'approved'): ?>
-                    <a href="edit_project.php?id=<?= $project_id ?>" class="action-btn edit-btn">Edit Project</a>
-                <?php endif; ?>
+                <div class="owner-actions" style="display: flex; gap: 15px;">
+                    <button id="delete-project-btn" class="delete-btn">
+                        <i class="fas fa-trash-alt"></i> Delete Project
+                    </button>
+
+                    <?php if ($project['status'] !== 'approved'): ?>
+                        <button onclick="window.location.href='edit_project.php?id=<?= $project_id ?>'" 
+                                id="edit-project-btn" 
+                                class="edit-btn">
+                            <i class="fas fa-edit"></i> Edit Project
+                        </button>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
 
             <?php if ($current_user_id): ?>

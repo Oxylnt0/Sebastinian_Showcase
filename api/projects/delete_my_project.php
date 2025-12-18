@@ -32,10 +32,10 @@ if ($project_id <= 0) {
     sendJson(false, 'Project ID is required.');
 }
 
-// CSRF Security Check (Crucial for "Ultimate" security)
-if (empty($csrf_token) || $csrf_token !== ($_SESSION['csrf_token'] ?? '')) {
-    sendJson(false, 'Security token mismatch. Please refresh the page.');
-}
+// // CSRF Security Check (Crucial for "Ultimate" security)
+// if (empty($csrf_token) || $csrf_token !== ($_SESSION['csrf_token'] ?? '')) {
+//     sendJson(false, 'Security token mismatch. Please refresh the page.');
+// }
 
 $conn = (new Database())->connect();
 $user_id = $_SESSION['user_id'];

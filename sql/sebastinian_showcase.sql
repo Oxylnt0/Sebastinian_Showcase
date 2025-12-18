@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 17, 2025 at 07:33 PM
+-- Generation Time: Dec 18, 2025 at 08:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,6 +34,16 @@ CREATE TABLE `activity_log` (
   `details` text DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `activity_log`
+--
+
+INSERT INTO `activity_log` (`log_id`, `user_id`, `action`, `details`, `timestamp`) VALUES
+(16, 34, 'project_status_update', 'Project 19 set to approved', '2025-12-17 20:26:13'),
+(17, 34, 'add_admin', 'Admin Ken created', '2025-12-17 23:43:52'),
+(18, 34, 'delete_admin', 'Deleted admin ID 35', '2025-12-17 23:44:08'),
+(19, 34, 'add_admin', 'Created admin account: Ken', '2025-12-17 23:53:48');
 
 -- --------------------------------------------------------
 
@@ -177,6 +187,15 @@ CREATE TABLE `users` (
   `otp_expires_at` datetime DEFAULT NULL,
   `is_verified` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `password`, `full_name`, `email`, `role`, `date_created`, `profile_image`, `otp_code`, `otp_expires_at`, `is_verified`) VALUES
+(34, 'Admin', '$2y$10$1WUq/5ZnJOUVFRsbIQx6G.ArCoi.CE4nNkj5LwD9Xt2QOAXXWbuXC', 'Sebastinian Admin', 'admin_account@sscr.edu', 'admin', '2025-12-17 20:25:25', '1766003865_c083ebc49b89708c_picture.jpg', NULL, NULL, 1),
+(36, 'Ken', '$2y$10$veOrT4GmpTnnQ/dgjBQalu.Yfterc2YGMaazQPYo3dDjT0D/iql/C', 'Ken', 's.kenadreien.arceno@sscr.edu', 'admin', '2025-12-17 23:53:48', NULL, NULL, NULL, 1),
+(39, 'Simoun_00', '$2y$10$IBya8GmR/FjQQdoDtwo0XOhECZIP7yaj5DMGtdOxQIJo/2f4OuQJa', 'Simoun Andreo Supnet', 's.simounandreo.supnet@sscr.edu', 'student', '2025-12-18 00:18:56', '1766017272_fcda6ca11da93202_picture.jpg', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -327,7 +346,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `admin_settings`
@@ -339,7 +358,7 @@ ALTER TABLE `admin_settings`
 -- AUTO_INCREMENT for table `approvals`
 --
 ALTER TABLE `approvals`
-  MODIFY `approval_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `approval_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `comments`
@@ -357,13 +376,13 @@ ALTER TABLE `comment_likes`
 -- AUTO_INCREMENT for table `downloads_log`
 --
 ALTER TABLE `downloads_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `project_likes`
@@ -375,7 +394,7 @@ ALTER TABLE `project_likes`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- Constraints for dumped tables

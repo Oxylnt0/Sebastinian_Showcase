@@ -33,42 +33,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 2. Real-Time Password Validation Logic
+   // 2. Real-Time Password Validation Logic
     if (passwordInput && checklistBox) {
         
-        // Show requirements on focus
-        passwordInput.addEventListener("focus", () => {
-            checklistBox.style.display = "block";
-        });
+        passwordInput.addEventListener("focus", () => { checklistBox.style.display = "block"; });
+        passwordInput.addEventListener("blur", () => { checklistBox.style.display = "none"; });
 
-        passwordInput.addEventListener("blur", () => {
-            checklistBox.style.display = "none";
-        });
-
-        // Check rules while typing
         passwordInput.addEventListener("input", () => {
             checklistBox.style.display = "block"; 
             const val = passwordInput.value;
 
-            // UPDATED RULE: Length 12+
-            if (val.length >= 12) {
-                setValid(ruleLength, true);
-            } else {
-                setValid(ruleLength, false);
-            }
+            // Rule 1: Length 12+
+            setValid(ruleLength, val.length >= 12);
 
             // Rule 2: One Uppercase
-            if (/[A-Z]/.test(val)) {
-                setValid(ruleUpper, true);
-            } else {
-                setValid(ruleUpper, false);
-            }
+            setValid(ruleUpper, /[A-Z]/.test(val));
 
             // Rule 3: One Special Character
-            if (/[\W_]/.test(val)) {
-                setValid(ruleSpecial, true);
-            } else {
-                setValid(ruleSpecial, false);
+            setValid(ruleSpecial, /[\W_]/.test(val));
+
+            // NEW RULE: Rule 4: One Number
+            if (ruleNumber) {
+                setValid(ruleNumber, /\d/.test(val));
             }
         });
     }
@@ -103,23 +89,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // --- B. Password Validation ---
             const passVal = passwordInput.value;
-            // UPDATED REGEX: 12 chars minimum
-            const passRegex = /^(?=.*[A-Z])(?=.*[\W_]).{12,}$/;
+            // UPDATED REGEX: Added (?=.*\d) for numbers
+            const passRegex = /^(?=.*[A-Z])(?=.*[\W_])(?=.*\d).{12,}$/;
             
             if (!passRegex.test(passVal)) {
-                showFeedback("Password does not meet requirements (Min 12 chars).", "error");
+                showFeedback("Password must be 12+ chars with an uppercase letter, special char, and a number.", "error");
                 checklistBox.style.display = "block"; 
                 shakeElement(passwordInput.closest('.input-wrapper'));
                 return;
             }
 
+            /* ... Rest of submission (Confirm Match, Fetch, OTP) remains same ... */
             if (passVal !== confirmInput.value) {
                 showFeedback("Passwords do not match.", "error");
                 shakeElement(confirmInput.closest('.input-wrapper'));
                 return;
             }
 
-            // --- C. Submit ---
             isSubmitting = true;
             const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;

@@ -124,34 +124,76 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchMyProjects();
     }
 
-    // --- DELETE LOGIC (Unchanged) ---
-    grid.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.action-btn.delete');
-        if (deleteBtn) {
-            const id = deleteBtn.dataset.id;
-            if(typeof createConfirmModal === 'function') {
-                createConfirmModal(() => performDelete(id, deleteBtn));
-            } else {
-                if(confirm("Are you sure you want to delete this?")) performDelete(id, deleteBtn);
-            }
-        }
-    });
+// --- IMPROVED DELETE LOGIC ---
+// We use a single, clean event listener on the grid
+grid.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.action-btn.delete');
+    if (!deleteBtn) return; // Exit if we didn't click a delete button
 
-    const performDelete = async (id, btn) => {
-        try {
-            const response = await fetch('../api/projects/delete_my_project.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ id: id }) 
-            });
-            const res = await response.json();
-            if(res.success) {
-                btn.closest('article').remove();
-            } else {
-                alert("Failed: " + res.message);
-            }
-        } catch (err) {
-            console.error(err);
+    const id = deleteBtn.dataset.id;
+    
+    // Check if we are already deleting to prevent double-clicks
+    if (deleteBtn.classList.contains('is-processing')) return;
+
+    const executeDelete = () => performDelete(id, deleteBtn);
+
+    // Single confirmation check
+    if (typeof createConfirmModal === 'function') {
+        createConfirmModal(executeDelete);
+    } else {
+        if (confirm("Are you sure you want to permanently delete this research?")) {
+            executeDelete();
         }
-    };
+    }
+});
+
+const performDelete = async (id, btn) => {
+    // Add a processing state to the button
+    btn.classList.add('is-processing');
+    const card = btn.closest('article');
+
+    try {
+        const response = await fetch('../api/projects/delete_my_project.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                id: id, 
+                csrf_token: typeof GLOBAL_CSRF_TOKEN !== 'undefined' ? GLOBAL_CSRF_TOKEN : '' 
+            }) 
+        });
+
+        // First check if the response is actually OK
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const res = await response.json();
+
+        if (res.success) {
+            // 1. Visually remove the card immediately
+            card.style.pointerEvents = 'none';
+            card.style.transform = 'scale(0.9) translateY(20px)';
+            card.style.opacity = '0';
+            card.style.transition = 'all 0.4s ease';
+
+            setTimeout(() => {
+                card.remove();
+                
+                // 2. Check if grid is empty without re-fetching from database
+                const remainingCards = document.querySelectorAll('.project-card');
+                if (remainingCards.length === 0) {
+                    if (noResults) noResults.style.display = 'block';
+                }
+            }, 400);
+
+            console.log("Thesis removed successfully.");
+        } else {
+            // This catches the "Project Not Found" from the PHP side
+            alert("Note: " + res.message);
+            btn.classList.remove('is-processing');
+        }
+    } catch (err) {
+        console.error("Deletion Error:", err);
+        alert("System error. The project may have already been deleted.");
+        btn.classList.remove('is-processing');
+    }
+};
 });

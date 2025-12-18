@@ -32,6 +32,7 @@ if (substr($email, -9) !== '@sscr.edu') Response::error("Registration restricted
 
 // Password Complexity
 if (strlen($raw_password) < 12) Response::error("Password must be at least 12 characters.");
+if (!preg_match('/\d/', $raw_password)) Response::error("Password must contain at least one number.");
 if (!preg_match('/[A-Z]/', $raw_password)) Response::error("Password must contain an uppercase letter.");
 if (!preg_match('/[\W_]/', $raw_password)) Response::error("Password must contain a special character.");
 

@@ -3,6 +3,19 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// 1. Centralized CSRF Token Generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
+
+<script>
+    const GLOBAL_CSRF_TOKEN = "<?php echo $_SESSION['csrf_token']; ?>";
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
+<?php
 // Project root base path
 $base = '/Sebastinian_Showcase/pages';
 $assets = '/Sebastinian_Showcase/assets';
