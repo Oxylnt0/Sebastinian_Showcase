@@ -5,7 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================
-       Feedback Toast System
+        Feedback Toast System
     ========================= */
     const feedback = document.createElement("div");
     feedback.className = "feedback";
@@ -23,30 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     /* =========================
-       Password Visibility Toggle
-    ========================= */
-    document.querySelectorAll(".toggle-password").forEach(icon => {
-        icon.addEventListener("click", function() {
-            const targetId = this.getAttribute("data-target");
-            const input = document.getElementById(targetId);
-            
-            const isPassword = input.getAttribute("type") === "password";
-            input.setAttribute("type", isPassword ? "text" : "password");
-
-            this.classList.toggle("fa-eye");
-            this.classList.toggle("fa-eye-slash");
-            
-            // Visual feedback on the input
-            if (isPassword) {
-                input.style.borderColor = "#D4AF37";
-            } else {
-                input.style.borderColor = "#ddd";
-            }
-        });
-    });
-
-    /* =========================
-       Tabs Switching
+        Tabs Switching
     ========================= */
     const tabs = document.querySelectorAll(".tab-btn");
     const panes = document.querySelectorAll(".tab-pane");
@@ -66,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* =========================
-       Admin Management & Authorization
+        Admin Management
     ========================= */
     const loadAdmins = async () => {
         const container = document.getElementById("admins-container");
@@ -98,71 +75,61 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    const attachAdminEvents = () => {
-        const addForm = document.getElementById("addAdminForm");
-        if (addForm) {
-            addForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const formData = Object.fromEntries(new FormData(addForm).entries());
-                
-                // Client-side Security Enforcement
-                if (!formData.email.toLowerCase().endsWith("@sscr.edu")) {
-                    showFeedback("Only @sscr.edu emails are allowed.", "error");
-                    return;
-                }
+    /* ==========================================
+        DYNAMIC PROJECT ACTIONS (Approve/Delete)
+        This is the fix for your buttons
+    ========================================== */
+    const projectsContainer = document.getElementById("projects-container");
 
-                const pass = formData.password;
-                const strongPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/.test(pass);
-                if (!strongPass) {
-                    showFeedback("Password must be 12+ chars with Uppercase, Number, and Special char.", "error");
-                    return;
-                }
+    if (projectsContainer) {
+        projectsContainer.addEventListener("click", async (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
 
-                if (pass !== formData.confirm_password) {
-                    showFeedback("Passwords do not match.", "error");
-                    return;
-                }
+            const row = btn.closest("tr");
+            const projectId = row.dataset.projectId;
 
+            // --- APPROVE LOGIC ---
+            if (btn.classList.contains("approve-btn")) {
                 try {
-                    const res = await fetch("/Sebastinian_Showcase/api/admin/add_admin.php", {
+                    const res = await fetch("/Sebastinian_Showcase/api/admin/approve_project.php", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(formData)
-                    });
-                    const data = await res.json();
-                    if (data.status !== "success") throw new Error(data.message);
-
-                    addForm.reset();
-                    loadAdmins();
-                    showFeedback("Admin authorized successfully", "success");
-                } catch (err) {
-                    showFeedback(err.message, "error");
-                }
-            };
-        }
-
-        document.querySelectorAll(".delete-admin-btn").forEach(btn => {
-            btn.onclick = async () => {
-                if (!confirm("Revoke this admin's access?")) return;
-                const userId = btn.closest("tr").dataset.userId;
-                try {
-                    const res = await fetch("/Sebastinian_Showcase/api/admin/delete_admin.php", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ user_id: userId })
+                        body: JSON.stringify({ project_id: projectId })
                     });
                     const data = await res.json();
                     if (data.status === "success") {
-                        btn.closest("tr").remove();
-                        showFeedback("Access revoked.", "success");
+                        showFeedback("Research Approved!", "success");
+                        loadProjects(); // Refresh the list
+                    } else {
+                        throw new Error(data.message);
                     }
-                } catch (err) { showFeedback("Delete failed.", "error"); }
-            };
+                } catch (err) { showFeedback(err.message, "error"); }
+            }
+
+            // --- DELETE LOGIC ---
+            if (btn.classList.contains("delete-project-btn")) {
+                if (!confirm("Are you sure? This research will be permanently deleted.")) return;
+                try {
+                    const res = await fetch("/Sebastinian_Showcase/api/admin/delete_project.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ project_id: projectId })
+                    });
+                    const data = await res.json();
+                    if (data.status === "success") {
+                        row.remove();
+                        showFeedback("Research deleted.", "success");
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (err) { showFeedback(err.message, "error"); }
+            }
         });
-    };
+    }
 
     /* =========================
-       Research/Thesis Management
+        Research/Thesis Loading
     ========================= */
     const loadProjects = async (search = "") => {
         const container = document.getElementById("projects-container");
@@ -183,14 +150,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td>${proj.title}</td>
                         <td>${proj.student_name}</td>
                         <td><span class="status ${proj.status}">${proj.status}</span></td>
-                        <td>
+                        <td style="display:flex; gap:10px;">
                             ${proj.status === "pending" ? `<button class="approve-btn">Approve</button>` : ""}
                             <button class="delete-project-btn">Delete</button>
                         </td>
                     </tr>`;
             });
             container.innerHTML = html + `</tbody></table>`;
-            // Attach approval/delete events here...
         } catch (err) { showFeedback("Failed to load archive.", "error"); }
     };
 
